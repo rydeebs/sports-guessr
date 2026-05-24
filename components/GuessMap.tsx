@@ -84,6 +84,7 @@ export function GuessMap({
       })
       .catch((error) => {
         if (isMounted) {
+          console.error("Google Maps failed to initialize", error);
           setMapError(getGoogleMapsErrorMessage(error));
           setMapStatus("error");
         }

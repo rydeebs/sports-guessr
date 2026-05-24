@@ -100,6 +100,7 @@ export function RoundResultView({
       })
       .catch((error) => {
         if (isMounted) {
+          console.error("Google Maps result map failed to initialize", error);
           setMapError(getGoogleMapsErrorMessage(error));
           setMapStatus("error");
         }
