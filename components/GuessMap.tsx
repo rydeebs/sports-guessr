@@ -19,6 +19,7 @@ export function GuessMap({
 }: GuessMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const googleMapRef = useRef<google.maps.Map | null>(null);
+  const geocoderRef = useRef<google.maps.Geocoder | null>(null);
   const guessMarkerRef = useRef<google.maps.Marker | null>(null);
   const actualMarkerRef = useRef<google.maps.Marker | null>(null);
   const onSelectRef = useRef(onSelect);
@@ -43,7 +44,7 @@ export function GuessMap({
     let isMounted = true;
 
     loadGoogleMaps()
-      .then(({ Map }) => {
+      .then(({ Geocoder, Map }) => {
         if (!isMounted || !mapRef.current || googleMapRef.current) {
           return;
         }
@@ -73,12 +74,36 @@ export function GuessMap({
             return;
           }
 
+          const point = {
+            lat: event.latLng.lat(),
+            lng: event.latLng.lng(),
+          };
+
+          geocoderRef.current
+            ?.geocode({ location: point })
+            .then(({ results }) => {
+              onSelectRef.current({
+                ...point,
+                country: getCountryFromGeocodeResults(results),
+              });
+            })
+            .catch(() => {
+              onSelectRef.current(point);
+            });
+        });
+
+        map.addListener("rightclick", (event: google.maps.MapMouseEvent) => {
+          if (disabledRef.current || !event.latLng) {
+            return;
+          }
+
           onSelectRef.current({
             lat: event.latLng.lat(),
             lng: event.latLng.lng(),
           });
         });
 
+        geocoderRef.current = new Geocoder();
         googleMapRef.current = map;
         setMapStatus("ready");
       })
@@ -173,4 +198,18 @@ export function GuessMap({
       ) : null}
     </section>
   );
+}
+
+function getCountryFromGeocodeResults(results: google.maps.GeocoderResult[]) {
+  for (const result of results) {
+    const countryComponent = result.address_components.find((component) =>
+      component.types.includes("country"),
+    );
+
+    if (countryComponent) {
+      return countryComponent.long_name;
+    }
+  }
+
+  return undefined;
 }

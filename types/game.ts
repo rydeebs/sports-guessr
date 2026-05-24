@@ -1,6 +1,7 @@
 export type LocationPoint = {
   lat: number;
   lng: number;
+  country?: string;
 };
 
 export type RoundLocation = LocationPoint & {
@@ -27,6 +28,7 @@ export type Guess = {
 export type ScoreResult = {
   distanceMiles: number;
   yearError: number;
+  countryMatch: boolean;
   locationScore: number;
   yearScore: number;
   roundScore: number;

@@ -18,6 +18,7 @@ declare global {
 }
 
 export type GoogleMapsLibraries = {
+  Geocoder: typeof google.maps.Geocoder;
   LatLngBounds: typeof google.maps.LatLngBounds;
   Map: typeof google.maps.Map;
   Marker: typeof google.maps.Marker;
@@ -111,6 +112,7 @@ async function loadGoogleMapsLibraries(): Promise<GoogleMapsLibraries> {
   }
 
   return {
+    Geocoder: google.maps.Geocoder,
     LatLngBounds: google.maps.LatLngBounds,
     Map: google.maps.Map,
     Marker: google.maps.Marker,
