@@ -43,12 +43,12 @@ export function GuessMap({
     let isMounted = true;
 
     loadGoogleMaps()
-      .then(() => {
+      .then(({ Map }) => {
         if (!isMounted || !mapRef.current || googleMapRef.current) {
           return;
         }
 
-        const map = new google.maps.Map(mapRef.current, {
+        const map = new Map(mapRef.current, {
           center: { lat: 18, lng: 0 },
           clickableIcons: false,
           disableDefaultUI: true,
@@ -104,11 +104,7 @@ export function GuessMap({
 
     guessMarkerRef.current?.setMap(null);
     guessMarkerRef.current = guess
-      ? new google.maps.Marker({
-          map,
-          position: guess,
-          title: "Your guess",
-        })
+      ? new google.maps.Marker({ map, position: guess, title: "Your guess" })
       : null;
   }, [guess]);
 

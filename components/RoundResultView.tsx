@@ -35,12 +35,12 @@ export function RoundResultView({
     let connector: google.maps.Polyline | null = null;
 
     loadGoogleMaps()
-      .then(() => {
+      .then(({ LatLngBounds, Map, Marker, Polyline, SymbolPath }) => {
         if (!isMounted || !mapElementRef.current) {
           return;
         }
 
-        const map = new google.maps.Map(mapElementRef.current, {
+        const map = new Map(mapElementRef.current, {
           clickableIcons: false,
           fullscreenControl: false,
           gestureHandling: "greedy",
@@ -53,16 +53,16 @@ export function RoundResultView({
           lng: round.actualLocation.lng,
         };
 
-        guessMarker = new google.maps.Marker({
+        guessMarker = new Marker({
           map,
           position: guessLocation,
           title: "Your guess",
         });
-        answerMarker = new google.maps.Marker({
+        answerMarker = new Marker({
           icon: {
             fillColor: "#246bff",
             fillOpacity: 1,
-            path: google.maps.SymbolPath.CIRCLE,
+            path: SymbolPath.CIRCLE,
             scale: 10,
             strokeColor: "#fff7e8",
             strokeWeight: 3,
@@ -71,7 +71,7 @@ export function RoundResultView({
           position: actualPoint,
           title: round.actualLocation.name,
         });
-        connector = new google.maps.Polyline({
+        connector = new Polyline({
           geodesic: true,
           map,
           path: [guessLocation, actualPoint],
@@ -80,7 +80,7 @@ export function RoundResultView({
           strokeWeight: 3,
         });
 
-        const bounds = new google.maps.LatLngBounds();
+        const bounds = new LatLngBounds();
         bounds.extend(guessLocation);
         bounds.extend(actualPoint);
 
