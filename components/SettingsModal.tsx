@@ -21,12 +21,12 @@ export function SettingsModal({
   return (
     <div
       aria-modal="true"
-      className="pointer-events-auto fixed inset-0 z-40 grid place-items-center bg-[#06101c]/62 p-4 backdrop-blur-sm"
+      className="pointer-events-auto fixed inset-0 z-40 grid place-items-center overflow-y-auto bg-[#06101c]/62 p-3 backdrop-blur-sm sm:p-4"
       role="dialog"
     >
-      <section className="settings-sheet glass-panel w-full max-w-md rounded-[1.75rem] p-5 text-[#0d1a26] shadow-2xl sm:p-6">
+      <section className="settings-sheet glass-panel my-auto w-full max-w-md rounded-[1.5rem] p-4 text-[#0d1a26] shadow-2xl sm:rounded-[1.75rem] sm:p-6">
         <div className="flex items-start justify-between gap-4">
-          <h2 className="font-serif text-4xl leading-none">Settings</h2>
+          <h2 className="font-serif text-3xl leading-none sm:text-4xl">Settings</h2>
           <button
             aria-label="Close settings"
             className="grid size-10 place-items-center rounded-full border border-[#aab7c5] font-sans text-xl text-[#0d1a26] transition hover:bg-[#e3eaf2]"

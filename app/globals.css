@@ -428,3 +428,204 @@ input {
     width: min(28rem, calc(100vw - 2rem));
   }
 }
+
+@media (max-width: 640px) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+
+  .game-header {
+    align-items: flex-start;
+  }
+
+  .game-brand p {
+    max-width: 7.5rem;
+    overflow-wrap: break-word;
+  }
+
+  .timer-shell {
+    height: 3rem;
+    min-width: 5.85rem;
+    padding: 0.28rem 0.8rem;
+  }
+
+  .timer-shell span {
+    font-size: 1.75rem;
+  }
+
+  .timer-track,
+  .timer-progress {
+    stroke-width: 7;
+  }
+
+  .score-display {
+    max-width: 5.8rem;
+  }
+
+  .year-dock {
+    padding-inline: 4.9rem;
+  }
+
+  .year-control {
+    width: min(18rem, calc(100vw - 10.25rem));
+  }
+
+  .year-value,
+  .year-entry {
+    font-size: 1.9rem;
+    min-width: 5.5rem;
+    padding: 0.08rem 0.35rem;
+  }
+
+  .year-entry {
+    width: 6.25rem;
+  }
+
+  .year-rail {
+    height: 3rem;
+  }
+
+  .year-tick {
+    flex-basis: 9px;
+  }
+
+  .year-tick::before {
+    height: 0.85rem;
+  }
+
+  .decade-tick::before {
+    height: 1.45rem;
+  }
+
+  .year-tick-label {
+    bottom: 0.12rem;
+    font-size: 0.48rem;
+  }
+
+  .top-pointer {
+    border-left-width: 0.45rem;
+    border-right-width: 0.45rem;
+    border-top-width: 0.62rem;
+  }
+
+  .bottom-pointer {
+    border-bottom-width: 0.62rem;
+    border-left-width: 0.45rem;
+    border-right-width: 0.45rem;
+    bottom: 0.18rem;
+  }
+
+  .year-center-line {
+    bottom: 0.55rem;
+    top: 0.55rem;
+  }
+
+  .map-dock {
+    bottom: 5rem;
+    right: 0.75rem;
+  }
+
+  .map-preview {
+    width: min(10.75rem, calc(100vw - 1.5rem));
+  }
+
+  .map-expanded {
+    width: min(22rem, calc(100vw - 1.5rem));
+  }
+
+  .world-map {
+    min-height: 5.8rem;
+  }
+
+  .map-expanded .world-map {
+    min-height: 11.25rem;
+  }
+
+  .glass-control {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.4),
+      0 0.55rem 1.2rem rgba(0, 0, 0, 0.24);
+  }
+
+  .round-result-panel-wrap {
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 0.75rem;
+  }
+
+  .result-panel {
+    max-height: 58vh;
+    overflow-y: auto;
+  }
+
+  .result-panel h2 {
+    font-size: 1.55rem;
+  }
+
+  .result-panel button {
+    padding-block: 0.78rem;
+  }
+
+  .settings-sheet {
+    max-height: calc(100svh - 1.5rem);
+    overflow-y: auto;
+  }
+
+  .settings-pill {
+    font-size: 1.55rem;
+    min-height: 3.25rem;
+    padding: 0.65rem 1.1rem;
+  }
+
+  .profile-history h3 {
+    font-size: 1.4rem;
+  }
+
+  .daily-summary {
+    min-height: 100svh;
+  }
+
+  .daily-summary h1 {
+    font-size: clamp(3.6rem, 17vw, 5.5rem);
+  }
+
+  .daily-summary header {
+    align-items: flex-start;
+  }
+
+  .daily-summary header p {
+    font-size: 2rem;
+  }
+
+  .state-map svg {
+    height: min(18rem, 70vw);
+  }
+}
+
+@media (max-width: 380px) {
+  .game-brand p {
+    max-width: 6.25rem;
+  }
+
+  .timer-shell {
+    min-width: 5.25rem;
+  }
+
+  .timer-shell span {
+    font-size: 1.55rem;
+  }
+
+  .score-display {
+    max-width: 5.15rem;
+    padding-inline: 0.55rem;
+  }
+
+  .year-dock {
+    padding-inline: 4.35rem;
+  }
+
+  .year-control {
+    width: min(15rem, calc(100vw - 9rem));
+  }
+}

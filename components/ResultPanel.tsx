@@ -14,18 +14,18 @@ export function ResultPanel({
   onNextRound,
 }: ResultPanelProps) {
   return (
-    <aside className="glass-panel w-[min(32rem,calc(100vw-2rem))] rounded-[2rem] p-5 text-[#0d1a26] shadow-2xl sm:p-6">
+    <aside className="result-panel glass-panel w-[min(32rem,calc(100vw-1.5rem))] rounded-[1.5rem] p-4 text-[#0d1a26] shadow-2xl sm:rounded-[2rem] sm:p-6">
       <p className="font-sans text-xs font-black uppercase text-[#246bff]">
         Result
       </p>
-      <h2 className="mt-2 font-serif text-3xl leading-tight text-[#07111d]">
+      <h2 className="mt-2 font-serif text-2xl leading-tight text-[#07111d] sm:text-3xl">
         {round.title}
       </h2>
       <p className="mt-2 font-sans text-sm text-[#465251]">
         {round.actualLocation.name}, {round.actualLocation.city},{" "}
         {round.actualLocation.country} · {round.actualYear}
       </p>
-      <div className="mt-5 grid grid-cols-2 gap-2.5 font-sans">
+      <div className="mt-4 grid grid-cols-2 gap-2 font-sans sm:mt-5 sm:gap-2.5">
         <ResultStat
           label="Distance error"
           value={`${result.distanceMiles.toLocaleString(undefined, {
@@ -34,11 +34,11 @@ export function ResultPanel({
         />
         <ResultStat label="Year error" value={`${result.yearError} yr`} />
       </div>
-      <div className="mt-3 rounded-[1.35rem] bg-[#1f2934] px-4 py-4 text-white">
+      <div className="mt-3 rounded-[1.2rem] bg-[#1f2934] px-4 py-3 text-white sm:rounded-[1.35rem] sm:py-4">
         <p className="font-sans text-xs font-bold uppercase text-[#78b7ff]">
           Round score
         </p>
-        <p className="font-serif text-4xl leading-none">
+        <p className="font-serif text-3xl leading-none sm:text-4xl">
           {result.roundScore.toLocaleString()}
         </p>
       </div>
