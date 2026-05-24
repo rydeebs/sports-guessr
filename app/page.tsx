@@ -142,8 +142,8 @@ export default function Home() {
     <GameLayout isDimmed={isDimmed} round={round}>
       <header className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-start justify-between gap-4 p-4 sm:p-6">
         <div className="pointer-events-auto glass-dark rounded-[1.5rem] px-4 py-3 shadow-2xl">
-          <p className="font-serif text-2xl leading-none text-white sm:text-3xl">
-            MomentGuessr
+          <p className="font-serif text-lg leading-none text-white sm:text-xl">
+            Guess that Play
           </p>
         </div>
         <div className="pointer-events-auto absolute left-1/2 top-4 -translate-x-1/2 sm:top-6">
