@@ -1,0 +1,224 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import { GameLayout } from "@/components/GameLayout";
+import { DailySummary } from "@/components/DailySummary";
+import { GuessMap } from "@/components/GuessMap";
+import { RoundResultView } from "@/components/RoundResultView";
+import { ScoreDisplay } from "@/components/ScoreDisplay";
+import { SettingsModal } from "@/components/SettingsModal";
+import { Timer } from "@/components/Timer";
+import { YearSlider } from "@/components/YearSlider";
+import { getAvailableDailyDates, getDailyGame } from "@/data/dailyGames";
+import type { Guess, ScoreResult } from "@/types/game";
+import type { DailyScoreHistory } from "@/types/history";
+import { readDailyHistory, writeDailyHistory } from "@/utils/history";
+import { scoreGuess } from "@/utils/scoring";
+
+const ROUND_SECONDS = 60;
+const blankGuess: Guess = { year: null, location: null };
+const DAY_COUNT = 6;
+
+export default function Home() {
+  const [roundIndex, setRoundIndex] = useState(0);
+  const [guess, setGuess] = useState<Guess>(blankGuess);
+  const [result, setResult] = useState<ScoreResult | null>(null);
+  const [scoreHistory, setScoreHistory] = useState<ScoreResult[]>([]);
+  const [isDailyComplete, setIsDailyComplete] = useState(false);
+  const [secondsLeft, setSecondsLeft] = useState(ROUND_SECONDS);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [isDimmed] = useState(false);
+  const [activeDate, setActiveDate] = useState(getLocalDateKey(new Date()));
+  const [dailyHistory, setDailyHistory] = useState<DailyScoreHistory[]>([]);
+  const dailyGame = getDailyGame(activeDate);
+  const round = dailyGame.rounds[roundIndex];
+
+  useEffect(() => {
+    setDailyHistory(readDailyHistory());
+  }, []);
+
+  useEffect(() => {
+    const requestedDate = new URLSearchParams(window.location.search).get("date");
+
+    if (requestedDate && requestedDate !== activeDate) {
+      startDay(requestedDate);
+    }
+  }, [activeDate]);
+
+  useEffect(() => {
+    if (result) {
+      return;
+    }
+
+    const timer = window.setInterval(() => {
+      setSecondsLeft((seconds) => Math.max(0, seconds - 1));
+    }, 1000);
+
+    return () => window.clearInterval(timer);
+  }, [result, roundIndex]);
+
+  const totalScore = useMemo(
+    () => scoreHistory.reduce((total, score) => total + score.roundScore, 0),
+    [scoreHistory],
+  );
+
+  useEffect(() => {
+    if (!isDailyComplete || scoreHistory.length !== dailyGame.rounds.length) {
+      return;
+    }
+
+    setDailyHistory(
+      writeDailyHistory({
+        date: activeDate,
+        playedAt: new Date().toISOString(),
+        roundScores: scoreHistory.map((score) => score.roundScore),
+        totalScore,
+      }),
+    );
+  }, [activeDate, dailyGame.rounds.length, isDailyComplete, scoreHistory, totalScore]);
+
+  const canSubmit = guess.location !== null && guess.year !== null && !result;
+  const isLastRound = roundIndex === dailyGame.rounds.length - 1;
+
+  const submitGuess = () => {
+    if (!canSubmit) {
+      return;
+    }
+
+    const scoredGuess = scoreGuess(round, guess);
+    setResult(scoredGuess);
+    setScoreHistory((history) => [...history, scoredGuess]);
+  };
+
+  const resetRoundState = () => {
+    setGuess(blankGuess);
+    setResult(null);
+    setSecondsLeft(ROUND_SECONDS);
+  };
+
+  const advanceRound = () => {
+    if (isLastRound) {
+      setIsDailyComplete(true);
+      return;
+    }
+
+    setRoundIndex((index) => index + 1);
+    resetRoundState();
+  };
+
+  const startDay = (date: string) => {
+    setActiveDate(date);
+    setIsDailyComplete(false);
+    setRoundIndex(0);
+    setScoreHistory([]);
+    resetRoundState();
+  };
+
+  if (isDailyComplete) {
+    return (
+      <DailySummary
+        activeDate={activeDate}
+        archivedDates={getArchiveDates(activeDate)}
+        onSelectDate={startDay}
+        scoreHistory={scoreHistory}
+        totalScore={totalScore}
+      />
+    );
+  }
+
+  if (result && guess.location) {
+    return (
+      <RoundResultView
+        guessLocation={guess.location}
+        isLastRound={isLastRound}
+        onNextRound={advanceRound}
+        result={result}
+        round={round}
+      />
+    );
+  }
+
+  return (
+    <GameLayout isDimmed={isDimmed} round={round}>
+      <header className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-start justify-between gap-4 p-4 sm:p-6">
+        <div className="pointer-events-auto glass-dark rounded-[1.5rem] px-4 py-3 shadow-2xl">
+          <p className="font-serif text-2xl leading-none text-white sm:text-3xl">
+            MomentGuessr
+          </p>
+        </div>
+        <div className="pointer-events-auto absolute left-1/2 top-4 -translate-x-1/2 sm:top-6">
+          <Timer secondsLeft={secondsLeft} totalSeconds={ROUND_SECONDS} />
+        </div>
+        <div className="pointer-events-auto">
+          <ScoreDisplay
+            currentRound={roundIndex + 1}
+            totalRounds={dailyGame.rounds.length}
+            totalScore={totalScore}
+          />
+        </div>
+      </header>
+
+      <div className="pointer-events-auto absolute bottom-4 left-4 z-20 sm:bottom-6 sm:left-6">
+        <button
+          className="glass-control rounded-full px-5 py-3 font-sans text-sm font-black uppercase text-white shadow-2xl transition"
+          onClick={() => setSettingsOpen(true)}
+          type="button"
+        >
+          Settings
+        </button>
+      </div>
+
+      <div className="pointer-events-auto absolute bottom-4 right-4 z-20 sm:bottom-6 sm:right-6">
+        <button
+          className="glass-control rounded-full px-7 py-3 font-sans text-sm font-black uppercase text-white shadow-2xl transition disabled:cursor-not-allowed disabled:opacity-45"
+          disabled={!canSubmit}
+          onClick={submitGuess}
+          type="button"
+        >
+          Submit
+        </button>
+      </div>
+
+      <div className="pointer-events-auto absolute inset-x-0 bottom-4 z-10 flex justify-center px-4 sm:bottom-6">
+        <YearSlider
+          disabled={Boolean(result)}
+          onChange={(year) => setGuess((current) => ({ ...current, year }))}
+          year={guess.year}
+        />
+      </div>
+
+      <div className="pointer-events-auto absolute bottom-24 right-4 z-20 sm:bottom-28 sm:right-6">
+        <GuessMap
+          actualLocation={result ? round.actualLocation : undefined}
+          disabled={Boolean(result)}
+          guess={guess.location}
+          onSelect={(location) =>
+            setGuess((current) => ({ ...current, location }))
+          }
+        />
+      </div>
+
+      <SettingsModal
+        history={dailyHistory}
+        isOpen={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+      />
+    </GameLayout>
+  );
+}
+
+function getLocalDateKey(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+function getArchiveDates(activeDate: string) {
+  const availableDates = getAvailableDailyDates();
+
+  return availableDates.includes(activeDate)
+    ? availableDates.slice(0, DAY_COUNT)
+    : [activeDate, ...availableDates].slice(0, DAY_COUNT);
+}
