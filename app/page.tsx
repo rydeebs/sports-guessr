@@ -31,7 +31,10 @@ export default function Home() {
   const [activeDate, setActiveDate] = useState(getLocalDateKey(new Date()));
   const [dailyHistory, setDailyHistory] = useState<DailyScoreHistory[]>([]);
   const dailyGame = getDailyGame(activeDate);
-  const round = dailyGame.rounds[roundIndex];
+  const [gameRounds, setGameRounds] = useState(() =>
+    shuffleRounds(dailyGame.rounds),
+  );
+  const round = gameRounds[roundIndex];
 
   useEffect(() => {
     setDailyHistory(readDailyHistory());
@@ -63,7 +66,7 @@ export default function Home() {
   );
 
   useEffect(() => {
-    if (!isDailyComplete || scoreHistory.length !== dailyGame.rounds.length) {
+    if (!isDailyComplete || scoreHistory.length !== gameRounds.length) {
       return;
     }
 
@@ -75,10 +78,10 @@ export default function Home() {
         totalScore,
       }),
     );
-  }, [activeDate, dailyGame.rounds.length, isDailyComplete, scoreHistory, totalScore]);
+  }, [activeDate, gameRounds.length, isDailyComplete, scoreHistory, totalScore]);
 
   const canSubmit = guess.location !== null && guess.year !== null && !result;
-  const isLastRound = roundIndex === dailyGame.rounds.length - 1;
+  const isLastRound = roundIndex === gameRounds.length - 1;
 
   const submitGuess = () => {
     if (!canSubmit) {
@@ -108,6 +111,7 @@ export default function Home() {
 
   const startDay = (date: string) => {
     setActiveDate(date);
+    setGameRounds(shuffleRounds(getDailyGame(date).rounds));
     setIsDailyComplete(false);
     setRoundIndex(0);
     setScoreHistory([]);
@@ -152,7 +156,7 @@ export default function Home() {
         <div className="pointer-events-auto">
           <ScoreDisplay
             currentRound={roundIndex + 1}
-            totalRounds={dailyGame.rounds.length}
+            totalRounds={gameRounds.length}
             totalScore={totalScore}
           />
         </div>
@@ -221,4 +225,15 @@ function getArchiveDates(activeDate: string) {
   return availableDates.includes(activeDate)
     ? availableDates.slice(0, DAY_COUNT)
     : [activeDate, ...availableDates].slice(0, DAY_COUNT);
+}
+
+function shuffleRounds<T>(items: T[]) {
+  const shuffled = [...items];
+
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+  }
+
+  return shuffled;
 }

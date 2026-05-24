@@ -24,6 +24,7 @@ export function GuessMap({
   const actualMarkerRef = useRef<google.maps.Marker | null>(null);
   const onSelectRef = useRef(onSelect);
   const disabledRef = useRef(disabled);
+  const isExpandedRef = useRef(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [mapStatus, setMapStatus] = useState<"loading" | "ready" | "error">(
     "loading",
@@ -39,6 +40,24 @@ export function GuessMap({
   useEffect(() => {
     disabledRef.current = disabled;
   }, [disabled]);
+
+  useEffect(() => {
+    isExpandedRef.current = isExpanded;
+  }, [isExpanded]);
+
+  const selectLocation = (point: LocationPoint) => {
+    geocoderRef.current
+      ?.geocode({ location: point })
+      .then(({ results }) => {
+        onSelectRef.current({
+          ...point,
+          country: getCountryFromGeocodeResults(results),
+        });
+      })
+      .catch(() => {
+        onSelectRef.current(point);
+      });
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -74,22 +93,17 @@ export function GuessMap({
             return;
           }
 
+          if (isTouchViewport() && !isExpandedRef.current) {
+            setIsExpanded(true);
+            return;
+          }
+
           const point = {
             lat: event.latLng.lat(),
             lng: event.latLng.lng(),
           };
 
-          geocoderRef.current
-            ?.geocode({ location: point })
-            .then(({ results }) => {
-              onSelectRef.current({
-                ...point,
-                country: getCountryFromGeocodeResults(results),
-              });
-            })
-            .catch(() => {
-              onSelectRef.current(point);
-            });
+          selectLocation(point);
         });
 
         map.addListener("rightclick", (event: google.maps.MapMouseEvent) => {
@@ -171,6 +185,11 @@ export function GuessMap({
       className={`glass-panel group relative rounded-[1.75rem] p-2 text-[#0d1a26] shadow-2xl transition-all duration-300 ${
         isExpanded ? "map-expanded" : "map-preview"
       }`}
+      onClick={() => {
+        if (!disabled && isTouchViewport() && !isExpandedRef.current) {
+          setIsExpanded(true);
+        }
+      }}
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
     >
@@ -197,6 +216,13 @@ export function GuessMap({
         </div>
       ) : null}
     </section>
+  );
+}
+
+function isTouchViewport() {
+  return (
+    typeof window !== "undefined" &&
+    (window.matchMedia("(hover: none)").matches || window.innerWidth <= 640)
   );
 }
 

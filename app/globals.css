@@ -548,6 +548,17 @@ input {
       0 0.55rem 1.2rem rgba(0, 0, 0, 0.24);
   }
 
+  .game-settings button,
+  .game-submit button {
+    font-size: 0.62rem;
+    min-height: 2.2rem;
+    padding: 0.48rem 0.82rem;
+  }
+
+  .game-submit button {
+    padding-inline: 1rem;
+  }
+
   .round-result-panel-wrap {
     align-items: flex-end;
     justify-content: center;
