@@ -22,12 +22,15 @@ JavaScript API for the current location picker.
    ```text
    http://localhost:3000/*
    http://127.0.0.1:3000/*
+   http://localhost:3002/*
+   http://127.0.0.1:3002/*
    ```
 
 6. Add the deployed site referrer before production use, for example:
 
    ```text
-   https://your-domain.example/*
+   https://your-vercel-project.vercel.app/*
+   https://your-custom-domain.example/*
    ```
 
 7. Restrict the key to the `Maps JavaScript API`.
