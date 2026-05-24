@@ -9,6 +9,7 @@ JavaScript API for the current location picker.
 1. Install dependencies with `npm install`.
 2. Copy `.env.example` to `.env.local`.
 3. Set `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` in `.env.local`.
+   You can also set `GOOGLE_MAPS_API_KEY` as a runtime fallback.
 4. Start the app with `npm run dev`.
 
 ## Google Maps setup

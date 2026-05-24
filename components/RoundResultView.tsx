@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { LocationPoint, Round, ScoreResult } from "@/types/game";
 import { ResultPanel } from "@/components/ResultPanel";
-import { hasGoogleMapsKey, loadGoogleMaps } from "@/utils/googleMaps";
+import { loadGoogleMaps } from "@/utils/googleMaps";
 
 type RoundResultViewProps = {
   guessLocation: LocationPoint;
@@ -22,7 +22,7 @@ export function RoundResultView({
 }: RoundResultViewProps) {
   const mapElementRef = useRef<HTMLDivElement>(null);
   const [mapStatus, setMapStatus] = useState<"loading" | "ready" | "error">(
-    hasGoogleMapsKey ? "loading" : "error",
+    "loading",
   );
 
   useEffect(() => {

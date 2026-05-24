@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { LocationPoint } from "@/types/game";
-import { hasGoogleMapsKey, loadGoogleMaps } from "@/utils/googleMaps";
+import { loadGoogleMaps } from "@/utils/googleMaps";
 
 type GuessMapProps = {
   guess: LocationPoint | null;
@@ -25,7 +25,7 @@ export function GuessMap({
   const disabledRef = useRef(disabled);
   const [isExpanded, setIsExpanded] = useState(false);
   const [mapStatus, setMapStatus] = useState<"loading" | "ready" | "error">(
-    hasGoogleMapsKey ? "loading" : "error",
+    "loading",
   );
 
   useEffect(() => {

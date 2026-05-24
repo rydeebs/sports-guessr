@@ -1,10 +1,12 @@
 "use client";
 
 const GOOGLE_MAPS_SCRIPT_ID = "momentguessr-google-maps";
-const GOOGLE_MAPS_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+const BUILD_TIME_GOOGLE_MAPS_KEY =
+  process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "";
 
 let googleMapsLoader: Promise<void> | null = null;
 let googleMapsAuthFailed = false;
+let runtimeGoogleMapsKey: string | null = BUILD_TIME_GOOGLE_MAPS_KEY || null;
 
 declare global {
   interface Window {
@@ -12,25 +14,23 @@ declare global {
   }
 }
 
-export const hasGoogleMapsKey = Boolean(GOOGLE_MAPS_KEY);
-
-export function loadGoogleMaps() {
+export async function loadGoogleMaps() {
   if (typeof window === "undefined") {
-    return Promise.resolve();
+    return;
   }
 
   if (window.google?.maps) {
-    return Promise.resolve();
+    return;
   }
 
-  if (!GOOGLE_MAPS_KEY) {
-    return Promise.reject(new Error("Missing Google Maps API key."));
+  const googleMapsKey = await getGoogleMapsKey();
+
+  if (!googleMapsKey) {
+    throw new Error("Missing Google Maps API key.");
   }
 
   if (googleMapsAuthFailed) {
-    return Promise.reject(
-      new Error("Google Maps API key authentication failed."),
-    );
+    throw new Error("Google Maps API key authentication failed.");
   }
 
   if (!googleMapsLoader) {
@@ -56,7 +56,9 @@ export function loadGoogleMaps() {
       script.async = true;
       script.defer = true;
       script.id = GOOGLE_MAPS_SCRIPT_ID;
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_KEY}&v=weekly&loading=async`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(
+        googleMapsKey,
+      )}&v=weekly&loading=async`;
       script.onload = () => resolve();
       script.onerror = () => reject(new Error("Google Maps failed to load."));
       document.head.appendChild(script);
@@ -64,4 +66,23 @@ export function loadGoogleMaps() {
   }
 
   return googleMapsLoader;
+}
+
+async function getGoogleMapsKey() {
+  if (runtimeGoogleMapsKey) {
+    return runtimeGoogleMapsKey;
+  }
+
+  const response = await fetch("/api/google-maps-key", {
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    return "";
+  }
+
+  const config = (await response.json()) as { key?: string };
+  runtimeGoogleMapsKey = config.key?.trim() || "";
+
+  return runtimeGoogleMapsKey;
 }
