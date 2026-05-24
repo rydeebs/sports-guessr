@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { LocationPoint } from "@/types/game";
-import { loadGoogleMaps } from "@/utils/googleMaps";
+import { getGoogleMapsErrorMessage, loadGoogleMaps } from "@/utils/googleMaps";
 
 type GuessMapProps = {
   guess: LocationPoint | null;
@@ -26,6 +26,9 @@ export function GuessMap({
   const [isExpanded, setIsExpanded] = useState(false);
   const [mapStatus, setMapStatus] = useState<"loading" | "ready" | "error">(
     "loading",
+  );
+  const [mapError, setMapError] = useState(
+    "Google Maps failed to load. Check API key, billing, and referrers",
   );
 
   useEffect(() => {
@@ -79,8 +82,9 @@ export function GuessMap({
         googleMapRef.current = map;
         setMapStatus("ready");
       })
-      .catch(() => {
+      .catch((error) => {
         if (isMounted) {
+          setMapError(getGoogleMapsErrorMessage(error));
           setMapStatus("error");
         }
       });
@@ -167,7 +171,7 @@ export function GuessMap({
         <div className="pointer-events-none absolute inset-2 grid place-items-center rounded-[1.1rem] bg-[#08131f]/92 p-4 text-center font-sans text-xs font-bold uppercase text-white">
           {mapStatus === "loading"
             ? "Loading Google Maps"
-            : "Add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to use Google Maps"}
+            : mapError}
         </div>
       ) : null}
     </section>

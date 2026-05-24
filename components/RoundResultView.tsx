@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { LocationPoint, Round, ScoreResult } from "@/types/game";
 import { ResultPanel } from "@/components/ResultPanel";
-import { loadGoogleMaps } from "@/utils/googleMaps";
+import { getGoogleMapsErrorMessage, loadGoogleMaps } from "@/utils/googleMaps";
 
 type RoundResultViewProps = {
   guessLocation: LocationPoint;
@@ -23,6 +23,9 @@ export function RoundResultView({
   const mapElementRef = useRef<HTMLDivElement>(null);
   const [mapStatus, setMapStatus] = useState<"loading" | "ready" | "error">(
     "loading",
+  );
+  const [mapError, setMapError] = useState(
+    "Google Maps failed to load. Check API key, billing, and referrers",
   );
 
   useEffect(() => {
@@ -95,8 +98,9 @@ export function RoundResultView({
 
         setMapStatus("ready");
       })
-      .catch(() => {
+      .catch((error) => {
         if (isMounted) {
+          setMapError(getGoogleMapsErrorMessage(error));
           setMapStatus("error");
         }
       });
@@ -120,7 +124,7 @@ export function RoundResultView({
         <div className="absolute inset-0 z-10 grid place-items-center bg-[#08131f]/85 p-6 text-center font-sans text-sm font-black uppercase text-white">
           {mapStatus === "loading"
             ? "Loading result map"
-            : "Add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to show result map"}
+            : mapError}
         </div>
       ) : null}
       <div className="pointer-events-none absolute inset-x-0 top-0 z-20 p-3 sm:p-6">

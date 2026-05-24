@@ -37,7 +37,7 @@ export async function loadGoogleMaps() {
     googleMapsLoader = new Promise((resolve, reject) => {
       window.gm_authFailure = () => {
         googleMapsAuthFailed = true;
-        reject(new Error("Google Maps API key authentication failed."));
+        reject(new Error("Google Maps key rejected. Check referrer restrictions."));
       };
 
       const existingScript = document.getElementById(
@@ -85,4 +85,19 @@ async function getGoogleMapsKey() {
   runtimeGoogleMapsKey = config.key?.trim() || "";
 
   return runtimeGoogleMapsKey;
+}
+
+export function getGoogleMapsErrorMessage(error: unknown) {
+  const message =
+    error instanceof Error ? error.message : "Google Maps failed to load.";
+
+  if (message.includes("Missing")) {
+    return "Add GOOGLE_MAPS_API_KEY or NEXT_PUBLIC_GOOGLE_MAPS_API_KEY in Vercel";
+  }
+
+  if (message.includes("rejected") || message.includes("authentication")) {
+    return "Google Maps key rejected. Add this Vercel URL to Google referrers";
+  }
+
+  return "Google Maps failed to load. Check API key, billing, and referrers";
 }
