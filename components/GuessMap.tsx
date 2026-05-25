@@ -106,7 +106,7 @@ export function GuessMap({
           },
           streetViewControl: false,
           zoom: 1,
-          zoomControl: true,
+          zoomControl: false,
         });
 
         map.addListener("click", (event: google.maps.MapMouseEvent) => {

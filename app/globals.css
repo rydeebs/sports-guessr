@@ -464,6 +464,7 @@ input {
   }
 
   .year-dock {
+    bottom: 4.8rem;
     padding-inline: 4.9rem;
   }
 
@@ -522,24 +523,24 @@ input {
   }
 
   .map-dock {
-    bottom: 5rem;
+    bottom: 8.15rem;
     right: 0.75rem;
   }
 
   .map-preview {
-    width: min(10.75rem, calc(100vw - 1.5rem));
+    width: min(7.4rem, calc(100vw - 1.5rem));
   }
 
   .map-expanded {
-    width: min(22rem, calc(100vw - 1.5rem));
+    width: min(20.5rem, calc(100vw - 1.5rem));
   }
 
   .world-map {
-    min-height: 5.8rem;
+    min-height: 4.1rem;
   }
 
   .map-expanded .world-map {
-    min-height: 11.25rem;
+    min-height: 10.6rem;
   }
 
   .glass-control {
@@ -553,6 +554,11 @@ input {
     font-size: 0.56rem;
     min-height: 1.85rem;
     padding: 0.36rem 0.62rem;
+  }
+
+  .game-settings,
+  .game-submit {
+    bottom: 1.35rem;
   }
 
   .game-submit button {
