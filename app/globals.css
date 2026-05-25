@@ -550,13 +550,13 @@ input {
 
   .game-settings button,
   .game-submit button {
-    font-size: 0.62rem;
-    min-height: 2.2rem;
-    padding: 0.48rem 0.82rem;
+    font-size: 0.56rem;
+    min-height: 1.85rem;
+    padding: 0.36rem 0.62rem;
   }
 
   .game-submit button {
-    padding-inline: 1rem;
+    padding-inline: 0.78rem;
   }
 
   .round-result-panel-wrap {

@@ -1,7 +1,8 @@
 import type { Round } from "@/types/game";
+import { importedRounds } from "@/data/importedRounds";
 
 // Upload 360-degree equirectangular panoramas to these local paths as needed.
-export const rounds: Round[] = [
+export const coreRounds: Round[] = [
   {
     id: "1936-olympics-jesse-owens",
     title: "Jesse Owens at Berlin 1936",
@@ -78,3 +79,5 @@ export const rounds: Round[] = [
       "Tiger Woods watches his legendary chip on the 16th green pause on the lip before dropping during the final round of the Masters.",
   },
 ];
+
+export const rounds: Round[] = [...coreRounds, ...importedRounds];

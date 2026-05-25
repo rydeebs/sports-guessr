@@ -44,3 +44,36 @@ like a server secret.
 
 The map setup lives in `components/GuessMap.tsx`. Once the key is configured,
 clicking the map records the selected latitude and longitude for the guess.
+
+## Moment import admin
+
+The password-protected import/review tool lives at `/admin/moments`.
+
+Required `.env.local` values:
+
+```text
+MOMENT_ADMIN_PASSWORD=choose-a-password
+OPENAI_API_KEY=sk-...
+```
+
+Optional image generation overrides:
+
+```text
+OPENAI_IMAGE_MODEL=chatgpt-image-latest
+OPENAI_IMAGE_SIZE=1536x1024
+OPENAI_IMAGE_QUALITY=medium
+OPENAI_RESEARCH_MODEL=gpt-5-mini
+OPENAI_ENABLE_VISUAL_RESEARCH=true
+```
+
+The tool accepts pasted freeform event descriptions, JSON arrays, CSV, or PDFs.
+Freeform descriptions use OpenAI web search to fill in event metadata, sport,
+venue, coordinates, and visual reference notes before image generation. Structured
+imports can provide these fields directly: `title`, `year`, `locationName`,
+`city`, `country`, `lat`, `lng`, `description`, optional `sport`, optional
+`referenceNotes`, and optional `prompt`. PDF imports can use numbered event
+blocks with labels such as
+`Title:`, `Year:`, `locationName:`, `City:`, `Country:`, `Lat:`, `Lng:`, and
+`Description:`. Generated candidates are staged in `public/moment-drafts`.
+Approved images are copied into `public/rounds`, and approved metadata is
+written to `data/importedRounds.ts` so it becomes part of the game.

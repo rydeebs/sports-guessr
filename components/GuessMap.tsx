@@ -45,6 +45,27 @@ export function GuessMap({
     isExpandedRef.current = isExpanded;
   }, [isExpanded]);
 
+  useEffect(() => {
+    const collapseOnOutsideTap = (event: PointerEvent) => {
+      if (
+        !isExpandedRef.current ||
+        !isTouchViewport() ||
+        !mapRef.current ||
+        mapRef.current.parentElement?.contains(event.target as Node)
+      ) {
+        return;
+      }
+
+      setIsExpanded(false);
+    };
+
+    document.addEventListener("pointerdown", collapseOnOutsideTap);
+
+    return () => {
+      document.removeEventListener("pointerdown", collapseOnOutsideTap);
+    };
+  }, []);
+
   const selectLocation = (point: LocationPoint) => {
     geocoderRef.current
       ?.geocode({ location: point })

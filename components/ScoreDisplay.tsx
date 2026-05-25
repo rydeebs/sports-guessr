@@ -17,9 +17,6 @@ export function ScoreDisplay({
       <p className="mt-0.5 font-serif text-xl leading-none text-white sm:mt-1 sm:text-3xl">
         {totalScore.toLocaleString()}
       </p>
-      <p className="mt-0.5 font-sans text-[0.58rem] font-semibold uppercase text-white/60 sm:mt-1 sm:text-xs">
-        Total score
-      </p>
     </div>
   );
 }
