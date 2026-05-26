@@ -8,8 +8,6 @@ export const importedRounds: Round[] = [
     "title": "Miracle on Ice",
     "imageUrl": "/rounds/1980-miracle-on-ice-2.png",
     "actualYear": 1980,
-    "actualMonth": 2,
-    "actualDay": 22,
     "actualLocation": {
       "name": "Olympic Fieldhouse",
       "city": "Lake Placid, New York",
@@ -24,8 +22,6 @@ export const importedRounds: Round[] = [
     "title": "Secretariat — Belmont Stakes Dominance",
     "imageUrl": "/rounds/1973-secretariat-belmont-stakes-dominance.png",
     "actualYear": 1973,
-    "actualMonth": 6,
-    "actualDay": 9,
     "actualLocation": {
       "name": "Belmont Park",
       "city": "Elmont, New York",
@@ -40,8 +36,6 @@ export const importedRounds: Round[] = [
     "title": "The Phantom Punch",
     "imageUrl": "/rounds/1965-the-phantom-punch.png",
     "actualYear": 1965,
-    "actualMonth": 5,
-    "actualDay": 25,
     "actualLocation": {
       "name": "Central Maine Youth Center",
       "city": "Lewiston, Maine",
@@ -49,15 +43,13 @@ export const importedRounds: Round[] = [
       "lat": 44.1004,
       "lng": -70.2197
     },
-    "description": "TODO: Update this description for Muhammad Ali's controversial first-round knockout of Sonny Liston."
+    "description": "Muhammad Ali knocked out Sonny Liston in the first round and stood triumphantly over him in one of the most iconic moments in boxing history."
   },
   {
     "id": "1954-willie-mays-the-catch",
     "title": "Willie Mays — The Catch",
     "imageUrl": "/rounds/1954-willie-mays-the-catch.png",
     "actualYear": 1954,
-    "actualMonth": 9,
-    "actualDay": 29,
     "actualLocation": {
       "name": "Polo Grounds",
       "city": "New York, New York",
@@ -72,14 +64,12 @@ export const importedRounds: Round[] = [
     "title": "LeBron James — The Block",
     "imageUrl": "/rounds/2016-lebron-james-the-block.png",
     "actualYear": 2016,
-    "actualMonth": 6,
-    "actualDay": 19,
     "actualLocation": {
       "name": "Oracle Arena",
       "city": "Oakland, California",
       "country": "United States",
       "lat": 37.7503,
-      "lng": -122.203
+      "lng": -122.203,
     },
     "description": "TODO: Update this description for LeBron James' chase-down block on Andre Iguodala in Game 7 of the 2016 NBA Finals."
   },
@@ -88,8 +78,6 @@ export const importedRounds: Round[] = [
     "title": "Cristiano Ronaldo — Bicycle Kick",
     "imageUrl": "/rounds/2018-cristiano-ronaldo-bicycle-kick.png",
     "actualYear": 2018,
-    "actualMonth": 4,
-    "actualDay": 3,
     "actualLocation": {
       "name": "Allianz Stadium",
       "city": "Turin",
