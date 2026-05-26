@@ -9,7 +9,7 @@ type MomentDraft = {
   id: string;
   title: string;
   actualYear: number;
-  actualMonth: number;
+  actualMonth: string;
   actualDay: number;
   actualLocation: {
     name: string;
@@ -33,7 +33,7 @@ type MomentDraft = {
 };
 
 const sampleImport = `Miracle on Ice
-Month: 2
+Month: February
 Day: 22
 Year: 1980
 The United States hockey team shocked the heavily favored Soviet Union during the 1980 Winter Olympics in one of the greatest upsets in sports history.
@@ -682,11 +682,10 @@ function MomentCard({
             label="Month"
             onChange={(value) =>
               onChange(draft.id, {
-                actualMonth: Number(value) || draft.actualMonth,
+                actualMonth: value || draft.actualMonth,
               })
             }
-            type="number"
-            value={String(draft.actualMonth)}
+            value={draft.actualMonth}
           />
           <Field
             label="Day"

@@ -54,13 +54,7 @@ export function ResultPanel({
 }
 
 function formatRoundDate(round: Round) {
-  return new Intl.DateTimeFormat("en-US", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  }).format(
-    new Date(round.actualYear, round.actualMonth - 1, round.actualDay, 12),
-  );
+  return `${round.actualMonth} ${round.actualDay}, ${round.actualYear}`;
 }
 
 function ResultStat({ label, value }: { label: string; value: string }) {

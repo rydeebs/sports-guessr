@@ -8,7 +8,7 @@ export const coreRounds: Round[] = [
     title: "Jesse Owens at Berlin 1936",
     imageUrl: "/rounds/jesse-owens-1936.jpg",
     actualYear: 1936,
-    actualMonth: 8,
+    actualMonth: "August",
     actualDay: 3,
     actualLocation: {
       name: "Olympiastadion Berlin",
@@ -25,7 +25,7 @@ export const coreRounds: Round[] = [
     title: "Barry Bonds Breaks the Record",
     imageUrl: "/rounds/barry-bonds-2007.jpg",
     actualYear: 2007,
-    actualMonth: 8,
+    actualMonth: "August",
     actualDay: 7,
     actualLocation: {
       name: "AT&T Park",
@@ -42,7 +42,7 @@ export const coreRounds: Round[] = [
     title: "Jordan's Last Shot",
     imageUrl: "/rounds/jordan-last-shot.jpg",
     actualYear: 1998,
-    actualMonth: 6,
+    actualMonth: "June",
     actualDay: 14,
     actualLocation: {
       name: "Delta Center",
@@ -59,7 +59,7 @@ export const coreRounds: Round[] = [
     title: "Hand of God",
     imageUrl: "/rounds/hand-of-god.jpg",
     actualYear: 1986,
-    actualMonth: 6,
+    actualMonth: "June",
     actualDay: 22,
     actualLocation: {
       name: "Estadio Azteca",
@@ -76,7 +76,7 @@ export const coreRounds: Round[] = [
     title: "Tiger's Chip-In at Augusta",
     imageUrl: "/rounds/tiger-chip-in-2005.jpg",
     actualYear: 2005,
-    actualMonth: 4,
+    actualMonth: "April",
     actualDay: 10,
     actualLocation: {
       name: "Augusta National Golf Club",

@@ -12,7 +12,7 @@ type MomentDraft = {
   id: string;
   title: string;
   actualYear: number;
-  actualMonth: number;
+  actualMonth: string;
   actualDay: number;
   actualLocation: RoundLocation;
   description: string;
@@ -513,7 +513,7 @@ function buildImagePrompt(draft: MomentDraft) {
     "",
     "CUSTOM EVENT DESCRIPTION",
     `EVENT: ${draft.title}`,
-    `Event date: ${draft.actualMonth}/${draft.actualDay}/${draft.actualYear}.`,
+    `Event date: ${draft.actualMonth} ${draft.actualDay}, ${draft.actualYear}.`,
     `Location: ${draft.actualLocation.name}, ${draft.actualLocation.city}, ${draft.actualLocation.country}.`,
     `Description: ${draft.description}`,
     draft.referenceNotes
@@ -675,7 +675,7 @@ async function researchImportedMoments(input: string): Promise<ImportedMoment[]>
                   properties: {
                     title: { type: "string" },
                     actualYear: { type: "number" },
-                    actualMonth: { type: "number" },
+                    actualMonth: { type: "string" },
                     actualDay: { type: "number" },
                     actualLocation: {
                       type: "object",
@@ -767,7 +767,7 @@ async function researchVisualReference(draft: MomentDraft) {
           role: "user",
           content: [
             `Event: ${draft.title}`,
-            `Date: ${draft.actualMonth}/${draft.actualDay}/${draft.actualYear}`,
+            `Date: ${draft.actualMonth} ${draft.actualDay}, ${draft.actualYear}`,
             `Venue: ${draft.actualLocation.name}, ${draft.actualLocation.city}, ${draft.actualLocation.country}`,
             `Description: ${draft.description}`,
             "Return concise visual reference notes covering athlete/body positioning, uniforms or era details, crowd reaction, camera/viewpoint cues, venue geometry, lighting, and the exact recognizable action moment.",
@@ -840,7 +840,7 @@ async function recommendPromptImprovement(draft: MomentDraft) {
               type: "input_text",
               text: [
                 `Event: ${draft.title}`,
-                `Date: ${draft.actualMonth}/${draft.actualDay}/${draft.actualYear}`,
+                `Date: ${draft.actualMonth} ${draft.actualDay}, ${draft.actualYear}`,
                 `Sport: ${draft.sport ?? inferSport(draft)}`,
                 `Venue: ${draft.actualLocation.name}, ${draft.actualLocation.city}, ${draft.actualLocation.country}`,
                 `Description: ${draft.description}`,
@@ -913,7 +913,7 @@ function normalizeMoment(value: unknown): ImportedMoment | null {
 
   const title = stringValue(value.title);
   const actualYear = numberValue(value.actualYear ?? value.year);
-  const actualMonth = numberValue(value.actualMonth ?? value.month);
+  const actualMonth = monthNameValue(value.actualMonth ?? value.month);
   const actualDay = numberValue(value.actualDay ?? value.day);
   const name = stringValue(value.locationName ?? value.name ?? value.venue);
   const city = stringValue(value.city);
@@ -969,9 +969,7 @@ function isImportedMoment(value: ReturnType<typeof normalizeMoment>): value is I
     value &&
       value.title &&
       Number.isFinite(value.actualYear) &&
-      Number.isFinite(value.actualMonth) &&
-      value.actualMonth >= 1 &&
-      value.actualMonth <= 12 &&
+      value.actualMonth &&
       Number.isFinite(value.actualDay) &&
       value.actualDay >= 1 &&
       value.actualDay <= 31 &&
@@ -1121,9 +1119,7 @@ async function readStore(): Promise<ImportStore> {
       return {
         drafts: parsed.drafts.map((draft: MomentDraft) => ({
           ...draft,
-          actualMonth: Number.isFinite(draft.actualMonth)
-            ? draft.actualMonth
-            : 1,
+          actualMonth: monthNameValue(draft.actualMonth) || "January",
           actualDay: Number.isFinite(draft.actualDay) ? draft.actualDay : 1,
         })),
       };
@@ -1205,7 +1201,7 @@ function draftToRound(draft: MomentDraft): Round {
 function applyDraftUpdates(draft: MomentDraft, updates: Record<string, unknown>) {
   const title = stringValue(updates.title);
   const actualYear = numberValue(updates.actualYear);
-  const actualMonth = numberValue(updates.actualMonth);
+  const actualMonth = monthNameValue(updates.actualMonth);
   const actualDay = numberValue(updates.actualDay);
   const description = stringValue(updates.description);
   const prompt = stringValue(updates.prompt);
@@ -1223,7 +1219,7 @@ function applyDraftUpdates(draft: MomentDraft, updates: Record<string, unknown>)
 
   if (title) draft.title = title;
   if (Number.isFinite(actualYear)) draft.actualYear = actualYear;
-  if (Number.isFinite(actualMonth)) draft.actualMonth = actualMonth;
+  if (actualMonth) draft.actualMonth = actualMonth;
   if (Number.isFinite(actualDay)) draft.actualDay = actualDay;
   if (description) draft.description = description;
   draft.prompt = prompt;
@@ -1466,6 +1462,32 @@ function numberValue(value: unknown) {
   const number = typeof value === "number" ? value : Number(value);
 
   return Number.isFinite(number) ? number : Number.NaN;
+}
+
+function monthNameValue(value: unknown) {
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  const numericMonth = numberValue(value);
+
+  if (Number.isInteger(numericMonth) && numericMonth >= 1 && numericMonth <= 12) {
+    return months[numericMonth - 1];
+  }
+
+  const month = stringValue(value).toLowerCase();
+
+  return months.find((name) => name.toLowerCase() === month) ?? "";
 }
 
 function isObject(value: unknown): value is Record<string, unknown> {
