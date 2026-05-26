@@ -8,6 +8,8 @@ export const importedRounds: Round[] = [
     "title": "Miracle on Ice",
     "imageUrl": "/rounds/1980-miracle-on-ice-2.png",
     "actualYear": 1980,
+    "actualMonth": 2,
+    "actualDay": 22,
     "actualLocation": {
       "name": "Olympic Fieldhouse",
       "city": "Lake Placid, New York",
@@ -16,5 +18,85 @@ export const importedRounds: Round[] = [
       "lng": -73.9799
     },
     "description": "The underdog United States hockey team shocked the heavily favored Soviet Union during the 1980 Winter Olympics in one of the greatest upsets in sports history."
+  },
+  {
+    "id": "1973-secretariat-belmont-stakes-dominance",
+    "title": "Secretariat — Belmont Stakes Dominance",
+    "imageUrl": "/rounds/1973-secretariat-belmont-stakes-dominance.png",
+    "actualYear": 1973,
+    "actualMonth": 6,
+    "actualDay": 9,
+    "actualLocation": {
+      "name": "Belmont Park",
+      "city": "Elmont, New York",
+      "country": "United States",
+      "lat": 40.7156,
+      "lng": -73.7214
+    },
+    "description": "Secretariat delivered one of the greatest performances in sports history by winning the 1973 Belmont Stakes by 31 lengths and securing the Triple Crown in record-setting fashion."
+  },
+  {
+    "id": "1965-the-phantom-punch",
+    "title": "The Phantom Punch",
+    "imageUrl": "/rounds/1965-the-phantom-punch.png",
+    "actualYear": 1965,
+    "actualMonth": 5,
+    "actualDay": 25,
+    "actualLocation": {
+      "name": "Central Maine Youth Center",
+      "city": "Lewiston, Maine",
+      "country": "United States",
+      "lat": 44.1004,
+      "lng": -70.2197
+    },
+    "description": "TODO: Update this description for Muhammad Ali's controversial first-round knockout of Sonny Liston."
+  },
+  {
+    "id": "1954-willie-mays-the-catch",
+    "title": "Willie Mays — The Catch",
+    "imageUrl": "/rounds/1954-willie-mays-the-catch.png",
+    "actualYear": 1954,
+    "actualMonth": 9,
+    "actualDay": 29,
+    "actualLocation": {
+      "name": "Polo Grounds",
+      "city": "New York, New York",
+      "country": "United States",
+      "lat": 40.8309,
+      "lng": -73.9365
+    },
+    "description": "TODO: Update this description for Willie Mays' over-the-shoulder catch during Game 1 of the 1954 World Series."
+  },
+  {
+    "id": "2016-lebron-james-the-block",
+    "title": "LeBron James — The Block",
+    "imageUrl": "/rounds/2016-lebron-james-the-block.png",
+    "actualYear": 2016,
+    "actualMonth": 6,
+    "actualDay": 19,
+    "actualLocation": {
+      "name": "Oracle Arena",
+      "city": "Oakland, California",
+      "country": "United States",
+      "lat": 37.7503,
+      "lng": -122.203
+    },
+    "description": "TODO: Update this description for LeBron James' chase-down block on Andre Iguodala in Game 7 of the 2016 NBA Finals."
+  },
+  {
+    "id": "2018-cristiano-ronaldo-bicycle-kick",
+    "title": "Cristiano Ronaldo — Bicycle Kick",
+    "imageUrl": "/rounds/2018-cristiano-ronaldo-bicycle-kick.png",
+    "actualYear": 2018,
+    "actualMonth": 4,
+    "actualDay": 3,
+    "actualLocation": {
+      "name": "Allianz Stadium",
+      "city": "Turin",
+      "country": "Italy",
+      "lat": 45.1096,
+      "lng": 7.6413
+    },
+    "description": "TODO: Update this description for Cristiano Ronaldo's bicycle kick against Juventus in the 2018 Champions League quarterfinal."
   }
 ];

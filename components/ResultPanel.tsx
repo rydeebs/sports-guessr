@@ -23,7 +23,7 @@ export function ResultPanel({
       </h2>
       <p className="mt-2 font-sans text-sm text-[#465251]">
         {round.actualLocation.name}, {round.actualLocation.city},{" "}
-        {round.actualLocation.country} · {round.actualYear}
+        {round.actualLocation.country} · {formatRoundDate(round)}
       </p>
       <div className="mt-4 grid grid-cols-2 gap-2 font-sans sm:mt-5 sm:gap-2.5">
         <ResultStat
@@ -50,6 +50,16 @@ export function ResultPanel({
         {isLastRound ? "See Results" : "Next Round"}
       </button>
     </aside>
+  );
+}
+
+function formatRoundDate(round: Round) {
+  return new Intl.DateTimeFormat("en-US", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(
+    new Date(round.actualYear, round.actualMonth - 1, round.actualDay, 12),
   );
 }
 

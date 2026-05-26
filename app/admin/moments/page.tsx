@@ -9,6 +9,8 @@ type MomentDraft = {
   id: string;
   title: string;
   actualYear: number;
+  actualMonth: number;
+  actualDay: number;
   actualLocation: {
     name: string;
     city: string;
@@ -20,6 +22,9 @@ type MomentDraft = {
   prompt?: string;
   sport?: string;
   referenceNotes?: string;
+  promptRecommendation?: string;
+  referenceImageUrl?: string;
+  referenceInstructions?: string;
   imageUrl?: string;
   status: MomentStatus;
   createdAt: string;
@@ -28,9 +33,13 @@ type MomentDraft = {
 };
 
 const sampleImport = `Miracle on Ice
+Month: 2
+Day: 22
+Year: 1980
 The United States hockey team shocked the heavily favored Soviet Union during the 1980 Winter Olympics in one of the greatest upsets in sports history.
 
 Michael Jordan hitting the game-winning shot in Game 6 of the 1998 NBA Finals.`;
+const adminPasswordStorageKey = "moment-admin-password";
 
 export default function MomentAdminPage() {
   const [password, setPassword] = useState("");
@@ -41,13 +50,14 @@ export default function MomentAdminPage() {
   const [message, setMessage] = useState("");
   const [imageModel, setImageModel] = useState("");
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [referenceUploadId, setReferenceUploadId] = useState<string | null>(null);
   const [isBatchGenerating, setIsBatchGenerating] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [previewDraft, setPreviewDraft] = useState<MomentDraft | null>(null);
   const [statusFilter, setStatusFilter] = useState<MomentStatus | "all">("all");
 
   useEffect(() => {
-    const storedPassword = window.sessionStorage.getItem("moment-admin-password");
+    const storedPassword = window.localStorage.getItem(adminPasswordStorageKey);
 
     if (storedPassword) {
       setPassword(storedPassword);
@@ -102,7 +112,7 @@ export default function MomentAdminPage() {
         drafts: MomentDraft[];
         imageModel: string;
       }>(undefined, providedPassword);
-      window.sessionStorage.setItem("moment-admin-password", providedPassword.trim());
+      window.localStorage.setItem(adminPasswordStorageKey, providedPassword.trim());
       setIsUnlocked(true);
       setDrafts(payload.drafts);
       setImageModel(payload.imageModel);
@@ -111,6 +121,15 @@ export default function MomentAdminPage() {
       setIsUnlocked(false);
       setMessage(error instanceof Error ? error.message : "Unable to load drafts.");
     }
+  }
+
+  function lockAdmin() {
+    window.localStorage.removeItem(adminPasswordStorageKey);
+    setPassword("");
+    setIsUnlocked(false);
+    setDrafts([]);
+    setImageModel("");
+    setMessage("Locked.");
   }
 
   async function importMoments() {
@@ -168,6 +187,46 @@ export default function MomentAdminPage() {
     }
   }
 
+  async function uploadReferenceImage(draft: MomentDraft, file: File | null) {
+    if (!file) {
+      return;
+    }
+
+    setReferenceUploadId(draft.id);
+    setMessage("");
+
+    try {
+      const formData = new FormData();
+      formData.append("action", "uploadReference");
+      formData.append("id", draft.id);
+      formData.append("file", file);
+
+      const response = await fetch("/api/admin/moments", {
+        method: "POST",
+        headers: {
+          "x-admin-password": password.trim(),
+        },
+        body: formData,
+      });
+      const payload = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(payload.error ?? "Reference upload failed.");
+      }
+
+      setDrafts((current) =>
+        current.map((item) => (item.id === payload.draft?.id ? payload.draft : item)),
+      );
+      setMessage("Reference image added.");
+    } catch (error) {
+      setMessage(
+        error instanceof Error ? error.message : "Reference upload failed.",
+      );
+    } finally {
+      setReferenceUploadId(null);
+    }
+  }
+
   async function runAction(action: string, draft: MomentDraft) {
     setBusyId(draft.id);
     setMessage("");
@@ -176,18 +235,28 @@ export default function MomentAdminPage() {
       const payload = await requestAdmin<{ draft?: MomentDraft; ok?: boolean }>({
         action,
         id: draft.id,
-        updates: action === "approve" ? draft : undefined,
+        updates: ["approve", "improve"].includes(action) ? draft : undefined,
       });
 
       if (payload.draft) {
         setDrafts((current) =>
-          current.map((item) => (item.id === payload.draft?.id ? payload.draft : item)),
+          action === "approve"
+            ? current.filter((item) => item.id !== payload.draft?.id)
+            : current.map((item) =>
+                item.id === payload.draft?.id ? payload.draft : item,
+              ),
         );
       } else {
         await loadDrafts();
       }
 
-      setMessage(action === "approve" ? "Approved and added to code." : "Updated.");
+      setMessage(
+        action === "approve"
+          ? `${draft.title} approved, added to code, and removed from the queue.`
+          : action === "improve"
+            ? "Recommendation ready."
+            : "Updated.",
+      );
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Action failed.");
       await loadDrafts();
@@ -277,6 +346,15 @@ export default function MomentAdminPage() {
             >
               {isUnlocked ? "Unlocked" : "Unlock"}
             </button>
+            {isUnlocked ? (
+              <button
+                className="h-10 rounded-md border border-[#b7c1ce] bg-white px-4 text-sm font-bold text-[#283647]"
+                onClick={lockAdmin}
+                type="button"
+              >
+                Lock
+              </button>
+            ) : null}
           </div>
         </header>
 
@@ -341,7 +419,8 @@ export default function MomentAdminPage() {
                 </button>
                 <p className="mt-3 text-xs leading-5 text-[#5d7184]">
                   PDFs can use numbered event blocks like the example: Title,
-                  Year, locationName, City, Country, Lat, Lng, and Description.
+                  Month, Day, Year, locationName, City, Country, Lat, Lng, and
+                  Description.
                 </p>
               </div>
             </div>
@@ -412,6 +491,8 @@ export default function MomentAdminPage() {
                   onDelete={(item) => runAction("delete", item)}
                   onLocationChange={updateLocation}
                   onPreview={setPreviewDraft}
+                  onReferenceUpload={uploadReferenceImage}
+                  referenceUploading={referenceUploadId === draft.id}
                 />
               ))}
             </div>
@@ -478,6 +559,8 @@ function MomentCard({
   onDelete,
   onLocationChange,
   onPreview,
+  onReferenceUpload,
+  referenceUploading,
 }: {
   busy: boolean;
   draft: MomentDraft;
@@ -489,6 +572,8 @@ function MomentCard({
     updates: Partial<MomentDraft["actualLocation"]>,
   ) => void;
   onPreview: (draft: MomentDraft) => void;
+  onReferenceUpload: (draft: MomentDraft, file: File | null) => Promise<void>;
+  referenceUploading: boolean;
 }) {
   return (
     <article className="overflow-hidden rounded-lg border border-[#d8dee9] bg-white shadow-sm">
@@ -517,6 +602,48 @@ function MomentCard({
       </div>
 
       <div className="flex flex-col gap-3 p-4">
+        <div className="grid gap-3 sm:grid-cols-[1fr_8rem]">
+          <label className="flex min-w-0 flex-col gap-1">
+            <span className="text-xs font-bold uppercase text-[#5d7184]">
+              Reference Image
+            </span>
+            <input
+              accept="image/png,image/jpeg,image/webp"
+              className="block w-full rounded-md border border-[#b7c1ce] bg-white px-3 py-2 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-[#eef2ff] file:px-3 file:py-1.5 file:text-xs file:font-bold file:text-[#3730a3]"
+              disabled={busy || referenceUploading}
+              onChange={(event) => {
+                void onReferenceUpload(draft, event.target.files?.item(0) ?? null);
+                event.target.value = "";
+              }}
+              type="file"
+            />
+          </label>
+          <div className="min-h-20 overflow-hidden rounded-md border border-[#d8dee9] bg-[#f3f6fa]">
+            {draft.referenceImageUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                alt=""
+                className="h-full min-h-20 w-full object-cover"
+                src={`${draft.referenceImageUrl}?v=${encodeURIComponent(
+                  draft.updatedAt,
+                )}`}
+              />
+            ) : (
+              <div className="flex h-full min-h-20 items-center justify-center px-2 text-center text-xs font-bold text-[#5d7184]">
+                {referenceUploading ? "Uploading..." : "No reference"}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <TextArea
+          label="Reference Instructions"
+          onChange={(referenceInstructions) =>
+            onChange(draft.id, { referenceInstructions })
+          }
+          value={draft.referenceInstructions ?? ""}
+        />
+
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="text-xs font-bold uppercase text-[#5d7184]">
@@ -551,6 +678,27 @@ function MomentCard({
             type="number"
             value={String(draft.actualYear)}
           />
+          <Field
+            label="Month"
+            onChange={(value) =>
+              onChange(draft.id, {
+                actualMonth: Number(value) || draft.actualMonth,
+              })
+            }
+            type="number"
+            value={String(draft.actualMonth)}
+          />
+          <Field
+            label="Day"
+            onChange={(value) =>
+              onChange(draft.id, { actualDay: Number(value) || draft.actualDay })
+            }
+            type="number"
+            value={String(draft.actualDay)}
+          />
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2">
           <Field
             label="Latitude"
             onChange={(value) =>
@@ -615,13 +763,47 @@ function MomentCard({
           value={draft.prompt ?? ""}
         />
 
+        {draft.promptRecommendation ? (
+          <div className="rounded-md border border-[#c7d0dc] bg-[#f8fafc] p-3">
+            <div className="mb-2 flex items-center justify-between gap-3">
+              <p className="text-xs font-bold uppercase text-[#5d7184]">
+                Prompt Recommendation
+              </p>
+              <button
+                className="rounded-md border border-[#2563eb] px-3 py-1.5 text-xs font-black text-[#1d4ed8]"
+                disabled={busy}
+                onClick={() =>
+                  onChange(draft.id, {
+                    prompt: [draft.prompt, draft.promptRecommendation]
+                      .filter(Boolean)
+                      .join("\n\nPROMPT IMPROVEMENT ADDENDUM\n"),
+                    promptRecommendation: "",
+                  })
+                }
+                type="button"
+              >
+                Apply to Prompt
+              </button>
+            </div>
+            <textarea
+              className="min-h-32 w-full resize-y rounded-md border border-[#b7c1ce] bg-white p-3 text-sm leading-5 outline-none focus:border-[#2563eb]"
+              onChange={(event) =>
+                onChange(draft.id, {
+                  promptRecommendation: event.target.value,
+                })
+              }
+              value={draft.promptRecommendation}
+            />
+          </div>
+        ) : null}
+
         {draft.error ? (
           <p className="rounded-md bg-[#fef2f2] p-3 text-sm text-[#991b1b]">
             {draft.error}
           </p>
         ) : null}
 
-        <div className="grid gap-2 sm:grid-cols-3">
+        <div className="grid gap-2 sm:grid-cols-4">
           <button
             className="h-10 rounded-md bg-[#2563eb] px-3 text-sm font-black text-white disabled:opacity-50"
             disabled={busy}
@@ -629,6 +811,14 @@ function MomentCard({
             type="button"
           >
             {busy ? "Working..." : draft.imageUrl ? "Regenerate" : "Generate"}
+          </button>
+          <button
+            className="h-10 rounded-md border border-[#2563eb] px-3 text-sm font-black text-[#1d4ed8] disabled:opacity-50"
+            disabled={busy}
+            onClick={() => onAction("improve", draft)}
+            type="button"
+          >
+            Recommend Fixes
           </button>
           <button
             className="h-10 rounded-md bg-[#15803d] px-3 text-sm font-black text-white disabled:opacity-50"

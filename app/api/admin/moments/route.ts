@@ -12,11 +12,16 @@ type MomentDraft = {
   id: string;
   title: string;
   actualYear: number;
+  actualMonth: number;
+  actualDay: number;
   actualLocation: RoundLocation;
   description: string;
   prompt?: string;
   sport?: string;
   referenceNotes?: string;
+  promptRecommendation?: string;
+  referenceImageUrl?: string;
+  referenceInstructions?: string;
   imageUrl?: string;
   status: MomentStatus;
   createdAt: string;
@@ -38,6 +43,7 @@ const storePath = path.join(rootDir, "data", "momentImports.json");
 const importedRoundsPath = path.join(rootDir, "data", "importedRounds.ts");
 const roundsPublicDir = path.join(rootDir, "public", "rounds");
 const draftPublicDir = path.join(rootDir, "public", "moment-drafts");
+const referencePublicDir = path.join(rootDir, "public", "moment-references");
 
 export async function GET(request: NextRequest) {
   const auth = requireAdmin(request);
@@ -62,7 +68,7 @@ export async function POST(request: NextRequest) {
   }
 
   if (request.headers.get("content-type")?.includes("multipart/form-data")) {
-    return importPdfMoments(request);
+    return handleMultipartAction(request);
   }
 
   const body = await request.json().catch(() => null);
@@ -78,6 +84,10 @@ export async function POST(request: NextRequest) {
 
   if (action === "approve") {
     return approveMoment(body);
+  }
+
+  if (action === "improve") {
+    return improveMomentPrompt(body);
   }
 
   if (action === "reject") {
@@ -202,6 +212,79 @@ async function importPdfMoments(request: NextRequest) {
   }
 }
 
+async function handleMultipartAction(request: NextRequest) {
+  const formData = await request.formData();
+  const action = formData.get("action");
+
+  if (action === "importPdf") {
+    return importPdfMomentsFromForm(formData);
+  }
+
+  if (action === "uploadReference") {
+    return uploadReferenceImage(formData);
+  }
+
+  return NextResponse.json({ error: "Unknown multipart action." }, { status: 400 });
+}
+
+async function importPdfMomentsFromForm(formData: FormData) {
+  const file = formData.get("file");
+
+  if (!(file instanceof File) || file.type !== "application/pdf") {
+    return NextResponse.json({ error: "Upload a PDF file." }, { status: 400 });
+  }
+
+  try {
+    const text = await extractPdfText(file);
+
+    return importMoments({ input: text });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : "Unable to extract events from the PDF.",
+      },
+      { status: 400 },
+    );
+  }
+}
+
+async function uploadReferenceImage(formData: FormData) {
+  const id = formData.get("id");
+  const file = formData.get("file");
+
+  if (typeof id !== "string") {
+    return NextResponse.json({ error: "Missing id." }, { status: 400 });
+  }
+
+  if (!(file instanceof File) || !isSupportedReferenceImage(file)) {
+    return NextResponse.json(
+      { error: "Upload a PNG, JPEG, or WebP reference image." },
+      { status: 400 },
+    );
+  }
+
+  const store = await readStore();
+  const draft = store.drafts.find((item) => item.id === id);
+
+  if (!draft) {
+    return NextResponse.json({ error: "Moment not found." }, { status: 404 });
+  }
+
+  await mkdir(referencePublicDir, { recursive: true });
+  const extension = getImageExtension(file);
+  const fileName = `${draft.id}-reference.${extension}`;
+  const imageBytes = Buffer.from(await file.arrayBuffer());
+  await writeFile(path.join(referencePublicDir, fileName), imageBytes);
+  draft.referenceImageUrl = `/moment-references/${fileName}`;
+  draft.updatedAt = new Date().toISOString();
+  await writeStore(store);
+
+  return NextResponse.json({ draft });
+}
+
 async function generateMoment(body: unknown) {
   const id = isObject(body) && typeof body.id === "string" ? body.id : "";
   const store = await readStore();
@@ -262,10 +345,40 @@ async function approveMoment(body: unknown) {
   draft.status = "approved";
   draft.error = undefined;
   draft.updatedAt = new Date().toISOString();
+  await upsertImportedRounds([draftToRound(draft)]);
+  store.drafts = store.drafts.filter((item) => item.id !== draft.id);
   await writeStore(store);
-  await writeImportedRounds(store.drafts);
 
   return NextResponse.json({ draft });
+}
+
+async function improveMomentPrompt(body: unknown) {
+  const id = isObject(body) && typeof body.id === "string" ? body.id : "";
+  const updates = isObject(body) && isObject(body.updates) ? body.updates : {};
+  const store = await readStore();
+  const draft = store.drafts.find((item) => item.id === id);
+
+  if (!draft) {
+    return NextResponse.json({ error: "Moment not found." }, { status: 404 });
+  }
+
+  applyDraftUpdates(draft, updates);
+
+  try {
+    draft.promptRecommendation = await recommendPromptImprovement(draft);
+    draft.error = undefined;
+    draft.updatedAt = new Date().toISOString();
+    await writeStore(store);
+
+    return NextResponse.json({ draft });
+  } catch (error) {
+    draft.error =
+      error instanceof Error ? error.message : "Prompt recommendation failed.";
+    draft.updatedAt = new Date().toISOString();
+    await writeStore(store);
+
+    return NextResponse.json({ error: draft.error, draft }, { status: 502 });
+  }
 }
 
 async function updateMomentStatus(id: unknown, status: MomentStatus) {
@@ -293,9 +406,13 @@ async function deleteMoment(id: unknown) {
   }
 
   const store = await readStore();
+  const deletedDraft = store.drafts.find((draft) => draft.id === id);
   store.drafts = store.drafts.filter((draft) => draft.id !== id);
   await writeStore(store);
-  await writeImportedRounds(store.drafts);
+
+  if (deletedDraft?.status === "approved") {
+    await removeImportedRound(id);
+  }
 
   return NextResponse.json({ ok: true });
 }
@@ -305,6 +422,10 @@ async function generateImage(draft: MomentDraft) {
 
   if (!apiKey) {
     throw new Error("OPENAI_API_KEY is not configured.");
+  }
+
+  if (draft.referenceImageUrl) {
+    return generateImageWithReference(draft, apiKey);
   }
 
   const response = await fetch("https://api.openai.com/v1/images/generations", {
@@ -337,21 +458,119 @@ async function generateImage(draft: MomentDraft) {
   return Buffer.from(base64, "base64");
 }
 
+async function generateImageWithReference(draft: MomentDraft, apiKey: string) {
+  if (!draft.referenceImageUrl) {
+    throw new Error("Reference image is missing.");
+  }
+
+  const referencePath = publicPathFromUrl(draft.referenceImageUrl);
+  const referenceBytes = await readFile(referencePath);
+  const formData = new FormData();
+
+  formData.append("model", getImageModel());
+  formData.append("prompt", draft.prompt?.trim() || buildImagePrompt(draft));
+  formData.append("n", "1");
+  formData.append("size", process.env.OPENAI_IMAGE_SIZE ?? "1536x1024");
+  formData.append("quality", process.env.OPENAI_IMAGE_QUALITY ?? "medium");
+  formData.append(
+    "image",
+    new Blob([referenceBytes], { type: mimeTypeFromUrl(draft.referenceImageUrl) }),
+    path.basename(referencePath),
+  );
+
+  const response = await fetch("https://api.openai.com/v1/images/edits", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: formData,
+  });
+  const payload = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(readOpenAIError(payload) ?? `OpenAI returned ${response.status}.`);
+  }
+
+  const base64 = payload?.data?.[0]?.b64_json;
+
+  if (typeof base64 !== "string") {
+    throw new Error("OpenAI response did not include image data.");
+  }
+
+  return Buffer.from(base64, "base64");
+}
+
 function buildImagePrompt(draft: MomentDraft) {
   const sportLogic = getSportPromptAdditions(draft);
   const negativeAdditions = getSportNegativeAdditions(draft);
 
   return [
-    "Ultra-realistic immersive sports environment designed as a TRUE CONTINUOUS CYLINDRICAL VENUE SHELL for seamless EQUIRECTANGULAR 360 VR WORLD viewing.",
+    "Ultra-realistic immersive sports environment captured as a TRUE EQUIRECTANGULAR 360 VR WORLD from the perspective of a fan seated courtside in the lower bowl.",
+    "",
+    "This is NOT a broadcast camera, sports poster, cinematic render, or close-up action shot.",
+    "",
+    "This is a physically realistic spectator memory captured from a fixed human seat inside a real arena during a historic sports moment.",
     "",
     "CUSTOM EVENT DESCRIPTION",
     `EVENT: ${draft.title}`,
-    `Event year: ${draft.actualYear}.`,
+    `Event date: ${draft.actualMonth}/${draft.actualDay}/${draft.actualYear}.`,
     `Location: ${draft.actualLocation.name}, ${draft.actualLocation.city}, ${draft.actualLocation.country}.`,
     `Description: ${draft.description}`,
     draft.referenceNotes
       ? `Visual reference research notes from web search: ${draft.referenceNotes}`
       : "",
+    draft.referenceInstructions
+      ? `User reference-image instructions and prompt recommendations: ${draft.referenceInstructions}`
+      : "",
+    "",
+    "LOCK THE PLAY GEOMETRY",
+    "Maintain the EXACT spatial positioning and geometry of the original historic play.",
+    "Do NOT reinterpret the player locations, spacing, court positioning, or timing of the original play.",
+    "The players must remain in the exact same relative positions they occupied in the famous reference photograph.",
+    "ONLY change the viewer perspective.",
+    "The viewer is now seated courtside along the sideline, watching the identical play unfold from the side at human eye level.",
+    "",
+    "FORCE HUMAN SEAT POSITIONING",
+    "Viewer seated front-row courtside at natural seated eye level approximately 1.2 meters above floor height.",
+    "Viewer positioned 10-25 feet from the play from a side-angle perspective.",
+    "The camera must feel physically attached to a real seated spectator.",
+    "No floating camera.",
+    "No impossible crane angle.",
+    "No broadcast perspective.",
+    "",
+    "FORCE CLEAN FOREGROUND",
+    "Keep the lower foreground clean and unobstructed with visible hardwood court extending naturally from the viewer position.",
+    "No photographers blocking the view.",
+    "No giant foreground spectators.",
+    "No media equipment directly in front of the viewer.",
+    "",
+    "PREVENT THE TOO-CLOSE PROBLEM",
+    "The historic action should remain clearly readable but must exist naturally within the larger arena environment.",
+    "Players should occupy approximately 20-35% of the image width, not dominate the frame.",
+    "The viewer should feel like they are witnessing the play live from premium seats, not standing inside the play itself.",
+    "The viewer should feel like: I bought courtside seats to witness this historic moment live.",
+    "",
+    "FORCE SIDE-ANGLE COMPOSITION",
+    "The viewer perspective should resemble a fan sitting along the sideline near the baseline watching the play unfold laterally across their field of view.",
+    "The play should move left-to-right or right-to-left across the scene rather than directly toward the camera.",
+    "Avoid head-on broadcast framing.",
+    "",
+    "CONTROL THE 360 PROJECTION",
+    "Render using TRUE EQUIRECTANGULAR CYLINDRICAL PROJECTION.",
+    "The arena should wrap horizontally like a real venue.",
+    "Court lines, baselines, sidelines, and arena architecture must remain straight and level.",
+    "No fisheye distortion.",
+    "No spherical warping.",
+    "No tiny-planet effect.",
+    "No curved court.",
+    "No panoramic bubble distortion.",
+    "",
+    "PRIORITY ORDER",
+    "1. Preserve exact historic play geometry.",
+    "2. Maintain believable seated fan perspective.",
+    "3. Preserve realistic arena scale.",
+    "4. Maintain flat realistic court geometry.",
+    "5. Ensure seamless 360 cylindrical wrapping.",
     "",
     "REFERENCE IMAGE USAGE",
     "Use visual reference research only as inspiration for athlete positioning, crowd energy, emotional atmosphere, venue geometry, lighting realism, historical realism, sports authenticity, spectator perspective, and environmental composition.",
@@ -394,38 +613,24 @@ function buildImagePrompt(draft: MomentDraft) {
     "",
     "NEGATIVE PROMPT",
     [
-      "fisheye distortion",
-      "spherical warping",
-      "tiny planet effect",
-      "panoramic bubble distortion",
-      "donut-world effect",
-      "floating camera",
-      "curved playing surfaces",
-      "warped geometry",
-      "impossible perspective",
-      "panoramic tunnel distortion",
-      "environmental collapse toward center",
-      "stretched edges",
-      "disconnected seams",
-      "duplicated players",
-      "duplicated balls/pucks",
-      "mirrored crowd",
-      "repeated spectators",
-      "warped anatomy",
-      "obstructed premium POV",
-      "giant foreground heads",
-      "photographers blocking foreground",
-      "synthetic lighting",
-      "cartoon look",
-      "fake HDR glow",
-      "AI artifacts",
-      "blurry central action",
-      "over-cinematic composition",
-      "unrealistic venue curvature",
+      "No broadcast camera angle.",
+      "No floating camera.",
+      "No cinematic poster composition.",
+      "No close-up action framing.",
+      "No fisheye distortion.",
+      "No curved court.",
+      "No spherical panorama.",
+      "No tiny-planet effect.",
+      "No warped sidelines.",
+      "No giant foreground heads.",
+      "No courtside photographers blocking the view.",
+      "No duplicated players.",
+      "No repeated crowd patterns.",
+      "No action positioned across panorama seam.",
       negativeAdditions,
     ]
       .filter(Boolean)
-      .join(", "),
+      .join("\n"),
     "",
     "OUTPUT GOAL",
     "Create a TRUE 360 VR WORLD sports environment that feels like a real spectator memory captured live during one of the greatest moments in sports history.",
@@ -470,6 +675,8 @@ async function researchImportedMoments(input: string): Promise<ImportedMoment[]>
                   properties: {
                     title: { type: "string" },
                     actualYear: { type: "number" },
+                    actualMonth: { type: "number" },
+                    actualDay: { type: "number" },
                     actualLocation: {
                       type: "object",
                       additionalProperties: false,
@@ -489,6 +696,8 @@ async function researchImportedMoments(input: string): Promise<ImportedMoment[]>
                   required: [
                     "title",
                     "actualYear",
+                    "actualMonth",
+                    "actualDay",
                     "actualLocation",
                     "description",
                     "sport",
@@ -505,7 +714,7 @@ async function researchImportedMoments(input: string): Promise<ImportedMoment[]>
         {
           role: "system",
           content:
-            "Extract sports moments from pasted text. Use web search to verify year, venue, city, country, coordinates, sport, and the visual appearance of the iconic moment. Return only structured JSON. If multiple moments are pasted, return all of them.",
+            "Extract sports moments from pasted text. Use web search to verify the exact year, month, day, venue, city, country, coordinates, sport, and the visual appearance of the iconic moment. Return only structured JSON. If multiple moments are pasted, return all of them.",
         },
         {
           role: "user",
@@ -558,7 +767,7 @@ async function researchVisualReference(draft: MomentDraft) {
           role: "user",
           content: [
             `Event: ${draft.title}`,
-            `Year: ${draft.actualYear}`,
+            `Date: ${draft.actualMonth}/${draft.actualDay}/${draft.actualYear}`,
             `Venue: ${draft.actualLocation.name}, ${draft.actualLocation.city}, ${draft.actualLocation.country}`,
             `Description: ${draft.description}`,
             "Return concise visual reference notes covering athlete/body positioning, uniforms or era details, crowd reaction, camera/viewpoint cues, venue geometry, lighting, and the exact recognizable action moment.",
@@ -574,6 +783,90 @@ async function researchVisualReference(draft: MomentDraft) {
   }
 
   return readResponseOutputText(payload).slice(0, 4000);
+}
+
+async function recommendPromptImprovement(draft: MomentDraft) {
+  const apiKey = process.env.OPENAI_API_KEY;
+
+  if (!apiKey) {
+    throw new Error("OPENAI_API_KEY is not configured.");
+  }
+
+  const currentPrompt = draft.prompt?.trim() || buildImagePrompt(draft);
+  const imageContent = [
+    ...(draft.imageUrl
+      ? [
+          {
+            type: "input_text",
+            text: "Generated candidate image to critique:",
+          },
+          {
+            type: "input_image",
+            image_url: await imageUrlToDataUrl(draft.imageUrl),
+          },
+        ]
+      : []),
+    ...(draft.referenceImageUrl
+      ? [
+          {
+            type: "input_text",
+            text: "User-provided reference image for event appearance and composition:",
+          },
+          {
+            type: "input_image",
+            image_url: await imageUrlToDataUrl(draft.referenceImageUrl),
+          },
+        ]
+      : []),
+  ];
+  const response = await fetch("https://api.openai.com/v1/responses", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: process.env.OPENAI_RESEARCH_MODEL ?? "gpt-5-mini",
+      input: [
+        {
+          role: "system",
+          content:
+            "You are a strict creative director for equirectangular 360 sports image generation. Identify concrete prompt improvements that make the next generation more historically recognizable, more immersive in VR, and less distorted. Do not praise. Return actionable prompt text only.",
+        },
+        {
+          role: "user",
+          content: [
+            {
+              type: "input_text",
+              text: [
+                `Event: ${draft.title}`,
+                `Date: ${draft.actualMonth}/${draft.actualDay}/${draft.actualYear}`,
+                `Sport: ${draft.sport ?? inferSport(draft)}`,
+                `Venue: ${draft.actualLocation.name}, ${draft.actualLocation.city}, ${draft.actualLocation.country}`,
+                `Description: ${draft.description}`,
+                `Reference notes: ${draft.referenceNotes ?? ""}`,
+                `User reference instructions: ${draft.referenceInstructions ?? ""}`,
+                "",
+                "Current prompt:",
+                currentPrompt,
+                "",
+                "Task: Recommend a concise replacement/addendum for the prompt that fixes the most likely weaknesses. Focus on exact action readability, athlete scale, 360 edge continuity, flat venue geometry, clean foreground, sport-specific accuracy, and historically recognizable details.",
+                "If images are attached, critique visible issues in the generated image and explicitly use the reference image plus the user's reference instructions to recommend positioning, environment, era details, and emotional atmosphere without copying the reference as a flat photo.",
+              ].join("\n"),
+            },
+            ...imageContent,
+          ],
+        },
+      ],
+    }),
+  });
+  const payload = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(readOpenAIError(payload) ?? `OpenAI returned ${response.status}.`);
+  }
+
+  return readResponseOutputText(payload).slice(0, 6000);
 }
 
 function parseImportInput(input: unknown): ImportedMoment[] {
@@ -620,6 +913,8 @@ function normalizeMoment(value: unknown): ImportedMoment | null {
 
   const title = stringValue(value.title);
   const actualYear = numberValue(value.actualYear ?? value.year);
+  const actualMonth = numberValue(value.actualMonth ?? value.month);
+  const actualDay = numberValue(value.actualDay ?? value.day);
   const name = stringValue(value.locationName ?? value.name ?? value.venue);
   const city = stringValue(value.city);
   const country = stringValue(value.country);
@@ -629,10 +924,15 @@ function normalizeMoment(value: unknown): ImportedMoment | null {
   const prompt = stringValue(value.prompt);
   const sport = stringValue(value.sport);
   const referenceNotes = stringValue(value.referenceNotes);
+  const promptRecommendation = stringValue(value.promptRecommendation);
+  const referenceImageUrl = stringValue(value.referenceImageUrl);
+  const referenceInstructions = stringValue(value.referenceInstructions);
 
   const moment: ImportedMoment = {
     title,
     actualYear,
+    actualMonth,
+    actualDay,
     actualLocation: { name, city, country, lat, lng },
     description,
   };
@@ -649,6 +949,18 @@ function normalizeMoment(value: unknown): ImportedMoment | null {
     moment.referenceNotes = referenceNotes;
   }
 
+  if (promptRecommendation) {
+    moment.promptRecommendation = promptRecommendation;
+  }
+
+  if (referenceImageUrl) {
+    moment.referenceImageUrl = referenceImageUrl;
+  }
+
+  if (referenceInstructions) {
+    moment.referenceInstructions = referenceInstructions;
+  }
+
   return moment;
 }
 
@@ -657,6 +969,12 @@ function isImportedMoment(value: ReturnType<typeof normalizeMoment>): value is I
     value &&
       value.title &&
       Number.isFinite(value.actualYear) &&
+      Number.isFinite(value.actualMonth) &&
+      value.actualMonth >= 1 &&
+      value.actualMonth <= 12 &&
+      Number.isFinite(value.actualDay) &&
+      value.actualDay >= 1 &&
+      value.actualDay <= 31 &&
       value.actualLocation.name &&
       value.actualLocation.city &&
       value.actualLocation.country &&
@@ -697,6 +1015,8 @@ function parseLabeledMoments(input: string) {
 function parseLabeledMoment(block: string) {
   const title = readLabel(block, "title") || readHeadingTitle(block);
   const year = readLabel(block, "year");
+  const month = readLabel(block, "month");
+  const day = readLabel(block, "day");
   const locationName =
     readLabel(block, "locationName") ||
     readLabel(block, "location name") ||
@@ -715,6 +1035,8 @@ function parseLabeledMoment(block: string) {
   return {
     title,
     year,
+    month,
+    day,
     locationName,
     city,
     country,
@@ -740,7 +1062,7 @@ function readLabel(block: string, label: string) {
 
 function readDescription(block: string) {
   const match = block.match(
-    /^\s*description\s*:\s*([\s\S]*?)(?=\n\s*(?:prompt|title|year|locationName|location name|venue|name|city|country|lat|latitude|lng|long|longitude)\s*:|$)/im,
+    /^\s*description\s*:\s*([\s\S]*?)(?=\n\s*(?:prompt|title|year|month|day|locationName|location name|venue|name|city|country|lat|latitude|lng|long|longitude)\s*:|$)/im,
   );
 
   return match?.[1]?.replace(/\s+/g, " ").trim() ?? "";
@@ -796,7 +1118,15 @@ async function readStore(): Promise<ImportStore> {
     const parsed = JSON.parse(content);
 
     if (Array.isArray(parsed.drafts)) {
-      return parsed;
+      return {
+        drafts: parsed.drafts.map((draft: MomentDraft) => ({
+          ...draft,
+          actualMonth: Number.isFinite(draft.actualMonth)
+            ? draft.actualMonth
+            : 1,
+          actualDay: Number.isFinite(draft.actualDay) ? draft.actualDay : 1,
+        })),
+      };
     }
   } catch {
     return { drafts: [] };
@@ -809,10 +1139,44 @@ async function writeStore(store: ImportStore) {
   await writeFile(storePath, `${JSON.stringify(store, null, 2)}\n`);
 }
 
-async function writeImportedRounds(drafts: MomentDraft[]) {
-  const approvedRounds = drafts
-    .filter((draft) => draft.status === "approved")
-    .map(draftToRound);
+async function upsertImportedRounds(roundsToUpsert: Round[]) {
+  const roundMap = new Map(
+    (await readImportedRounds()).map((round) => [round.id, round]),
+  );
+
+  for (const round of roundsToUpsert) {
+    roundMap.set(round.id, round);
+  }
+
+  await writeImportedRounds([...roundMap.values()]);
+}
+
+async function removeImportedRound(id: string) {
+  const existingRounds = await readImportedRounds();
+
+  await writeImportedRounds(existingRounds.filter((round) => round.id !== id));
+}
+
+async function readImportedRounds(): Promise<Round[]> {
+  try {
+    const content = await readFile(importedRoundsPath, "utf8");
+    const match = content.match(
+      /export const importedRounds: Round\[\] = ([\s\S]*?);\s*$/,
+    );
+
+    if (!match) {
+      return [];
+    }
+
+    const parsed = JSON.parse(match[1]);
+
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+async function writeImportedRounds(approvedRounds: Round[]) {
   const content = [
     'import type { Round } from "@/types/game";',
     "",
@@ -831,6 +1195,8 @@ function draftToRound(draft: MomentDraft): Round {
     title: draft.title,
     imageUrl: draft.imageUrl ?? "",
     actualYear: draft.actualYear,
+    actualMonth: draft.actualMonth,
+    actualDay: draft.actualDay,
     actualLocation: draft.actualLocation,
     description: draft.description,
   };
@@ -839,10 +1205,15 @@ function draftToRound(draft: MomentDraft): Round {
 function applyDraftUpdates(draft: MomentDraft, updates: Record<string, unknown>) {
   const title = stringValue(updates.title);
   const actualYear = numberValue(updates.actualYear);
+  const actualMonth = numberValue(updates.actualMonth);
+  const actualDay = numberValue(updates.actualDay);
   const description = stringValue(updates.description);
   const prompt = stringValue(updates.prompt);
   const sport = stringValue(updates.sport);
   const referenceNotes = stringValue(updates.referenceNotes);
+  const promptRecommendation = stringValue(updates.promptRecommendation);
+  const referenceImageUrl = stringValue(updates.referenceImageUrl);
+  const referenceInstructions = stringValue(updates.referenceInstructions);
   const location = isObject(updates.actualLocation) ? updates.actualLocation : {};
   const name = stringValue(location.name);
   const city = stringValue(location.city);
@@ -852,10 +1223,15 @@ function applyDraftUpdates(draft: MomentDraft, updates: Record<string, unknown>)
 
   if (title) draft.title = title;
   if (Number.isFinite(actualYear)) draft.actualYear = actualYear;
+  if (Number.isFinite(actualMonth)) draft.actualMonth = actualMonth;
+  if (Number.isFinite(actualDay)) draft.actualDay = actualDay;
   if (description) draft.description = description;
   draft.prompt = prompt;
   draft.sport = sport;
   draft.referenceNotes = referenceNotes;
+  draft.promptRecommendation = promptRecommendation;
+  if (referenceImageUrl) draft.referenceImageUrl = referenceImageUrl;
+  draft.referenceInstructions = referenceInstructions;
   if (name) draft.actualLocation.name = name;
   if (city) draft.actualLocation.city = city;
   if (country) draft.actualLocation.country = country;
@@ -899,6 +1275,39 @@ function readResponseOutputText(payload: unknown) {
     })
     .filter(Boolean)
     .join("\n");
+}
+
+async function imageUrlToDataUrl(imageUrl: string) {
+  const imagePath = publicPathFromUrl(imageUrl);
+  const imageBytes = await readFile(imagePath);
+
+  return `data:${mimeTypeFromUrl(imageUrl)};base64,${imageBytes.toString("base64")}`;
+}
+
+function publicPathFromUrl(imageUrl: string) {
+  const relativePath = imageUrl.split("?")[0].replace(/^\/+/, "");
+
+  return path.join(rootDir, "public", relativePath);
+}
+
+function isSupportedReferenceImage(file: File) {
+  return ["image/jpeg", "image/png", "image/webp"].includes(file.type);
+}
+
+function getImageExtension(file: File) {
+  if (file.type === "image/png") return "png";
+  if (file.type === "image/webp") return "webp";
+
+  return "jpg";
+}
+
+function mimeTypeFromUrl(imageUrl: string) {
+  const extension = path.extname(imageUrl.split("?")[0]).toLowerCase();
+
+  if (extension === ".jpg" || extension === ".jpeg") return "image/jpeg";
+  if (extension === ".webp") return "image/webp";
+
+  return "image/png";
 }
 
 function getSportPromptAdditions(draft: MomentDraft) {

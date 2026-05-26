@@ -16,6 +16,8 @@ export type Round = {
   imageUrl: string;
   initialPanoramaYaw?: number;
   actualYear: number;
+  actualMonth: number;
+  actualDay: number;
   actualLocation: RoundLocation;
   description: string;
 };
