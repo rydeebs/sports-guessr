@@ -16,7 +16,7 @@ import { readDailyHistory, writeDailyHistory } from "@/utils/history";
 import { scoreGuess } from "@/utils/scoring";
 
 const ROUND_SECONDS = 60;
-const blankGuess: Guess = { year: null, location: null };
+const blankGuess: Guess = { day: null, month: null, year: null, location: null };
 const DAY_COUNT = 6;
 
 export default function Home() {
@@ -80,7 +80,12 @@ export default function Home() {
     );
   }, [activeDate, gameRounds.length, isDailyComplete, scoreHistory, totalScore]);
 
-  const canSubmit = guess.location !== null && guess.year !== null && !result;
+  const canSubmit =
+    guess.location !== null &&
+    guess.month !== null &&
+    guess.day !== null &&
+    guess.year !== null &&
+    !result;
   const isLastRound = roundIndex === gameRounds.length - 1;
 
   const submitGuess = () => {
@@ -185,8 +190,10 @@ export default function Home() {
 
       <div className="year-dock pointer-events-auto absolute inset-x-0 bottom-3 z-10 flex justify-center px-4 sm:bottom-6">
         <YearSlider
+          day={guess.day}
           disabled={Boolean(result)}
-          onChange={(year) => setGuess((current) => ({ ...current, year }))}
+          month={guess.month}
+          onChange={(date) => setGuess((current) => ({ ...current, ...date }))}
           year={guess.year}
         />
       </div>

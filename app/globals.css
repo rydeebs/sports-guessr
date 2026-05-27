@@ -131,161 +131,140 @@ input {
   transition: stroke-dashoffset 1s linear;
 }
 
-.year-value,
-.year-entry {
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 0.85rem;
-  color: white;
-  display: block;
-  font-size: 3rem;
-  line-height: 1;
-  margin: 0 auto;
-  min-width: 7rem;
-  padding: 0.12rem 0.55rem;
-  text-align: center;
-  text-shadow: 0 0.25rem 1.25rem rgba(0, 0, 0, 0.55);
+.date-wheel-control {
+  width: min(30rem, calc(100vw - 24rem));
 }
 
-.year-value {
-  cursor: text;
-}
-
-.year-value:hover,
-.year-entry:focus {
-  background: rgba(8, 19, 31, 0.28);
-  border-color: rgba(255, 255, 255, 0.42);
-  outline: none;
-}
-
-.year-entry {
-  width: 8rem;
-}
-
-.year-entry::-webkit-outer-spin-button,
-.year-entry::-webkit-inner-spin-button {
-  appearance: none;
-  margin: 0;
-}
-
-.year-rail {
+.date-wheel-panel {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.23),
+      rgba(33, 86, 145, 0.42) 46%,
+      rgba(255, 255, 255, 0.18)
+    );
   border: 1px solid rgba(255, 255, 255, 0.52);
-  border-radius: 999px;
+  border-radius: 1.35rem;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.42),
     inset 0 -1rem 2.8rem rgba(10, 31, 57, 0.24),
     0 1.1rem 2.6rem rgba(0, 0, 0, 0.28);
-  background:
-    linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.22),
-      rgba(33, 86, 145, 0.4) 46%,
-      rgba(255, 255, 255, 0.18)
-  );
   backdrop-filter: blur(20px);
-  height: 4.2rem;
+  display: grid;
+  grid-template-columns: minmax(5.5rem, 1.15fr) minmax(3.5rem, 0.75fr) minmax(5.5rem, 1fr);
+  height: 11rem;
   overflow: hidden;
+  position: relative;
 }
 
-.year-pointer {
-  border-left: 0.6rem solid transparent;
-  border-right: 0.6rem solid transparent;
-  left: 50%;
+.date-wheel-panel::before,
+.date-wheel-panel::after {
+  content: "";
+  left: 0;
+  pointer-events: none;
   position: absolute;
-  transform: translateX(-50%);
+  right: 0;
+  z-index: 3;
 }
 
-.top-pointer {
-  border-top: 0.8rem solid rgba(255, 255, 255, 0.94);
+.date-wheel-panel::before {
+  background: linear-gradient(to bottom, rgba(8, 18, 31, 0.58), transparent);
+  height: 3.5rem;
+  top: 0;
+}
+
+.date-wheel-panel::after {
+  background: linear-gradient(to top, rgba(8, 18, 31, 0.58), transparent);
   bottom: 0;
+  height: 3.5rem;
 }
 
-.bottom-pointer {
-  border-bottom: 0.8rem solid rgba(255, 255, 255, 0.94);
-  bottom: 0.28rem;
+.date-wheel-highlight {
+  background: rgba(255, 255, 255, 0.2);
+  border-block: 1px solid rgba(255, 255, 255, 0.66);
+  box-shadow: 0 0 1.25rem rgba(255, 255, 255, 0.22);
+  height: 2.75rem;
+  left: 0.55rem;
+  pointer-events: none;
+  position: absolute;
+  right: 0.55rem;
+  top: 50%;
+  transform: translateY(-50%);
   z-index: 1;
 }
 
-.year-center-line {
-  background: rgba(255, 255, 255, 0.92);
-  bottom: 0.72rem;
-  box-shadow: 0 0 1rem rgba(255, 255, 255, 0.38);
-  left: 50%;
-  pointer-events: none;
-  position: absolute;
-  top: 0.72rem;
-  transform: translateX(-50%);
-  width: 2px;
-  z-index: 2;
-}
-
-.year-scroll {
-  cursor: ew-resize;
-  overflow-x: auto;
-  overflow-y: hidden;
+.date-wheel-column {
+  cursor: ns-resize;
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: relative;
+  scroll-snap-type: y mandatory;
   scrollbar-width: none;
-  scroll-snap-type: x mandatory;
-  touch-action: pan-x;
+  touch-action: pan-y;
+  z-index: 2;
   -webkit-overflow-scrolling: touch;
 }
 
-.year-scroll:active {
+.date-wheel-column:active {
   cursor: grabbing;
 }
 
-.year-scroll::-webkit-scrollbar {
+.date-wheel-column:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.88);
+  outline-offset: -0.35rem;
+}
+
+.date-wheel-column::-webkit-scrollbar {
   display: none;
 }
 
-.year-scroll-disabled {
+.date-wheel-column + .date-wheel-column {
+  border-left: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.date-wheel-disabled {
   cursor: default;
   overflow: hidden;
 }
 
-.year-strip {
-  display: flex;
-  height: 100%;
-  padding-inline: calc(50% - 6px);
-  width: max-content;
+.date-wheel-option {
+  height: 2.75rem;
 }
 
-.year-tick {
+.date-wheel-spacer {
+  height: 4.125rem;
+}
+
+.date-wheel-option {
   align-items: center;
+  color: rgba(255, 255, 255, 0.66);
   display: flex;
-  flex: 0 0 12px;
-  height: 100%;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 1.3rem;
+  font-weight: 700;
   justify-content: center;
-  position: relative;
-  scroll-snap-align: center;
-}
-
-.year-tick::before {
-  background: rgba(255, 255, 255, 0.72);
-  content: "";
-  height: 1.15rem;
-  width: 1px;
-}
-
-.decade-tick::before {
-  background: rgba(255, 255, 255, 0.94);
-  height: 2rem;
-  width: 2px;
-}
-
-.year-tick-label {
-  bottom: 0.18rem;
-  font-size: 0.58rem;
-  font-weight: 800;
-  left: 50%;
   line-height: 1;
-  position: absolute;
-  text-shadow: 0 0.2rem 0.8rem rgba(0, 0, 0, 0.55);
-  transform: translateX(-50%);
+  padding-inline: 0.35rem;
+  scroll-snap-align: center;
+  text-align: center;
+  text-shadow: 0 0.25rem 1.25rem rgba(0, 0, 0, 0.55);
+  transition:
+    color 160ms ease,
+    opacity 160ms ease,
+    transform 160ms ease;
   white-space: nowrap;
 }
 
-.year-control {
-  width: min(42rem, calc(100vw - 24rem));
+.date-wheel-option-selected {
+  color: white;
+  font-size: 1.55rem;
+  opacity: 1;
+  transform: scale(1.02);
+}
+
+.date-wheel-label-short {
+  display: none;
 }
 
 .map-preview {
@@ -420,8 +399,8 @@ input {
 }
 
 @media (max-width: 900px) {
-  .year-control {
-    width: min(34rem, calc(100vw - 2rem));
+  .date-wheel-control {
+    width: min(28rem, calc(100vw - 2rem));
   }
 
   .map-expanded {
@@ -468,58 +447,35 @@ input {
     padding-inline: 4.9rem;
   }
 
-  .year-control {
-    width: min(18rem, calc(100vw - 10.25rem));
+  .date-wheel-control {
+    width: min(18.5rem, calc(100vw - 10.25rem));
   }
 
-  .year-value,
-  .year-entry {
-    font-size: 1.9rem;
-    min-width: 5.5rem;
-    padding: 0.08rem 0.35rem;
+  .date-wheel-panel {
+    border-radius: 1rem;
+    grid-template-columns: minmax(4.25rem, 1fr) minmax(3rem, 0.7fr) minmax(4.75rem, 1fr);
+    height: 9.8rem;
   }
 
-  .year-entry {
-    width: 6.25rem;
+  .date-wheel-spacer {
+    height: 3.525rem;
   }
 
-  .year-rail {
-    height: 3rem;
+  .date-wheel-option {
+    font-size: 1.04rem;
+    padding-inline: 0.2rem;
   }
 
-  .year-tick {
-    flex-basis: 9px;
+  .date-wheel-option-selected {
+    font-size: 1.2rem;
   }
 
-  .year-tick::before {
-    height: 0.85rem;
+  .date-wheel-label-full {
+    display: none;
   }
 
-  .decade-tick::before {
-    height: 1.45rem;
-  }
-
-  .year-tick-label {
-    bottom: 0.12rem;
-    font-size: 0.48rem;
-  }
-
-  .top-pointer {
-    border-left-width: 0.45rem;
-    border-right-width: 0.45rem;
-    border-top-width: 0.62rem;
-  }
-
-  .bottom-pointer {
-    border-bottom-width: 0.62rem;
-    border-left-width: 0.45rem;
-    border-right-width: 0.45rem;
-    bottom: 0.18rem;
-  }
-
-  .year-center-line {
-    bottom: 0.55rem;
-    top: 0.55rem;
+  .date-wheel-label-short {
+    display: inline;
   }
 
   .map-dock {
@@ -642,7 +598,19 @@ input {
     padding-inline: 4.35rem;
   }
 
-  .year-control {
-    width: min(15rem, calc(100vw - 9rem));
+  .date-wheel-control {
+    width: min(15.75rem, calc(100vw - 9rem));
+  }
+
+  .date-wheel-panel {
+    grid-template-columns: minmax(3.75rem, 1fr) minmax(2.65rem, 0.7fr) minmax(4.35rem, 1fr);
+  }
+
+  .date-wheel-option {
+    font-size: 0.95rem;
+  }
+
+  .date-wheel-option-selected {
+    font-size: 1.08rem;
   }
 }

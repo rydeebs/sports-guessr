@@ -82,6 +82,10 @@ export async function POST(request: NextRequest) {
     return generateMoment(body);
   }
 
+  if (action === "generatePrompt") {
+    return generateMomentPrompt(body);
+  }
+
   if (action === "approve") {
     return approveMoment(body);
   }
@@ -287,6 +291,7 @@ async function uploadReferenceImage(formData: FormData) {
 
 async function generateMoment(body: unknown) {
   const id = isObject(body) && typeof body.id === "string" ? body.id : "";
+  const updates = isObject(body) && isObject(body.updates) ? body.updates : {};
   const store = await readStore();
   const draft = store.drafts.find((item) => item.id === id);
 
@@ -294,10 +299,10 @@ async function generateMoment(body: unknown) {
     return NextResponse.json({ error: "Moment not found." }, { status: 404 });
   }
 
+  applyDraftUpdates(draft, updates);
+
   try {
-    const referenceNotes = await researchVisualReference(draft);
-    draft.referenceNotes = referenceNotes || draft.referenceNotes;
-    draft.prompt = draft.prompt?.trim() || buildImagePrompt(draft);
+    draft.prompt = draft.prompt?.trim() || (await createImagePrompt(draft));
     const imageBytes = await generateImage(draft);
     await mkdir(draftPublicDir, { recursive: true });
     await writeFile(path.join(draftPublicDir, `${draft.id}.png`), imageBytes);
@@ -310,6 +315,36 @@ async function generateMoment(body: unknown) {
     return NextResponse.json({ draft });
   } catch (error) {
     draft.error = error instanceof Error ? error.message : "Image generation failed.";
+    draft.updatedAt = new Date().toISOString();
+    await writeStore(store);
+
+    return NextResponse.json({ error: draft.error, draft }, { status: 502 });
+  }
+}
+
+async function generateMomentPrompt(body: unknown) {
+  const id = isObject(body) && typeof body.id === "string" ? body.id : "";
+  const updates = isObject(body) && isObject(body.updates) ? body.updates : {};
+  const store = await readStore();
+  const draft = store.drafts.find((item) => item.id === id);
+
+  if (!draft) {
+    return NextResponse.json({ error: "Moment not found." }, { status: 404 });
+  }
+
+  applyDraftUpdates(draft, updates);
+
+  try {
+    draft.prompt = await createImagePrompt(draft);
+    draft.promptRecommendation = undefined;
+    draft.error = undefined;
+    draft.updatedAt = new Date().toISOString();
+    await writeStore(store);
+
+    return NextResponse.json({ draft });
+  } catch (error) {
+    draft.error =
+      error instanceof Error ? error.message : "Prompt generation failed.";
     draft.updatedAt = new Date().toISOString();
     await writeStore(store);
 
@@ -346,6 +381,7 @@ async function approveMoment(body: unknown) {
   draft.error = undefined;
   draft.updatedAt = new Date().toISOString();
   await upsertImportedRounds([draftToRound(draft)]);
+  await verifyApprovedMomentSaved(draft, finalPath);
   store.drafts = store.drafts.filter((item) => item.id !== draft.id);
   await writeStore(store);
 
@@ -436,7 +472,7 @@ async function generateImage(draft: MomentDraft) {
     },
     body: JSON.stringify({
       model: getImageModel(),
-      prompt: draft.prompt?.trim() || buildImagePrompt(draft),
+      prompt: draft.prompt?.trim() || buildConciseImagePrompt(draft),
       n: 1,
       size: process.env.OPENAI_IMAGE_SIZE ?? "1536x1024",
       quality: process.env.OPENAI_IMAGE_QUALITY ?? "medium",
@@ -468,7 +504,7 @@ async function generateImageWithReference(draft: MomentDraft, apiKey: string) {
   const formData = new FormData();
 
   formData.append("model", getImageModel());
-  formData.append("prompt", draft.prompt?.trim() || buildImagePrompt(draft));
+  formData.append("prompt", draft.prompt?.trim() || buildConciseImagePrompt(draft));
   formData.append("n", "1");
   formData.append("size", process.env.OPENAI_IMAGE_SIZE ?? "1536x1024");
   formData.append("quality", process.env.OPENAI_IMAGE_QUALITY ?? "medium");
@@ -500,6 +536,94 @@ async function generateImageWithReference(draft: MomentDraft, apiKey: string) {
   return Buffer.from(base64, "base64");
 }
 
+async function createImagePrompt(draft: MomentDraft) {
+  if (!draft.referenceImageUrl) {
+    return buildConciseImagePrompt(draft);
+  }
+
+  const apiKey = process.env.OPENAI_API_KEY;
+
+  if (!apiKey) {
+    throw new Error("OPENAI_API_KEY is not configured.");
+  }
+
+  const response = await fetch("https://api.openai.com/v1/responses", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: process.env.OPENAI_RESEARCH_MODEL ?? "gpt-5-mini",
+      input: [
+        {
+          role: "system",
+          content:
+            "Write very simple image-edit prompts. The uploaded reference image is the source of truth. The prompt should mostly ask for a 360 version of that photo, with only brief event details for uniforms, era, venue, and context. Return only the final prompt text.",
+        },
+        {
+          role: "user",
+          content: [
+            {
+              type: "input_text",
+              text: [
+                "Create one simple prompt for editing/generating from the attached reference image.",
+                "",
+                "Priority:",
+                "1. The attached image is the main source.",
+                "2. Ask for a realistic equirectangular 360 version of the same photo/moment.",
+                "3. Use the event details only to preserve uniforms, jersey colors, era, stadium/arena, crowd, and sport context.",
+                "",
+                "Prompt requirements:",
+                "- 45 to 90 words.",
+                "- Start with: Create a realistic equirectangular 360 version of the attached reference photo.",
+                "- Keep the action, athlete positioning, uniforms, colors, lighting, and mood from the image.",
+                "- Add only one short sentence with event/date/venue context.",
+                "- Avoid elaborate composition rules, long negative lists, and repeated instructions.",
+                "- Do not mention copyrighted-photo copying, text, captions, logos, or watermarks.",
+                "",
+                `Event: ${draft.title}`,
+                `Date: ${draft.actualMonth} ${draft.actualDay}, ${draft.actualYear}`,
+                `Sport: ${draft.sport ?? inferSport(draft)}`,
+                `Venue: ${draft.actualLocation.name}, ${draft.actualLocation.city}, ${draft.actualLocation.country}`,
+                `Description: ${draft.description}`,
+                `User instructions for the reference image: ${draft.referenceInstructions ?? ""}`,
+              ].join("\n"),
+            },
+            {
+              type: "input_image",
+              image_url: await imageUrlToDataUrl(draft.referenceImageUrl),
+            },
+          ],
+        },
+      ],
+    }),
+  });
+  const payload = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(readOpenAIError(payload) ?? `OpenAI returned ${response.status}.`);
+  }
+
+  const prompt = readResponseOutputText(payload).trim().slice(0, 3000);
+
+  return prompt || buildConciseImagePrompt(draft);
+}
+
+function buildConciseImagePrompt(draft: MomentDraft) {
+  return [
+    "Create a realistic equirectangular 360 version of this sports moment.",
+    `Use the event description for context: ${draft.description}`,
+    `Preserve the correct era, uniform colors, crowd, venue, and stadium/arena details for ${draft.title}, ${draft.actualMonth} ${draft.actualDay}, ${draft.actualYear}, at ${draft.actualLocation.name}.`,
+    draft.referenceInstructions
+      ? `Also follow this reference-image direction: ${draft.referenceInstructions}`
+      : "",
+    "Keep it natural, readable, and immersive. No text, captions, logos, or watermarks.",
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
 function buildImagePrompt(draft: MomentDraft) {
   const sportLogic = getSportPromptAdditions(draft);
   const negativeAdditions = getSportNegativeAdditions(draft);
@@ -516,9 +640,6 @@ function buildImagePrompt(draft: MomentDraft) {
     `Event date: ${draft.actualMonth} ${draft.actualDay}, ${draft.actualYear}.`,
     `Location: ${draft.actualLocation.name}, ${draft.actualLocation.city}, ${draft.actualLocation.country}.`,
     `Description: ${draft.description}`,
-    draft.referenceNotes
-      ? `Visual reference research notes from web search: ${draft.referenceNotes}`
-      : "",
     draft.referenceInstructions
       ? `User reference-image instructions and prompt recommendations: ${draft.referenceInstructions}`
       : "",
@@ -792,7 +913,7 @@ async function recommendPromptImprovement(draft: MomentDraft) {
     throw new Error("OPENAI_API_KEY is not configured.");
   }
 
-  const currentPrompt = draft.prompt?.trim() || buildImagePrompt(draft);
+  const currentPrompt = draft.prompt?.trim() || buildConciseImagePrompt(draft);
   const imageContent = [
     ...(draft.imageUrl
       ? [
@@ -844,7 +965,6 @@ async function recommendPromptImprovement(draft: MomentDraft) {
                 `Sport: ${draft.sport ?? inferSport(draft)}`,
                 `Venue: ${draft.actualLocation.name}, ${draft.actualLocation.city}, ${draft.actualLocation.country}`,
                 `Description: ${draft.description}`,
-                `Reference notes: ${draft.referenceNotes ?? ""}`,
                 `User reference instructions: ${draft.referenceInstructions ?? ""}`,
                 "",
                 "Current prompt:",
@@ -1151,6 +1271,18 @@ async function removeImportedRound(id: string) {
   const existingRounds = await readImportedRounds();
 
   await writeImportedRounds(existingRounds.filter((round) => round.id !== id));
+}
+
+async function verifyApprovedMomentSaved(draft: MomentDraft, finalPath: string) {
+  await readFile(finalPath);
+  const savedRounds = await readImportedRounds();
+  const savedRound = savedRounds.find((round) => round.id === draft.id);
+
+  if (!savedRound || savedRound.imageUrl !== draft.imageUrl) {
+    throw new Error(
+      "Approval failed because the moment was not saved to importedRounds.ts.",
+    );
+  }
 }
 
 async function readImportedRounds(): Promise<Round[]> {

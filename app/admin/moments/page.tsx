@@ -52,6 +52,7 @@ export default function MomentAdminPage() {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [referenceUploadId, setReferenceUploadId] = useState<string | null>(null);
   const [isBatchGenerating, setIsBatchGenerating] = useState(false);
+  const [isBatchPrompting, setIsBatchPrompting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [previewDraft, setPreviewDraft] = useState<MomentDraft | null>(null);
   const [statusFilter, setStatusFilter] = useState<MomentStatus | "all">("all");
@@ -97,6 +98,8 @@ export default function MomentAdminPage() {
       ),
     [drafts],
   );
+
+  const isBatchBusy = isBatchGenerating || isBatchPrompting;
 
   async function requestAdmin<T>(
     body?: Record<string, unknown>,
@@ -248,7 +251,11 @@ export default function MomentAdminPage() {
       const payload = await requestAdmin<{ draft?: MomentDraft; ok?: boolean }>({
         action,
         id: draft.id,
-        updates: ["approve", "improve"].includes(action) ? draft : undefined,
+        updates: ["approve", "generate", "generatePrompt", "improve"].includes(
+          action,
+        )
+          ? draft
+          : undefined,
       });
 
       if (payload.draft) {
@@ -266,6 +273,8 @@ export default function MomentAdminPage() {
       setMessage(
         action === "approve"
           ? `${draft.title} approved, added to code, and removed from the queue.`
+          : action === "generatePrompt"
+            ? "Prompt generated."
           : action === "improve"
             ? "Recommendation ready."
             : "Updated.",
@@ -296,6 +305,20 @@ export default function MomentAdminPage() {
       }
     } finally {
       setIsBatchGenerating(false);
+      await loadDrafts();
+    }
+  }
+
+  async function generatePromptsForQueue() {
+    const draftsToPrompt = batchGeneratableDrafts;
+    setIsBatchPrompting(true);
+
+    try {
+      for (const draft of draftsToPrompt) {
+        await runAction("generatePrompt", draft);
+      }
+    } finally {
+      setIsBatchPrompting(false);
       await loadDrafts();
     }
   }
@@ -451,7 +474,7 @@ export default function MomentAdminPage() {
                 disabled={
                   !hasQueuedDrafts ||
                   Boolean(busyId) ||
-                  isBatchGenerating
+                  isBatchBusy
                 }
                 onClick={generateNext}
                 type="button"
@@ -459,11 +482,25 @@ export default function MomentAdminPage() {
                 Generate Next Queued
               </button>
               <button
+                className="mt-2 h-10 w-full rounded-md border border-[#2563eb] px-4 text-sm font-black text-[#1d4ed8] disabled:opacity-50"
+                disabled={
+                  batchGeneratableDrafts.length === 0 ||
+                  Boolean(busyId) ||
+                  isBatchBusy
+                }
+                onClick={generatePromptsForQueue}
+                type="button"
+              >
+                {isBatchPrompting
+                  ? "Generating Prompts..."
+                  : "Generate Prompts For Queue"}
+              </button>
+              <button
                 className="mt-2 h-10 w-full rounded-md bg-[#111827] px-4 text-sm font-black text-white disabled:opacity-50"
                 disabled={
                   batchGeneratableDrafts.length === 0 ||
                   Boolean(busyId) ||
-                  isBatchGenerating
+                  isBatchBusy
                 }
                 onClick={generateAllQueued}
                 type="button"
@@ -819,7 +856,15 @@ function MomentCard({
           </p>
         ) : null}
 
-        <div className="grid gap-2 sm:grid-cols-4">
+        <div className="grid gap-2 sm:grid-cols-5">
+          <button
+            className="h-10 rounded-md border border-[#2563eb] px-3 text-sm font-black text-[#1d4ed8] disabled:opacity-50"
+            disabled={busy}
+            onClick={() => onAction("generatePrompt", draft)}
+            type="button"
+          >
+            Generate Prompt
+          </button>
           <button
             className="h-10 rounded-md bg-[#2563eb] px-3 text-sm font-black text-white disabled:opacity-50"
             disabled={busy}

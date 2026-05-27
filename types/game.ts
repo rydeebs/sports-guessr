@@ -23,6 +23,8 @@ export type Round = {
 };
 
 export type Guess = {
+  day: number | null;
+  month: number | null;
   year: number | null;
   location: LocationPoint | null;
 };
