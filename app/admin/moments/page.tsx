@@ -85,6 +85,19 @@ export default function MomentAdminPage() {
     [drafts],
   );
 
+  const hasQueuedDrafts = useMemo(
+    () => drafts.some((draft) => draft.status === "queued"),
+    [drafts],
+  );
+
+  const batchGeneratableDrafts = useMemo(
+    () =>
+      drafts.filter((draft) =>
+        draft.status === "queued" || draft.status === "generated",
+      ),
+    [drafts],
+  );
+
   async function requestAdmin<T>(
     body?: Record<string, unknown>,
     providedPassword = password,
@@ -274,11 +287,11 @@ export default function MomentAdminPage() {
   }
 
   async function generateAllQueued() {
-    const queuedDrafts = drafts.filter((draft) => draft.status === "queued");
+    const draftsToGenerate = batchGeneratableDrafts;
     setIsBatchGenerating(true);
 
     try {
-      for (const draft of queuedDrafts) {
+      for (const draft of draftsToGenerate) {
         await runAction("generate", draft);
       }
     } finally {
@@ -436,7 +449,7 @@ export default function MomentAdminPage() {
               <button
                 className="mt-3 h-10 w-full rounded-md border border-[#111827] px-4 text-sm font-black text-[#111827] disabled:opacity-50"
                 disabled={
-                  !drafts.some((draft) => draft.status === "queued") ||
+                  !hasQueuedDrafts ||
                   Boolean(busyId) ||
                   isBatchGenerating
                 }
@@ -448,14 +461,18 @@ export default function MomentAdminPage() {
               <button
                 className="mt-2 h-10 w-full rounded-md bg-[#111827] px-4 text-sm font-black text-white disabled:opacity-50"
                 disabled={
-                  !drafts.some((draft) => draft.status === "queued") ||
+                  batchGeneratableDrafts.length === 0 ||
                   Boolean(busyId) ||
                   isBatchGenerating
                 }
                 onClick={generateAllQueued}
                 type="button"
               >
-                {isBatchGenerating ? "Generating Queue..." : "Generate All Queued"}
+                {isBatchGenerating
+                  ? "Generating Queue..."
+                  : hasQueuedDrafts
+                    ? "Generate All Queued"
+                    : "Regenerate Loaded Images"}
               </button>
             </div>
           </aside>
