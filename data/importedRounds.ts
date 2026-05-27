@@ -65,7 +65,7 @@ export const importedRounds: Round[] = [
       "lat": 40.8309,
       "lng": -73.9365
     },
-    "description": "TODO: Update this description for Willie Mays' over-the-shoulder catch during Game 1 of the 1954 World Series."
+    "description": "Willie Mays made his legendary over-the-shoulder catch in deep center field during Game 1 of the 1954 World Series."
   },
   {
     "id": "2016-lebron-james-the-block",
@@ -81,7 +81,7 @@ export const importedRounds: Round[] = [
       "lat": 37.7503,
       "lng": -122.203
     },
-    "description": "TODO: Update this description for LeBron James' chase-down block on Andre Iguodala in Game 7 of the 2016 NBA Finals."
+    "description": "LeBron James delivered a historic chase-down block on Andre Iguodala in Game 7 of the 2016 NBA Finals, helping Cleveland complete a comeback from a 3–1 series deficit."
   },
   {
     "id": "2018-cristiano-ronaldo-bicycle-kick",
@@ -97,6 +97,22 @@ export const importedRounds: Round[] = [
       "lat": 45.1096,
       "lng": 7.6413
     },
-    "description": "TODO: Update this description for Cristiano Ronaldo's bicycle kick against Juventus in the 2018 Champions League quarterfinal."
+    "description": "Cristiano Ronaldo scored a spectacular bicycle kick for Real Madrid against Juventus during the UEFA Champions League quarterfinals, earning applause from opposing fans."
+  },
+  {
+    "id": "1982-dwight-clark-the-catch",
+    "title": "Dwight Clark — “The Catch”",
+    "imageUrl": "/rounds/1982-dwight-clark-the-catch.png",
+    "actualYear": 1982,
+    "actualMonth": "January",
+    "actualDay": 10,
+    "actualLocation": {
+      "name": "Candlestick Park",
+      "city": "San Francisco, California",
+      "country": "United States",
+      "lat": 37.7135,
+      "lng": -122.3866
+    },
+    "description": "Dwight Clark made the iconic leaping touchdown catch from Joe Montana in the closing moments of the 1981 NFC Championship Game, sending the San Francisco 49ers to their first Super Bowl."
   }
 ];
