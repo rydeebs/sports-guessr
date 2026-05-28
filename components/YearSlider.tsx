@@ -128,7 +128,7 @@ export function YearSlider({
   return (
     <section aria-label="Guess event date" className="date-wheel-control">
       <div className="date-wheel-panel">
-        <div className="date-wheel-frame">
+        <div className="date-wheel-frame date-wheel-frame-month">
           <span aria-hidden="true" className="date-wheel-highlight" />
           <WheelColumn
             ariaLabel="Guess event month"
@@ -138,7 +138,7 @@ export function YearSlider({
             value={selectedMonth}
           />
         </div>
-        <div className="date-wheel-frame">
+        <div className="date-wheel-frame date-wheel-frame-day">
           <span aria-hidden="true" className="date-wheel-highlight" />
           <WheelColumn
             ariaLabel="Guess event day"
@@ -148,7 +148,7 @@ export function YearSlider({
             value={selectedDay}
           />
         </div>
-        <div className="date-wheel-frame">
+        <div className="date-wheel-frame date-wheel-frame-year">
           <span aria-hidden="true" className="date-wheel-highlight" />
           <WheelColumn
             ariaLabel="Guess event year"
