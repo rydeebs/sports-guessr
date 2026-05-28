@@ -128,28 +128,36 @@ export function YearSlider({
   return (
     <section aria-label="Guess event date" className="date-wheel-control">
       <div className="date-wheel-panel">
-        <span aria-hidden="true" className="date-wheel-highlight" />
-        <WheelColumn
-          ariaLabel="Guess event month"
-          disabled={disabled}
-          onChange={(nextMonth) => updateDate({ month: nextMonth })}
-          options={monthOptions}
-          value={selectedMonth}
-        />
-        <WheelColumn
-          ariaLabel="Guess event day"
-          disabled={disabled}
-          onChange={(nextDay) => updateDate({ day: nextDay })}
-          options={dayOptions}
-          value={selectedDay}
-        />
-        <WheelColumn
-          ariaLabel="Guess event year"
-          disabled={disabled}
-          onChange={(nextYear) => updateDate({ year: nextYear })}
-          options={yearOptions}
-          value={selectedYear}
-        />
+        <div className="date-wheel-frame">
+          <span aria-hidden="true" className="date-wheel-highlight" />
+          <WheelColumn
+            ariaLabel="Guess event month"
+            disabled={disabled}
+            onChange={(nextMonth) => updateDate({ month: nextMonth })}
+            options={monthOptions}
+            value={selectedMonth}
+          />
+        </div>
+        <div className="date-wheel-frame">
+          <span aria-hidden="true" className="date-wheel-highlight" />
+          <WheelColumn
+            ariaLabel="Guess event day"
+            disabled={disabled}
+            onChange={(nextDay) => updateDate({ day: nextDay })}
+            options={dayOptions}
+            value={selectedDay}
+          />
+        </div>
+        <div className="date-wheel-frame">
+          <span aria-hidden="true" className="date-wheel-highlight" />
+          <WheelColumn
+            ariaLabel="Guess event year"
+            disabled={disabled}
+            onChange={(nextYear) => updateDate({ year: nextYear })}
+            options={yearOptions}
+            value={selectedYear}
+          />
+        </div>
       </div>
     </section>
   );
