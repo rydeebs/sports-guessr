@@ -22,6 +22,7 @@ type MomentDraft = {
   promptRecommendation?: string;
   referenceImageUrl?: string;
   referenceInstructions?: string;
+  layoutInstructions?: string;
   imageUrl?: string;
   status: MomentStatus;
   createdAt: string;
@@ -538,76 +539,35 @@ async function generateImageWithReference(draft: MomentDraft, apiKey: string) {
 
 async function createImagePrompt(draft: MomentDraft) {
   if (!draft.referenceImageUrl) {
-    return buildConciseImagePrompt(draft);
+    return buildImagePrompt(draft);
   }
 
-  const apiKey = process.env.OPENAI_API_KEY;
+  return buildReferenceImagePrompt(draft);
+}
 
-  if (!apiKey) {
-    throw new Error("OPENAI_API_KEY is not configured.");
-  }
-
-  const response = await fetch("https://api.openai.com/v1/responses", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: process.env.OPENAI_RESEARCH_MODEL ?? "gpt-5-mini",
-      input: [
-        {
-          role: "system",
-          content:
-            "Write very simple image-edit prompts. The uploaded reference image is the source of truth. The prompt should mostly ask for a 360 version of that photo, with only brief event details for uniforms, era, venue, and context. Return only the final prompt text.",
-        },
-        {
-          role: "user",
-          content: [
-            {
-              type: "input_text",
-              text: [
-                "Create one simple prompt for editing/generating from the attached reference image.",
-                "",
-                "Priority:",
-                "1. The attached image is the main source.",
-                "2. Ask for a realistic equirectangular 360 version of the same photo/moment.",
-                "3. Use the event details only to preserve uniforms, jersey colors, era, stadium/arena, crowd, and sport context.",
-                "",
-                "Prompt requirements:",
-                "- 45 to 90 words.",
-                "- Start with: Create a realistic equirectangular 360 version of the attached reference photo.",
-                "- Keep the action, athlete positioning, uniforms, colors, lighting, and mood from the image.",
-                "- Add only one short sentence with event/date/venue context.",
-                "- Avoid elaborate composition rules, long negative lists, and repeated instructions.",
-                "- Do not mention copyrighted-photo copying, text, captions, logos, or watermarks.",
-                "",
-                `Event: ${draft.title}`,
-                `Date: ${draft.actualMonth} ${draft.actualDay}, ${draft.actualYear}`,
-                `Sport: ${draft.sport ?? inferSport(draft)}`,
-                `Venue: ${draft.actualLocation.name}, ${draft.actualLocation.city}, ${draft.actualLocation.country}`,
-                `Description: ${draft.description}`,
-                `User instructions for the reference image: ${draft.referenceInstructions ?? ""}`,
-              ].join("\n"),
-            },
-            {
-              type: "input_image",
-              image_url: await imageUrlToDataUrl(draft.referenceImageUrl),
-            },
-          ],
-        },
-      ],
-    }),
-  });
-  const payload = await response.json().catch(() => null);
-
-  if (!response.ok) {
-    throw new Error(readOpenAIError(payload) ?? `OpenAI returned ${response.status}.`);
-  }
-
-  const prompt = readResponseOutputText(payload).trim().slice(0, 3000);
-
-  return prompt || buildConciseImagePrompt(draft);
+function buildReferenceImagePrompt(draft: MomentDraft) {
+  return [
+    "Create a realistic equirectangular 360 version of the attached reference photo.",
+    "Use the attached image for athlete likeness, uniforms, colors, lighting, emotion, and the recognizable action only.",
+    "Do not trust the attached image as the complete source for field or court layout if it is cropped, close-up, or missing venue geometry.",
+    "",
+    "EVENT CONTEXT",
+    `${draft.title}, ${draft.actualMonth} ${draft.actualDay}, ${draft.actualYear}, at ${draft.actualLocation.name}, ${draft.actualLocation.city}, ${draft.actualLocation.country}.`,
+    `Description: ${draft.description}`,
+    draft.referenceInstructions
+      ? `User reference-image instructions: ${draft.referenceInstructions}`
+      : "",
+    draft.layoutInstructions
+      ? `User field/court layout instructions: ${draft.layoutInstructions}`
+      : "",
+    "",
+    getSpatialLayoutContract(draft),
+    "",
+    "Keep the playing surface flat, regulation-proportioned, and physically navigable. The action must sit on the correct landmark of the court or field, with players in legal sport positions. No text, captions, logos, or watermarks.",
+  ]
+    .filter(Boolean)
+    .join("\n")
+    .slice(0, 3000);
 }
 
 function buildConciseImagePrompt(draft: MomentDraft) {
@@ -618,6 +578,9 @@ function buildConciseImagePrompt(draft: MomentDraft) {
     draft.referenceInstructions
       ? `Also follow this reference-image direction: ${draft.referenceInstructions}`
       : "",
+    draft.layoutInstructions
+      ? `Use this exact field/court layout: ${draft.layoutInstructions}`
+      : "",
     "Keep it natural, readable, and immersive. No text, captions, logos, or watermarks.",
   ]
     .filter(Boolean)
@@ -626,6 +589,7 @@ function buildConciseImagePrompt(draft: MomentDraft) {
 
 function buildImagePrompt(draft: MomentDraft) {
   const sportLogic = getSportPromptAdditions(draft);
+  const spatialLayout = getSpatialLayoutContract(draft);
   const negativeAdditions = getSportNegativeAdditions(draft);
 
   return [
@@ -643,6 +607,9 @@ function buildImagePrompt(draft: MomentDraft) {
     draft.referenceInstructions
       ? `User reference-image instructions and prompt recommendations: ${draft.referenceInstructions}`
       : "",
+    draft.layoutInstructions
+      ? `User field/court layout instructions: ${draft.layoutInstructions}`
+      : "",
     "",
     "LOCK THE PLAY GEOMETRY",
     "Maintain the EXACT spatial positioning and geometry of the original historic play.",
@@ -650,6 +617,8 @@ function buildImagePrompt(draft: MomentDraft) {
     "The players must remain in the exact same relative positions they occupied in the famous reference photograph.",
     "ONLY change the viewer perspective.",
     "The viewer is now seated courtside along the sideline, watching the identical play unfold from the side at human eye level.",
+    "",
+    spatialLayout,
     "",
     "FORCE HUMAN SEAT POSITIONING",
     "Viewer seated front-row courtside at natural seated eye level approximately 1.2 meters above floor height.",
@@ -965,6 +934,7 @@ async function recommendPromptImprovement(draft: MomentDraft) {
                 `Sport: ${draft.sport ?? inferSport(draft)}`,
                 `Venue: ${draft.actualLocation.name}, ${draft.actualLocation.city}, ${draft.actualLocation.country}`,
                 `Description: ${draft.description}`,
+                `User field/court layout instructions: ${draft.layoutInstructions ?? ""}`,
                 `User reference instructions: ${draft.referenceInstructions ?? ""}`,
                 "",
                 "Current prompt:",
@@ -1047,6 +1017,7 @@ function normalizeMoment(value: unknown): ImportedMoment | null {
   const promptRecommendation = stringValue(value.promptRecommendation);
   const referenceImageUrl = stringValue(value.referenceImageUrl);
   const referenceInstructions = stringValue(value.referenceInstructions);
+  const layoutInstructions = stringValue(value.layoutInstructions);
 
   const moment: ImportedMoment = {
     title,
@@ -1079,6 +1050,10 @@ function normalizeMoment(value: unknown): ImportedMoment | null {
 
   if (referenceInstructions) {
     moment.referenceInstructions = referenceInstructions;
+  }
+
+  if (layoutInstructions) {
+    moment.layoutInstructions = layoutInstructions;
   }
 
   return moment;
@@ -1149,6 +1124,12 @@ function parseLabeledMoment(block: string) {
     readLabel(block, "longitude");
   const description = readDescription(block);
   const prompt = readLabel(block, "prompt");
+  const layoutInstructions =
+    readLabel(block, "layoutInstructions") ||
+    readLabel(block, "layout instructions") ||
+    readLabel(block, "field layout") ||
+    readLabel(block, "court layout") ||
+    readLabel(block, "field/court layout");
 
   return {
     title,
@@ -1162,6 +1143,7 @@ function parseLabeledMoment(block: string) {
     lng,
     description,
     prompt,
+    layoutInstructions,
   };
 }
 
@@ -1180,7 +1162,7 @@ function readLabel(block: string, label: string) {
 
 function readDescription(block: string) {
   const match = block.match(
-    /^\s*description\s*:\s*([\s\S]*?)(?=\n\s*(?:prompt|title|year|month|day|locationName|location name|venue|name|city|country|lat|latitude|lng|long|longitude)\s*:|$)/im,
+    /^\s*description\s*:\s*([\s\S]*?)(?=\n\s*(?:prompt|layoutInstructions|layout instructions|field layout|court layout|field\/court layout|title|year|month|day|locationName|location name|venue|name|city|country|lat|latitude|lng|long|longitude)\s*:|$)/im,
   );
 
   return match?.[1]?.replace(/\s+/g, " ").trim() ?? "";
@@ -1342,6 +1324,7 @@ function applyDraftUpdates(draft: MomentDraft, updates: Record<string, unknown>)
   const promptRecommendation = stringValue(updates.promptRecommendation);
   const referenceImageUrl = stringValue(updates.referenceImageUrl);
   const referenceInstructions = stringValue(updates.referenceInstructions);
+  const layoutInstructions = stringValue(updates.layoutInstructions);
   const location = isObject(updates.actualLocation) ? updates.actualLocation : {};
   const name = stringValue(location.name);
   const city = stringValue(location.city);
@@ -1360,6 +1343,7 @@ function applyDraftUpdates(draft: MomentDraft, updates: Record<string, unknown>)
   draft.promptRecommendation = promptRecommendation;
   if (referenceImageUrl) draft.referenceImageUrl = referenceImageUrl;
   draft.referenceInstructions = referenceInstructions;
+  draft.layoutInstructions = layoutInstructions;
   if (name) draft.actualLocation.name = name;
   if (city) draft.actualLocation.city = city;
   if (country) draft.actualLocation.country = country;
@@ -1438,6 +1422,79 @@ function mimeTypeFromUrl(imageUrl: string) {
   return "image/png";
 }
 
+function getSpatialLayoutContract(draft: MomentDraft) {
+  const sport = inferSport(draft);
+  const eventText = `${draft.title} ${draft.description}`.toLowerCase();
+  const userLayout = draft.layoutInstructions?.trim();
+
+  if (userLayout) {
+    return [
+      "USER-SPECIFIED FIELD/COURT LAYOUT",
+      userLayout,
+    ].join("\n");
+  }
+
+  if (sport === "basketball") {
+    const eventSpecific = /jordan|1998|bryon russell|last shot/.test(eventText)
+      ? [
+          "Event-specific anchor: Michael Jordan is just inside the three-point arc near the right elbow/top of key, squared toward the basket. Bryon Russell is between Jordan and the hoop, falling or trailing after the separation move.",
+          "The basket is on the baseline behind Russell's defensive side. The painted lane and free throw circle align directly between Jordan and that basket.",
+        ]
+      : [
+          "Event-specific anchor: place the ballhandler, defender, shooter, rebounders, and nearest basket according to the event description. The active player must face or move toward the correct basket, not toward a random sideline or center court.",
+        ];
+
+    return [
+      "FIELD/COURT POSITIONING CONTRACT",
+      "Basketball court coordinate system: baseline with basket = far end, opposite baseline = behind the offense, left/right sidelines run the full court length, center line crosses the court at midcourt.",
+      "Exactly two baskets exist, one centered on each baseline. Each backboard is parallel to its baseline and perpendicular to the sidelines. Never put a hoop on a sideline, corner, center circle, or above empty hardwood.",
+      "The nearest scoring end must show a correct stack of landmarks in order: baseline, backboard/rim, restricted circle, painted lane, free throw line and circle, three-point arc, then half-court line farther away.",
+      "Player placement must obey basketball roles: shooter or driver oriented toward the rim, primary defender between ball and basket, help defenders near lane or wings, other players spaced at wing, corner, top of key, dunker spot, or perimeter.",
+      ...eventSpecific,
+    ].join("\n");
+  }
+
+  if (sport === "baseball") {
+    const eventSpecific = /bonds|756|home run/.test(eventText)
+      ? [
+          "Event-specific anchor: Barry Bonds is a left-handed batter at home plate in follow-through. Catcher and umpire are behind home plate, pitcher is on or near the mound watching, and the ball travels toward left-center field stands.",
+        ]
+      : [
+          "Event-specific anchor: place the batter at home plate, the pitcher on the mound, catcher and umpire behind home plate, infielders near their defensive positions, and outfielders in left, center, and right field unless the event description says otherwise.",
+        ];
+
+    return [
+      "FIELD/COURT POSITIONING CONTRACT",
+      "Baseball diamond coordinate system: home plate is the near point of the diamond, first base is to the batter's right, third base is to the batter's left, second base is straight away from home, and the pitcher's mound is centered between home and second.",
+      "The first-base and third-base foul lines must begin at home plate, pass through first and third base, and continue straight into the outfield corners. The infield dirt forms a true diamond around the bases, not a random oval or soccer-like field.",
+      "Player placement must obey baseball roles: batter in the batter's box at home plate, catcher and umpire behind home, pitcher on the mound, baserunners on basepaths or bases, infielders on dirt/edge of grass, outfielders in left/center/right field.",
+      "Camera may be behind home, along a foul line, or in lower bowl, but the field orientation must remain readable from home plate through the mound to second base and center field.",
+      ...eventSpecific,
+    ].join("\n");
+  }
+
+  if (sport === "soccer") {
+    return [
+      "FIELD/COURT POSITIONING CONTRACT",
+      "Soccer pitch coordinate system: goal line with goal, penalty box around that goal, six-yard box inside it, penalty spot centered in front of goal, touchlines running lengthwise, halfway line far from the goal.",
+      "Players must occupy real soccer positions relative to the ball, goal, penalty area, goalkeeper, defenders, and attacking player. Do not place players randomly across the pitch or detach the goal from the penalty box.",
+    ].join("\n");
+  }
+
+  if (sport === "hockey") {
+    return [
+      "FIELD/COURT POSITIONING CONTRACT",
+      "Hockey rink coordinate system: goal centered on end boards, crease in front of goal, faceoff circles and dots in correct zones, blue lines dividing rink zones, boards and glass wrapping the flat ice surface.",
+      "Players must occupy real hockey positions relative to puck, goal, crease, slot, blue line, and boards. Do not detach the goal from the crease or curve rink markings unnaturally.",
+    ].join("\n");
+  }
+
+  return [
+    "FIELD/COURT POSITIONING CONTRACT",
+    "Use the regulation coordinate system of this sport. Anchor the action to exact field markings, goals, bases, boundaries, equipment, and legal athlete positions. Do not infer venue geometry from a cropped reference image when the sport's real layout is known.",
+  ].join("\n");
+}
+
 function getSportPromptAdditions(draft: MomentDraft) {
   const sport = inferSport(draft);
 
@@ -1445,9 +1502,11 @@ function getSportPromptAdditions(draft: MomentDraft) {
     return [
       "BASKETBALL ENVIRONMENT LOGIC",
       "Viewer seated courtside or front-row lower bowl. Camera height approximately seated human eye level. Hardwood court remains completely flat and rectangular. Baselines and sidelines remain straight with no curvature. Arena bowl wraps horizontally around viewer. Hoop and backboard clearly visible and proportionally realistic.",
+      "Court topology must be physically valid: exactly two baskets, one centered on each baseline, with each backboard parallel to its baseline and perpendicular to the sideline. Do not place a hoop on a sideline, corner, center court, or above the wrong painted area.",
+      "The nearest visible basket must anchor the correct end of the court: rim above the lane, rectangular paint below it, free throw circle connected to the lane, three-point arc wrapping around that same basket, half-court line farther away. Player spacing must follow real basketball positions relative to the basket, lane, elbow, wing, corner, and top of key.",
       "Historic action occurs near the free throw line, top of key, rim, or corner three depending on event.",
       /jordan|1998|bryon russell|last shot/i.test(`${draft.title} ${draft.description}`)
-        ? "For the Jordan 1998 shot: POV from opposite lower bowl side, watching Jordan create separation from Bryon Russell near the top of key/right elbow. Utah crowd frozen in anticipation. Bulls bench and media table visible peripherally. Delta Center atmosphere tense, loud, historic, emotionally suspended."
+        ? "For the Jordan 1998 shot: set the basket on the baseline behind Bryon Russell's defensive side. Jordan is just inside the three-point arc near the right elbow/top-of-key area, squared toward that basket, with Bryon Russell falling or trailing in front of him. The painted lane and free throw circle must align directly between Jordan and the hoop. POV from the opposite lower bowl side. Utah crowd frozen in anticipation. Bulls bench and media table visible peripherally. Delta Center atmosphere tense, loud, historic, emotionally suspended."
         : "",
     ]
       .filter(Boolean)
@@ -1458,8 +1517,10 @@ function getSportPromptAdditions(draft: MomentDraft) {
     return [
       "BASEBALL ENVIRONMENT LOGIC",
       "Viewer seated front-row near foul line or behind home plate. Baseball diamond remains geographically correct. Baselines remain straight. Outfield extends naturally into distance. Stadium bowl wraps horizontally. Dirt, grass, warning track, and foul territory remain realistic.",
+      "Baseball field topology must be physically valid: home plate at the point of the diamond, first base to the batter's right, third base to the batter's left, second base straight away from home, pitcher's mound centered between home and second. Foul lines must run straight from home plate through first and third base to the outfield corners.",
+      "Players must occupy real baseball locations for the described moment: batter in the batter's box at home plate, catcher and umpire behind home, pitcher on or near the mound, infielders around the bases, outfielders in left/center/right field. Do not scatter players randomly on grass or place the batter away from home plate.",
       /bonds|756|home run/i.test(`${draft.title} ${draft.description}`)
-        ? "For Barry Bonds 756: POV from opposite side of stadium relative to left field home run trajectory. Viewer sees ball traveling into left-center stands. Barry Bonds remains visible near batter's box/follow-through. Crowd eruption isolated around landing area. McCovey Cove atmosphere visible in distance. Night game lighting realism critical."
+        ? "For Barry Bonds 756: Barry Bonds must be at home plate in a left-handed batter's follow-through, catcher and umpire behind him, pitcher on the mound watching, infield diamond correctly oriented. POV from opposite side of stadium relative to left field home run trajectory. Viewer sees ball traveling into left-center stands. Crowd eruption isolated around landing area. McCovey Cove atmosphere visible in distance. Night game lighting realism critical."
         : "",
     ]
       .filter(Boolean)

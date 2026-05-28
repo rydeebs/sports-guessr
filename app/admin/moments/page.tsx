@@ -25,6 +25,7 @@ type MomentDraft = {
   promptRecommendation?: string;
   referenceImageUrl?: string;
   referenceInstructions?: string;
+  layoutInstructions?: string;
   imageUrl?: string;
   status: MomentStatus;
   createdAt: string;
@@ -696,6 +697,14 @@ function MomentCard({
             onChange(draft.id, { referenceInstructions })
           }
           value={draft.referenceInstructions ?? ""}
+        />
+
+        <TextArea
+          label="Field/Court Layout"
+          onChange={(layoutInstructions) =>
+            onChange(draft.id, { layoutInstructions })
+          }
+          value={draft.layoutInstructions ?? ""}
         />
 
         <div className="flex items-start justify-between gap-3">
