@@ -114,5 +114,213 @@ export const importedRounds: Round[] = [
       "lng": -122.3866
     },
     "description": "Dwight Clark made the iconic leaping touchdown catch from Joe Montana in the closing moments of the 1981 NFC Championship Game, sending the San Francisco 49ers to their first Super Bowl."
+  },
+  {
+    "id": "2006-zinedine-zidane-a-stunning-final-exit",
+    "title": "Zinedine Zidane — A Stunning Final Exit",
+    "imageUrl": "/rounds/2006-zinedine-zidane-a-stunning-final-exit.png",
+    "actualYear": 2006,
+    "actualMonth": "July",
+    "actualDay": 9,
+    "actualLocation": {
+      "name": "Olympiastadion Berlin",
+      "city": "Berlin",
+      "country": "Germany",
+      "lat": 52.5147,
+      "lng": 13.2394
+    },
+    "description": "In the final match of his legendary career, Zinedine Zidane was sent off after headbutting Marco Materazzi during extra time of the 2006 FIFA World Cup Final."
+  },
+  {
+    "id": "2010-andr-s-iniesta-spain-s-historic-triumph",
+    "title": "Andrés Iniesta — Spain’s Historic Triumph",
+    "imageUrl": "/rounds/2010-andr-s-iniesta-spain-s-historic-triumph.png",
+    "actualYear": 2010,
+    "actualMonth": "July",
+    "actualDay": 11,
+    "actualLocation": {
+      "name": "Soccer City Stadium",
+      "city": "Johannesburg",
+      "country": "South Africa",
+      "lat": -26.2347,
+      "lng": 27.9826
+    },
+    "description": "Andrés Iniesta scored the extra-time winner against the Netherlands to give Spain its first FIFA World Cup title in 2010."
+  },
+  {
+    "id": "1993-joe-carter-touch-em-all-joe",
+    "title": "Joe Carter — “Touch ’Em All Joe”",
+    "imageUrl": "/rounds/1993-joe-carter-touch-em-all-joe.png",
+    "actualYear": 1993,
+    "actualMonth": "October",
+    "actualDay": 23,
+    "actualLocation": {
+      "name": "SkyDome",
+      "city": "Toronto, Ontario",
+      "country": "Canada",
+      "lat": 43.6414,
+      "lng": -79.3894
+    },
+    "description": "Joe Carter hit a walk-off three-run home run in Game 6 of the 1993 World Series, clinching a second straight championship for the Toronto Blue Jays."
+  },
+  {
+    "id": "2013-ray-allen-saving-the-heat-dynasty",
+    "title": "Ray Allen — Saving the Heat Dynasty",
+    "imageUrl": "/rounds/2013-ray-allen-saving-the-heat-dynasty.png",
+    "actualYear": 2013,
+    "actualMonth": "June",
+    "actualDay": 18,
+    "actualLocation": {
+      "name": "American Airlines Arena",
+      "city": "Miami, Florida",
+      "country": "United States",
+      "lat": 25.7814,
+      "lng": -80.187
+    },
+    "description": "Ray Allen hit a legendary game-tying corner three-pointer in the closing seconds of Game 6 of the 2013 NBA Finals, helping the Miami Heat force overtime and eventually win the championship."
+  },
+  {
+    "id": "1992-christian-laettner-the-shot",
+    "title": "Christian Laettner — The Shot",
+    "imageUrl": "/rounds/1992-christian-laettner-the-shot.png",
+    "actualYear": 1992,
+    "actualMonth": "March",
+    "actualDay": 28,
+    "actualLocation": {
+      "name": "Spectrum",
+      "city": "Philadelphia, Pennsylvania",
+      "country": "United States",
+      "lat": 39.901,
+      "lng": -75.1719
+    },
+    "description": "Christian Laettner hit a perfect turnaround buzzer-beater for Duke against Kentucky in the 1992 NCAA Tournament, creating one of the most iconic moments in college basketball history."
+  },
+  {
+    "id": "1974-hank-aaron-passing-babe-ruth",
+    "title": "Hank Aaron — Passing Babe Ruth",
+    "imageUrl": "/rounds/1974-hank-aaron-passing-babe-ruth.png",
+    "actualYear": 1974,
+    "actualMonth": "April",
+    "actualDay": 8,
+    "actualLocation": {
+      "name": "Atlanta Stadium",
+      "city": "Atlanta, Georgia",
+      "country": "United States",
+      "lat": 33.7356,
+      "lng": -84.3895
+    },
+    "description": "Hank Aaron hit his 715th career home run to surpass Babe Ruth’s all-time record, becoming one of the most historic moments in baseball history."
+  },
+  {
+    "id": "1986-mookie-wilson-through-buckner-s-legs",
+    "title": "Mookie Wilson — Through Buckner’s Legs",
+    "imageUrl": "/rounds/1986-mookie-wilson-through-buckner-s-legs.png",
+    "actualYear": 1986,
+    "actualMonth": "October",
+    "actualDay": 25,
+    "actualLocation": {
+      "name": "Shea Stadium",
+      "city": "New York City, New York",
+      "country": "United States",
+      "lat": 40.7571,
+      "lng": -73.8458
+    },
+    "description": "round ball rolled through Bill Buckner’s legs in Game 6 of the 1986 World Series, allowing the New York Mets to complete an improbable comeback and force Game 7."
+  },
+  {
+    "id": "2001-randy-johnson-the-bird-strike",
+    "title": "Randy Johnson — The Bird Strike",
+    "imageUrl": "/rounds/2001-randy-johnson-the-bird-strike.png",
+    "actualYear": 2001,
+    "actualMonth": "March",
+    "actualDay": 24,
+    "actualLocation": {
+      "name": "Tucson Electric Park",
+      "city": "Tucson, Arizona",
+      "country": "United States",
+      "lat": 32.1697,
+      "lng": -110.9176
+    },
+    "description": "During a spring training game, Randy Johnson accidentally struck and killed a bird with a fastball, creating one of the strangest and most surreal moments in baseball history."
+  },
+  {
+    "id": "2007-devin-hester-opening-shockwave",
+    "title": "Devin Hester — Opening Shockwave",
+    "imageUrl": "/rounds/2007-devin-hester-opening-shockwave.png",
+    "actualYear": 2007,
+    "actualMonth": "February",
+    "actualDay": 4,
+    "actualLocation": {
+      "name": "Dolphin Stadium",
+      "city": "Miami Gardens, Florida",
+      "country": "United States",
+      "lat": 25.958,
+      "lng": -80.2389
+    },
+    "description": "Devin Hester returned the opening kickoff of Super Bowl XLI for a touchdown, becoming the first player in Super Bowl history to score on the opening kickoff."
+  },
+  {
+    "id": "1991-michael-jordan-the-beginning-of-the-dynasty",
+    "title": "Michael Jordan — The Beginning of the Dynasty",
+    "imageUrl": "/rounds/1991-michael-jordan-the-beginning-of-the-dynasty.png",
+    "actualYear": 1991,
+    "actualMonth": "June",
+    "actualDay": 12,
+    "actualLocation": {
+      "name": "Great Western Forum",
+      "city": "Inglewood, California",
+      "country": "United States",
+      "lat": 33.9583,
+      "lng": -118.3417
+    },
+    "description": "Michael Jordan captured his first NBA championship as the Chicago Bulls defeated the Los Angeles Lakers in the 1991 NBA Finals, launching one of the greatest dynasties in sports history."
+  },
+  {
+    "id": "1999-serena-williams-first-of-many",
+    "title": "Serena Williams — First of Many",
+    "imageUrl": "/rounds/1999-serena-williams-first-of-many.png",
+    "actualYear": 1999,
+    "actualMonth": "September",
+    "actualDay": 11,
+    "actualLocation": {
+      "name": "Arthur Ashe Stadium",
+      "city": "New York City, New York",
+      "country": "United States",
+      "lat": 40.7498,
+      "lng": -73.8476
+    },
+    "description": "At just 17 years old, Serena Williams defeated Martina Hingis to win the 1999 US Open, becoming the first African American woman in the Open Era to win a Grand Slam singles title. zoom out to get full tennies court view"
+  },
+  {
+    "id": "2008-philadelphia-phillies-2008-world-series-champions",
+    "title": "Philadelphia Phillies — 2008 World Series Champions",
+    "imageUrl": "/rounds/2008-philadelphia-phillies-2008-world-series-champions.png",
+    "actualYear": 2008,
+    "actualMonth": "October",
+    "actualDay": 29,
+    "actualLocation": {
+      "name": "Citizens Bank Park",
+      "city": "Philadelphia, Pennsylvania",
+      "country": "United States",
+      "lat": 39.9061,
+      "lng": -75.1665
+    },
+    "description": "The Philadelphia Phillies defeated the Tampa Bay Rays to win the 2008 World Series, securing the franchise’s first championship since 1980 behind dominant pitching and clutch hitting."
+  },
+  {
+    "id": "2001-allen-iverson-finals-step-over",
+    "title": "Allen Iverson — Finals Step Over",
+    "imageUrl": "/rounds/2001-allen-iverson-finals-step-over.png",
+    "actualYear": 2001,
+    "actualMonth": "June",
+    "actualDay": 6,
+    "actualLocation": {
+      "name": "STAPLES Center",
+      "city": "Los Angeles, California",
+      "country": "United States",
+      "lat": 34.043,
+      "lng": -118.2673
+    },
+    "description": "Allen Iverson stepped over Tyronn Lue after hitting a clutch shot late in Game 1 of the 2001 NBA Finals, creating one of the most iconic and defiant moments in basketball history."
   }
 ];

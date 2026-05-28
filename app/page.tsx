@@ -9,7 +9,8 @@ import { ScoreDisplay } from "@/components/ScoreDisplay";
 import { SettingsModal } from "@/components/SettingsModal";
 import { Timer } from "@/components/Timer";
 import { YearSlider } from "@/components/YearSlider";
-import { getAvailableDailyDates, getDailyGame } from "@/data/dailyGames";
+import { getAvailableDailyDates } from "@/data/dailyGames";
+import { rounds } from "@/data/rounds";
 import type { Guess, ScoreResult } from "@/types/game";
 import type { DailyScoreHistory } from "@/types/history";
 import { readDailyHistory, writeDailyHistory } from "@/utils/history";
@@ -18,6 +19,7 @@ import { scoreGuess } from "@/utils/scoring";
 const ROUND_SECONDS = 60;
 const blankGuess: Guess = { day: null, month: null, year: null, location: null };
 const DAY_COUNT = 6;
+const ROUNDS_PER_GAME = 5;
 
 export default function Home() {
   const [roundIndex, setRoundIndex] = useState(0);
@@ -30,9 +32,8 @@ export default function Home() {
   const [isDimmed] = useState(false);
   const [activeDate, setActiveDate] = useState(getLocalDateKey(new Date()));
   const [dailyHistory, setDailyHistory] = useState<DailyScoreHistory[]>([]);
-  const dailyGame = getDailyGame(activeDate);
   const [gameRounds, setGameRounds] = useState(() =>
-    shuffleRounds(dailyGame.rounds),
+    selectRandomRounds(rounds, ROUNDS_PER_GAME),
   );
   const round = gameRounds[roundIndex];
 
@@ -116,7 +117,7 @@ export default function Home() {
 
   const startDay = (date: string) => {
     setActiveDate(date);
-    setGameRounds(shuffleRounds(getDailyGame(date).rounds));
+    setGameRounds(selectRandomRounds(rounds, ROUNDS_PER_GAME));
     setIsDailyComplete(false);
     setRoundIndex(0);
     setScoreHistory([]);
@@ -243,4 +244,8 @@ function shuffleRounds<T>(items: T[]) {
   }
 
   return shuffled;
+}
+
+function selectRandomRounds<T>(items: T[], count: number) {
+  return shuffleRounds(items).slice(0, count);
 }

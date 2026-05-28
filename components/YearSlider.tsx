@@ -39,7 +39,7 @@ const LAST_YEAR = 2026;
 const DEFAULT_MONTH = 1;
 const DEFAULT_DAY = 1;
 const DEFAULT_YEAR = 1963;
-const WHEEL_ITEM_PX = 44;
+const WHEEL_ITEM_PX = 36;
 
 const monthOptions = [
   "January",
