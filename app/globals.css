@@ -132,13 +132,12 @@ input {
 }
 
 .date-wheel-control {
-  width: fit-content;
-  max-width: calc(100vw - 24rem);
+  width: max-content;
 }
 
 .date-wheel-panel {
   display: grid;
-  gap: 0.28rem;
+  gap: 0.5rem;
   grid-template-columns: max-content max-content max-content;
 }
 
@@ -158,11 +157,11 @@ input {
 }
 
 .date-wheel-frame-month {
-  width: 5.25rem;
+  width: 14rem;
 }
 
 .date-wheel-frame-day {
-  width: 2.2rem;
+  width: 8rem;
 }
 
 .date-wheel-frame-year {
@@ -385,10 +384,6 @@ input {
 }
 
 @media (max-width: 900px) {
-  .date-wheel-control {
-    max-width: calc(100vw - 2rem);
-  }
-
   .map-expanded {
     width: min(28rem, calc(100vw - 2rem));
   }
@@ -433,12 +428,8 @@ input {
     padding-inline: 4.9rem;
   }
 
-  .date-wheel-control {
-    max-width: calc(100vw - 10.25rem);
-  }
-
   .date-wheel-panel {
-    gap: 0.24rem;
+    gap: 0.42rem;
     grid-template-columns: max-content max-content max-content;
   }
 
@@ -448,11 +439,11 @@ input {
   }
 
   .date-wheel-frame-month {
-    width: 3.55rem;
+    width: 5.35rem;
   }
 
   .date-wheel-frame-day {
-    width: 1.9rem;
+    width: 3.2rem;
   }
 
   .date-wheel-frame-year {
@@ -604,20 +595,16 @@ input {
     padding-inline: 4.35rem;
   }
 
-  .date-wheel-control {
-    max-width: calc(100vw - 9rem);
-  }
-
   .date-wheel-panel {
     grid-template-columns: max-content max-content max-content;
   }
 
   .date-wheel-frame-month {
-    width: 3.35rem;
+    width: 4.8rem;
   }
 
   .date-wheel-frame-day {
-    width: 1.75rem;
+    width: 2.85rem;
   }
 
   .date-wheel-frame-year {
