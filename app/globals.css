@@ -70,7 +70,17 @@ input {
   display: block;
   height: auto;
   opacity: 0.78;
+  position: absolute;
+  left: -1.67%;
+  top: -266%;
   transition: opacity 160ms ease;
+  width: 102.6%;
+}
+
+.game-brand {
+  aspect-ratio: 1559 / 133;
+  overflow: hidden;
+  position: relative;
   width: clamp(9rem, 17vw, 15rem);
 }
 
@@ -162,7 +172,7 @@ input {
     inset 0 -0.7rem 1.8rem rgba(255, 255, 255, 0.1),
     0 0.85rem 2rem rgba(0, 0, 0, 0.18);
   backdrop-filter: blur(24px) saturate(145%);
-  height: 7.25rem;
+  height: 6.75rem;
   min-width: 0;
   overflow: hidden;
   position: relative;
@@ -230,7 +240,7 @@ input {
 }
 
 .date-wheel-spacer {
-  height: 42px;
+  height: 38px;
 }
 
 .date-wheel-option {
@@ -1105,6 +1115,10 @@ input {
   }
 
   .game-brand-logo {
+    width: 102.6%;
+  }
+
+  .game-brand {
     width: clamp(7.5rem, 34vw, 10rem);
   }
 
@@ -1139,7 +1153,7 @@ input {
 
   .date-wheel-frame {
     border-radius: 0.8rem;
-    height: 6.5rem;
+    height: 6.25rem;
   }
 
   .date-wheel-frame-month {
@@ -1155,7 +1169,7 @@ input {
   }
 
   .date-wheel-spacer {
-    height: 36px;
+    height: 34px;
   }
 
   .date-wheel-option {
@@ -1282,6 +1296,10 @@ input {
 
 @media (max-width: 380px) {
   .game-brand-logo {
+    width: 102.6%;
+  }
+
+  .game-brand {
     width: 6.8rem;
   }
 
