@@ -187,7 +187,7 @@ export function WelcomePopup({
               <img
                 alt="Moment Guessr"
                 className="mg-popup-logo"
-                src="/moment-popup/logo-popup-dark.png"
+                src="/moment-popup/logo-popup-attached.png"
               />
             </div>
 
