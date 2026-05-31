@@ -7,6 +7,7 @@ export const importedRounds: Round[] = [
     "id": "1980-miracle-on-ice-2",
     "title": "Miracle on Ice",
     "imageUrl": "/rounds/1980-miracle-on-ice-2.png",
+    "level": "Medium",
     "actualYear": 1980,
     "actualMonth": "February",
     "actualDay": 22,
@@ -23,6 +24,7 @@ export const importedRounds: Round[] = [
     "id": "1973-secretariat-belmont-stakes-dominance",
     "title": "Secretariat — Belmont Stakes Dominance",
     "imageUrl": "/rounds/1973-secretariat-belmont-stakes-dominance.png",
+    "level": "Hard",
     "actualYear": 1973,
     "actualMonth": "June",
     "actualDay": 9,
@@ -39,6 +41,7 @@ export const importedRounds: Round[] = [
     "id": "1965-the-phantom-punch",
     "title": "The Phantom Punch",
     "imageUrl": "/rounds/1965-the-phantom-punch.png",
+    "level": "Medium",
     "actualYear": 1965,
     "actualMonth": "May",
     "actualDay": 25,
@@ -55,6 +58,7 @@ export const importedRounds: Round[] = [
     "id": "1954-willie-mays-the-catch",
     "title": "Willie Mays — The Catch",
     "imageUrl": "/rounds/1954-willie-mays-the-catch.png",
+    "level": "Medium",
     "actualYear": 1954,
     "actualMonth": "September",
     "actualDay": 29,
@@ -71,6 +75,7 @@ export const importedRounds: Round[] = [
     "id": "2016-lebron-james-the-block",
     "title": "LeBron James — The Block",
     "imageUrl": "/rounds/2016-lebron-james-the-block.png",
+    "level": "Easy",
     "actualYear": 2016,
     "actualMonth": "June",
     "actualDay": 19,
@@ -87,6 +92,7 @@ export const importedRounds: Round[] = [
     "id": "2018-cristiano-ronaldo-bicycle-kick",
     "title": "Cristiano Ronaldo — Bicycle Kick",
     "imageUrl": "/rounds/2018-cristiano-ronaldo-bicycle-kick.png",
+    "level": "Hard",
     "actualYear": 2018,
     "actualMonth": "April",
     "actualDay": 3,
@@ -103,6 +109,7 @@ export const importedRounds: Round[] = [
     "id": "1982-dwight-clark-the-catch",
     "title": "Dwight Clark — “The Catch”",
     "imageUrl": "/rounds/1982-dwight-clark-the-catch.png",
+    "level": "Hard",
     "actualYear": 1982,
     "actualMonth": "January",
     "actualDay": 10,
@@ -119,6 +126,7 @@ export const importedRounds: Round[] = [
     "id": "2006-zinedine-zidane-a-stunning-final-exit",
     "title": "Zinedine Zidane — A Stunning Final Exit",
     "imageUrl": "/rounds/2006-zinedine-zidane-a-stunning-final-exit.png",
+    "level": "Hard",
     "actualYear": 2006,
     "actualMonth": "July",
     "actualDay": 9,
@@ -135,6 +143,7 @@ export const importedRounds: Round[] = [
     "id": "2010-andr-s-iniesta-spain-s-historic-triumph",
     "title": "Andrés Iniesta — Spain’s Historic Triumph",
     "imageUrl": "/rounds/2010-andr-s-iniesta-spain-s-historic-triumph.png",
+    "level": "Medium",
     "actualYear": 2010,
     "actualMonth": "July",
     "actualDay": 11,
@@ -151,6 +160,7 @@ export const importedRounds: Round[] = [
     "id": "1993-joe-carter-touch-em-all-joe",
     "title": "Joe Carter — “Touch ’Em All Joe”",
     "imageUrl": "/rounds/1993-joe-carter-touch-em-all-joe.png",
+    "level": "Hard",
     "actualYear": 1993,
     "actualMonth": "October",
     "actualDay": 23,
@@ -167,6 +177,7 @@ export const importedRounds: Round[] = [
     "id": "2013-ray-allen-saving-the-heat-dynasty",
     "title": "Ray Allen — Saving the Heat Dynasty",
     "imageUrl": "/rounds/2013-ray-allen-saving-the-heat-dynasty.png",
+    "level": "Medium",
     "actualYear": 2013,
     "actualMonth": "June",
     "actualDay": 18,
@@ -183,6 +194,7 @@ export const importedRounds: Round[] = [
     "id": "1992-christian-laettner-the-shot",
     "title": "Christian Laettner — The Shot",
     "imageUrl": "/rounds/1992-christian-laettner-the-shot.png",
+    "level": "Hard",
     "actualYear": 1992,
     "actualMonth": "March",
     "actualDay": 28,
@@ -199,6 +211,7 @@ export const importedRounds: Round[] = [
     "id": "1974-hank-aaron-passing-babe-ruth",
     "title": "Hank Aaron — Passing Babe Ruth",
     "imageUrl": "/rounds/1974-hank-aaron-passing-babe-ruth.png",
+    "level": "Medium",
     "actualYear": 1974,
     "actualMonth": "April",
     "actualDay": 8,
@@ -215,6 +228,7 @@ export const importedRounds: Round[] = [
     "id": "1986-mookie-wilson-through-buckner-s-legs",
     "title": "Mookie Wilson — Through Buckner’s Legs",
     "imageUrl": "/rounds/1986-mookie-wilson-through-buckner-s-legs.png",
+    "level": "Brutal",
     "actualYear": 1986,
     "actualMonth": "October",
     "actualDay": 25,
@@ -231,6 +245,7 @@ export const importedRounds: Round[] = [
     "id": "2001-randy-johnson-the-bird-strike",
     "title": "Randy Johnson — The Bird Strike",
     "imageUrl": "/rounds/2001-randy-johnson-the-bird-strike.png",
+    "level": "Brutal",
     "actualYear": 2001,
     "actualMonth": "March",
     "actualDay": 24,
@@ -247,6 +262,7 @@ export const importedRounds: Round[] = [
     "id": "2007-devin-hester-opening-shockwave",
     "title": "Devin Hester — Opening Shockwave",
     "imageUrl": "/rounds/2007-devin-hester-opening-shockwave.png",
+    "level": "Medium",
     "actualYear": 2007,
     "actualMonth": "February",
     "actualDay": 4,
@@ -263,6 +279,7 @@ export const importedRounds: Round[] = [
     "id": "1991-michael-jordan-the-beginning-of-the-dynasty",
     "title": "Michael Jordan — The Beginning of the Dynasty",
     "imageUrl": "/rounds/1991-michael-jordan-the-beginning-of-the-dynasty.png",
+    "level": "Medium",
     "actualYear": 1991,
     "actualMonth": "June",
     "actualDay": 12,
@@ -279,6 +296,7 @@ export const importedRounds: Round[] = [
     "id": "1999-serena-williams-first-of-many",
     "title": "Serena Williams — First of Many",
     "imageUrl": "/rounds/1999-serena-williams-first-of-many.png",
+    "level": "Hard",
     "actualYear": 1999,
     "actualMonth": "September",
     "actualDay": 11,
@@ -295,6 +313,7 @@ export const importedRounds: Round[] = [
     "id": "2008-philadelphia-phillies-2008-world-series-champions",
     "title": "Philadelphia Phillies — 2008 World Series Champions",
     "imageUrl": "/rounds/2008-philadelphia-phillies-2008-world-series-champions.png",
+    "level": "Easy",
     "actualYear": 2008,
     "actualMonth": "October",
     "actualDay": 29,
@@ -311,6 +330,7 @@ export const importedRounds: Round[] = [
     "id": "2001-allen-iverson-finals-step-over",
     "title": "Allen Iverson — Finals Step Over",
     "imageUrl": "/rounds/2001-allen-iverson-finals-step-over.png",
+    "level": "Easy",
     "actualYear": 2001,
     "actualMonth": "June",
     "actualDay": 6,
@@ -322,5 +342,277 @@ export const importedRounds: Round[] = [
       "lng": -118.2673
     },
     "description": "Allen Iverson stepped over Tyronn Lue after hitting a clutch shot late in Game 1 of the 2001 NBA Finals, creating one of the most iconic and defiant moments in basketball history."
+  },
+  {
+    "id": "2006-kobe-bryant-jersey-pull-celebration",
+    "title": "Kobe Bryant — Jersey Pull Celebration",
+    "imageUrl": "/rounds/2006-kobe-bryant-jersey-pull-celebration.png",
+    "level": "Hard",
+    "actualYear": 2006,
+    "actualMonth": "April",
+    "actualDay": 30,
+    "actualLocation": {
+      "name": "STAPLES Center",
+      "city": "Los Angeles, California",
+      "country": "United States",
+      "lat": 34.043,
+      "lng": -118.2673
+    },
+    "description": "Kobe Bryant hit a dramatic game-tying floater and an overtime buzzer-beating fadeaway against the Phoenix Suns in Game 4 of the 2006 NBA Playoffs, followed by his iconic jersey-pull celebration."
+  },
+  {
+    "id": "2008-florida-vs-florida-state-the-mud-bowl",
+    "title": "Florida vs Florida State — The Mud Bowl",
+    "imageUrl": "/rounds/2008-florida-vs-florida-state-the-mud-bowl.png",
+    "level": "Hard",
+    "actualYear": 2008,
+    "actualMonth": "November",
+    "actualDay": 29,
+    "actualLocation": {
+      "name": "Doak Campbell Stadium",
+      "city": "Tallahassee, Florida",
+      "country": "United States",
+      "lat": 30.4381,
+      "lng": -84.3046
+    },
+    "description": "During a torrential rainstorm in Tallahassee, the Florida Gators defeated the Florida State Seminoles in a rivalry game remembered for its soaked field, muddy chaos, and players sliding across the waterlogged turf."
+  },
+  {
+    "id": "2007-peyton-manning-wins-his-first-super-bowl",
+    "title": "Peyton Manning Wins His First Super Bowl",
+    "imageUrl": "/rounds/2007-peyton-manning-wins-his-first-super-bowl.png",
+    "level": "Easy",
+    "actualYear": 2007,
+    "actualMonth": "February",
+    "actualDay": 4,
+    "actualLocation": {
+      "name": "Dolphin Stadium",
+      "city": "Miami Gardens, Florida",
+      "country": "United States",
+      "lat": 25.958,
+      "lng": -80.2389
+    },
+    "description": "Peyton Manning led the Indianapolis Colts to victory over the Chicago Bears in Super Bowl XLI, securing the first Super Bowl championship of his legendary NFL career."
+  },
+  {
+    "id": "2010-lebron-james-the-decision",
+    "title": "LeBron James — “The Decision”",
+    "imageUrl": "/rounds/2010-lebron-james-the-decision.png",
+    "level": "Easy",
+    "actualYear": 2010,
+    "actualMonth": "July",
+    "actualDay": 8,
+    "actualLocation": {
+      "name": "Boys & Girls Club of Greenwich",
+      "city": "Greenwich, Connecticut",
+      "country": "United States",
+      "lat": 41.0262,
+      "lng": -73.6282
+    },
+    "description": "LeBron James announced live on national television that he would leave the Cleveland Cavaliers to join the Miami Heat, delivering the famous line: “I’m going to take my talents to South Beach.”"
+  },
+  {
+    "id": "2022-antonio-brown-walks-off-the-field",
+    "title": "Antonio Brown Walks Off the Field",
+    "imageUrl": "/rounds/2022-antonio-brown-walks-off-the-field.png",
+    "level": "Easy",
+    "actualYear": 2022,
+    "actualMonth": "January",
+    "actualDay": 2,
+    "actualLocation": {
+      "name": "MetLife Stadium",
+      "city": "East Rutherford, New Jersey",
+      "country": "United States",
+      "lat": 40.8135,
+      "lng": -74.0745
+    },
+    "description": "Antonio Brown shocked the NFL world by removing his uniform and leaving the field mid-game during the Tampa Bay Buccaneers’ matchup against the New York Jets."
+  },
+  {
+    "id": "2005-the-bush-push",
+    "title": "The Bush Push",
+    "imageUrl": "/rounds/2005-the-bush-push.png",
+    "level": "Hard",
+    "actualYear": 2005,
+    "actualMonth": "October",
+    "actualDay": 15,
+    "actualLocation": {
+      "name": "Notre Dame Stadium",
+      "city": "Notre Dame, Indiana",
+      "country": "United States",
+      "lat": 41.6986,
+      "lng": -86.2339
+    },
+    "description": "In one of college football’s most controversial endings, USC quarterback Matt Leinart scored the game-winning touchdown after Reggie Bush appeared to illegally push him into the end zone against Notre Dame."
+  },
+  {
+    "id": "2018-jr-smith-s-finals-blunder",
+    "title": "JR Smith’s Finals Blunder",
+    "imageUrl": "/rounds/2018-jr-smith-s-finals-blunder.png",
+    "level": "Medium",
+    "actualYear": 2018,
+    "actualMonth": "May",
+    "actualDay": 31,
+    "actualLocation": {
+      "name": "Oracle Arena",
+      "city": "Oakland, California",
+      "country": "United States",
+      "lat": 37.7503,
+      "lng": -122.2029
+    },
+    "description": "After securing an offensive rebound in the closing seconds of Game 1 of the NBA Finals, JR Smith mistakenly dribbled away from the basket, seemingly unaware the game was tied, causing Lebron to scream at him near the score table"
+  },
+  {
+    "id": "2018-khabib-jumps-the-cage-after-defeating-mcgregor",
+    "title": "Khabib Jumps the Cage After Defeating McGregor",
+    "imageUrl": "/rounds/2018-khabib-jumps-the-cage-after-defeating-mcgregor.png",
+    "level": "Brutal",
+    "actualYear": 2018,
+    "actualMonth": "October",
+    "actualDay": 6,
+    "actualLocation": {
+      "name": "T-Mobile Arena",
+      "city": "Las Vegas, Nevada",
+      "country": "United States",
+      "lat": 36.1028,
+      "lng": -115.1781
+    },
+    "description": "After submitting Conor McGregor at UFC 229 inside the cage, Khabib Nurmagomedov held back by the referee inside the cage"
+  },
+  {
+    "id": "2018-tua-and-devonta-connect-for-the-title",
+    "title": "Tua and DeVonta Connect for the Title",
+    "imageUrl": "/rounds/2018-tua-and-devonta-connect-for-the-title.png",
+    "level": "Easy",
+    "actualYear": 2018,
+    "actualMonth": "January",
+    "actualDay": 8,
+    "actualLocation": {
+      "name": "Mercedes-Benz Stadium",
+      "city": "Atlanta, Georgia",
+      "country": "United States",
+      "lat": 33.7554,
+      "lng": -84.4009
+    },
+    "description": "touchdown pass to DeVonta Smith in the far left hand corner just before the endzone in overtime to defeat Georgia and win the College Football Playoff National Championship for Alabama"
+  },
+  {
+    "id": "1999-brandi-chastain-s-iconic-celebration",
+    "title": "Brandi Chastain’s Iconic Celebration",
+    "imageUrl": "/rounds/1999-brandi-chastain-s-iconic-celebration.png",
+    "level": "Hard",
+    "actualYear": 1999,
+    "actualMonth": "July",
+    "actualDay": 10,
+    "actualLocation": {
+      "name": "Rose Bowl Stadium",
+      "city": "Pasadena, California",
+      "country": "United States",
+      "lat": 34.1613,
+      "lng": -118.1676
+    },
+    "description": "After scoring the winning penalty kick to give the United States the Women’s World Cup title, Brandi Chastain celebrated with one of the most iconic moments in soccer history."
+  },
+  {
+    "id": "2008-the-helmet-catch",
+    "title": "The Helmet Catch",
+    "imageUrl": "/rounds/2008-the-helmet-catch.png",
+    "level": "Easy",
+    "actualYear": 2008,
+    "actualMonth": "February",
+    "actualDay": 3,
+    "actualLocation": {
+      "name": "University of Phoenix Stadium",
+      "city": "Glendale, Arizona",
+      "country": "United States",
+      "lat": 33.5276,
+      "lng": -112.2626
+    },
+    "description": "Eli Manning escaped multiple defenders before launching a desperate pass to David Tyree, who pinned the ball against his helmet for one of the greatest catches in Super Bowl history during the Giants’ upset over the Patriots."
+  },
+  {
+    "id": "1991-magic-johnson-announces-he-has-hiv",
+    "title": "Magic Johnson Announces He Has HIV",
+    "imageUrl": "/rounds/1991-magic-johnson-announces-he-has-hiv.png",
+    "level": "Brutal",
+    "actualYear": 1991,
+    "actualMonth": "November",
+    "actualDay": 7,
+    "actualLocation": {
+      "name": "The Forum",
+      "city": "Inglewood, California",
+      "country": "United States",
+      "lat": 33.958,
+      "lng": -118.3417
+    },
+    "description": "Magic Johnson shocked the sports world by announcing he had tested positive for HIV, leading to his immediate retirement from the NBA and transforming public awareness around the disease. show name \"Magic Johnson\" name on front pedastal"
+  },
+  {
+    "id": "2004-malice-at-the-palace",
+    "title": "Malice at the Palace",
+    "imageUrl": "/rounds/2004-malice-at-the-palace.png",
+    "level": "Medium",
+    "actualYear": 2004,
+    "actualMonth": "November",
+    "actualDay": 19,
+    "actualLocation": {
+      "name": "The Palace of Auburn Hills",
+      "city": "Auburn Hills, Michigan",
+      "country": "United States",
+      "lat": 42.6969,
+      "lng": -83.2455
+    },
+    "description": "A late-game altercation between the Indiana Pacers and Detroit Pistons escalated into a massive brawl involving players and fans, creating one of the most infamous incidents in NBA history."
+  },
+  {
+    "id": "2003-the-steve-bartman-incident",
+    "title": "The Steve Bartman Incident",
+    "imageUrl": "/rounds/2003-the-steve-bartman-incident.png",
+    "level": "Medium",
+    "actualYear": 2003,
+    "actualMonth": "October",
+    "actualDay": 14,
+    "actualLocation": {
+      "name": "Wrigley Field",
+      "city": "Chicago, Illinois",
+      "country": "United States",
+      "lat": 41.9484,
+      "lng": -87.6553
+    },
+    "description": "Cubs fan Steve Bartman unintentionally interfered with a foul ball during Game 6 of the NLCS, becoming one of the most infamous moments in baseball history as Chicago’s collapse continued."
+  },
+  {
+    "id": "2008-cristiano-ronaldo-wins-his-first-ballon-d-or",
+    "title": "Cristiano Ronaldo Wins His First Ballon d’Or",
+    "imageUrl": "/rounds/2008-cristiano-ronaldo-wins-his-first-ballon-d-or.png",
+    "level": "Brutal",
+    "actualYear": 2008,
+    "actualMonth": "December",
+    "actualDay": 2,
+    "actualLocation": {
+      "name": "Pavillon d'Armenonville",
+      "city": "Paris",
+      "country": "France",
+      "lat": 48.879,
+      "lng": 2.2645
+    },
+    "description": "Cristiano Ronaldo captured the first Ballon d’Or of his career after a spectacular season with Manchester United, beginning an era of global dominance alongside Lionel Messi."
+  },
+  {
+    "id": "2015-jos-bautista-s-iconic-bat-flip",
+    "title": "José Bautista’s Iconic Bat Flip",
+    "imageUrl": "/rounds/2015-jos-bautista-s-iconic-bat-flip.png",
+    "level": "Medium",
+    "actualYear": 2015,
+    "actualMonth": "October",
+    "actualDay": 14,
+    "actualLocation": {
+      "name": "Rogers Centre",
+      "city": "Toronto, Ontario",
+      "country": "Canada",
+      "lat": 43.6414,
+      "lng": -79.3894
+    },
+    "description": "José Bautista launched a dramatic three-run homer against the Texas Rangers and unleashed an unforgettable bat flip that became one of baseball’s defining postseason celebrations."
   }
 ];

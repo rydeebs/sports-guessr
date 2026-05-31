@@ -69,7 +69,13 @@ input {
 .game-brand-logo {
   display: block;
   height: auto;
+  opacity: 0.82;
+  transition: opacity 160ms ease;
   width: clamp(11rem, 20vw, 19rem);
+}
+
+.game-brand-logo:hover {
+  opacity: 0.96;
 }
 
 .panorama-scene {
@@ -852,9 +858,9 @@ input {
 .mg-popup-reopen {
   align-items: stretch;
   border: 0;
-  border-radius: 0;
-  bottom: 84px;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
+  border-radius: 999px;
+  bottom: 1.5rem;
+  box-shadow: 0 0.75rem 1.7rem rgba(0, 0, 0, 0.28);
   color: #fff;
   cursor: pointer;
   display: flex;
@@ -863,7 +869,7 @@ input {
   font-size: 11px;
   font-weight: 700;
   height: 40px;
-  left: 24px;
+  left: 1.5rem;
   letter-spacing: 0.12em;
   opacity: 0;
   overflow: hidden;
@@ -903,10 +909,14 @@ input {
 
 .mg-popup-reopen-label {
   align-items: center;
-  background: #16181c;
+  background: rgba(7, 18, 31, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.36);
+  border-left: 0;
+  backdrop-filter: blur(18px);
   color: #fff;
   display: flex;
   padding: 0 16px;
+  text-shadow: 0 0.18rem 0.55rem rgba(0, 0, 0, 0.72);
 }
 
 @media (max-width: 760px) {

@@ -166,7 +166,7 @@ export default function Home() {
   return (
     <GameLayout isDimmed={welcomeOpen} round={round}>
       <header className="game-header pointer-events-none absolute inset-x-0 top-0 z-20 flex items-start justify-between gap-3 p-3 sm:gap-4 sm:p-6">
-        <div className="game-brand pointer-events-auto rounded-[1rem] bg-white/90 px-3 py-2 shadow-2xl backdrop-blur-md sm:rounded-[1.25rem] sm:px-4 sm:py-3">
+        <div className="game-brand pointer-events-auto">
           <img
             alt="Moment Guessr"
             className="game-brand-logo"
