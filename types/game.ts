@@ -10,11 +10,14 @@ export type RoundLocation = LocationPoint & {
   country: string;
 };
 
+export type RoundLevel = "Easy" | "Medium" | "Hard" | "Brutal";
+
 export type Round = {
   id: string;
   title: string;
   imageUrl: string;
   initialPanoramaYaw?: number;
+  level?: RoundLevel;
   actualYear: number;
   actualMonth: string;
   actualDay: number;
