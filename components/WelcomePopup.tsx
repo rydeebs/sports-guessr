@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 
 type WelcomePopupProps = {
   isOpen: boolean;
+  isAccountUser: boolean;
   onClose: () => void;
+  onCreateAccount: () => void;
   onOpen: () => void;
 };
 
@@ -77,7 +79,13 @@ function Headline({ text }: { text: string }) {
   );
 }
 
-export function WelcomePopup({ isOpen, onClose, onOpen }: WelcomePopupProps) {
+export function WelcomePopup({
+  isOpen,
+  isAccountUser,
+  onClose,
+  onCreateAccount,
+  onOpen,
+}: WelcomePopupProps) {
   const [mode, setMode] = useState<"create" | "signin">("create");
   const [showAccount, setShowAccount] = useState(false);
   const [email, setEmail] = useState("");
@@ -101,6 +109,12 @@ export function WelcomePopup({ isOpen, onClose, onOpen }: WelcomePopupProps) {
     setHasError(false);
   };
 
+  const completeAccount = () => {
+    setHasError(false);
+    onCreateAccount();
+    onClose();
+  };
+
   const submitAccount = () => {
     const validEmail = /.+@.+\..+/.test(email);
     const validPassword = password.length > 0;
@@ -110,20 +124,21 @@ export function WelcomePopup({ isOpen, onClose, onOpen }: WelcomePopupProps) {
       return;
     }
 
-    setHasError(false);
-    onClose();
+    completeAccount();
   };
 
   return (
     <>
-      <button
-        className={`mg-popup-reopen${isOpen ? "" : " mg-popup-reopen-show"}`}
-        onClick={onOpen}
-        type="button"
-      >
-        <span className="mg-popup-reopen-icon" />
-        <span className="mg-popup-reopen-label">Sign in &amp; track stats</span>
-      </button>
+      {!isAccountUser ? (
+        <button
+          className={`mg-popup-reopen${isOpen ? "" : " mg-popup-reopen-show"}`}
+          onClick={onOpen}
+          type="button"
+        >
+          <span className="mg-popup-reopen-icon" />
+          <span className="mg-popup-reopen-label">Sign in &amp; track stats</span>
+        </button>
+      ) : null}
 
       <div
         className={`mg-popup-backdrop${isOpen ? " mg-popup-backdrop-show" : ""}`}
@@ -146,7 +161,18 @@ export function WelcomePopup({ isOpen, onClose, onOpen }: WelcomePopupProps) {
           </button>
 
           <div className="mg-popup-left">
-            <div className="mg-popup-left-image" />
+            <video
+              aria-label="Moment Guessr intro video"
+              autoPlay
+              className="mg-popup-left-video"
+              loop
+              muted
+              playsInline
+              poster="/moment-popup/game-bg.png"
+              preload="metadata"
+            >
+              <source src="/moment-popup/intro.mp4" type="video/mp4" />
+            </video>
             <div className="mg-popup-video-shade" />
             <div className="mg-popup-corner">
               <span className="mg-popup-live-dot" />
@@ -227,7 +253,7 @@ export function WelcomePopup({ isOpen, onClose, onOpen }: WelcomePopupProps) {
                   <div className="mg-popup-oauth">
                     <button
                       className="mg-popup-button mg-popup-oauth-button"
-                      onClick={submitAccount}
+                      onClick={completeAccount}
                       type="button"
                     >
                       <GoogleMark />
@@ -235,7 +261,7 @@ export function WelcomePopup({ isOpen, onClose, onOpen }: WelcomePopupProps) {
                     </button>
                     <button
                       className="mg-popup-button mg-popup-oauth-button"
-                      onClick={submitAccount}
+                      onClick={completeAccount}
                       type="button"
                     >
                       <AppleMark />

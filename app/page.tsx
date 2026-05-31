@@ -21,6 +21,7 @@ const ROUND_SECONDS = 60;
 const blankGuess: Guess = { day: null, month: null, year: null, location: null };
 const DAY_COUNT = 6;
 const ROUNDS_PER_GAME = 5;
+const ACCOUNT_STORAGE_KEY = "momentguessr-account-user";
 
 export default function Home() {
   const [roundIndex, setRoundIndex] = useState(0);
@@ -30,6 +31,7 @@ export default function Home() {
   const [isDailyComplete, setIsDailyComplete] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(ROUND_SECONDS);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [isAccountUser, setIsAccountUser] = useState(false);
   const [welcomeOpen, setWelcomeOpen] = useState(true);
   const [activeDate, setActiveDate] = useState(getLocalDateKey(new Date()));
   const [dailyHistory, setDailyHistory] = useState<DailyScoreHistory[]>([]);
@@ -40,6 +42,12 @@ export default function Home() {
 
   useEffect(() => {
     setDailyHistory(readDailyHistory());
+    const storedAccountState = window.localStorage.getItem(ACCOUNT_STORAGE_KEY);
+
+    if (storedAccountState === "true") {
+      setIsAccountUser(true);
+      setWelcomeOpen(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -125,6 +133,12 @@ export default function Home() {
     resetRoundState();
   };
 
+  const markAccountUser = () => {
+    window.localStorage.setItem(ACCOUNT_STORAGE_KEY, "true");
+    setIsAccountUser(true);
+    setSettingsOpen(false);
+  };
+
   if (isDailyComplete) {
     return (
       <DailySummary
@@ -152,10 +166,12 @@ export default function Home() {
   return (
     <GameLayout isDimmed={welcomeOpen} round={round}>
       <header className="game-header pointer-events-none absolute inset-x-0 top-0 z-20 flex items-start justify-between gap-3 p-3 sm:gap-4 sm:p-6">
-        <div className="game-brand pointer-events-auto glass-dark rounded-[1.25rem] px-3 py-2 shadow-2xl sm:rounded-[1.5rem] sm:px-4 sm:py-3">
-          <p className="font-serif text-lg leading-none text-white sm:text-xl">
-            Guess that Play
-          </p>
+        <div className="game-brand pointer-events-auto rounded-[1rem] bg-white/90 px-3 py-2 shadow-2xl backdrop-blur-md sm:rounded-[1.25rem] sm:px-4 sm:py-3">
+          <img
+            alt="Moment Guessr"
+            className="game-brand-logo"
+            src="/moment-popup/logo.png"
+          />
         </div>
         <div className="game-timer pointer-events-auto absolute left-1/2 top-3 -translate-x-1/2 sm:top-6">
           <Timer secondsLeft={secondsLeft} totalSeconds={ROUND_SECONDS} />
@@ -169,15 +185,17 @@ export default function Home() {
         </div>
       </header>
 
-      <div className="game-settings pointer-events-auto absolute bottom-3 left-3 z-20 sm:bottom-6 sm:left-6">
-        <button
-          className="glass-control rounded-full px-4 py-2.5 font-sans text-xs font-black uppercase text-white shadow-2xl transition sm:px-5 sm:py-3 sm:text-sm"
-          onClick={() => setSettingsOpen(true)}
-          type="button"
-        >
-          Settings
-        </button>
-      </div>
+      {isAccountUser ? (
+        <div className="game-settings pointer-events-auto absolute bottom-3 left-3 z-20 sm:bottom-6 sm:left-6">
+          <button
+            className="glass-control rounded-full px-4 py-2.5 font-sans text-xs font-black uppercase text-white shadow-2xl transition sm:px-5 sm:py-3 sm:text-sm"
+            onClick={() => setSettingsOpen(true)}
+            type="button"
+          >
+            Settings
+          </button>
+        </div>
+      ) : null}
 
       <div className="game-submit pointer-events-auto absolute bottom-3 right-3 z-20 sm:bottom-6 sm:right-6">
         <button
@@ -218,7 +236,9 @@ export default function Home() {
       />
       <WelcomePopup
         isOpen={welcomeOpen}
+        isAccountUser={isAccountUser}
         onClose={() => setWelcomeOpen(false)}
+        onCreateAccount={markAccountUser}
         onOpen={() => setWelcomeOpen(true)}
       />
     </GameLayout>

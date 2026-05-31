@@ -66,6 +66,12 @@ input {
     linear-gradient(145deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.2));
 }
 
+.game-brand-logo {
+  display: block;
+  height: auto;
+  width: clamp(11rem, 20vw, 19rem);
+}
+
 .panorama-scene {
   background:
     radial-gradient(circle at center, rgba(26, 48, 70, 0.42), transparent 55%),
@@ -341,19 +347,24 @@ input {
   width: 46%;
 }
 
-.mg-popup-left-image {
+.mg-popup-left-video {
   background: url("/moment-popup/game-bg.png") center / cover no-repeat;
+  height: 100%;
   inset: 0;
+  object-fit: cover;
   position: absolute;
+  width: 100%;
 }
 
-.mg-popup-left-image::after {
+.mg-popup-left::after {
   background:
     radial-gradient(circle at 35% 24%, rgba(255, 255, 255, 0.14), transparent 26%),
     linear-gradient(180deg, transparent 58%, rgba(18, 20, 24, 0.52));
   content: "";
   inset: 0;
+  pointer-events: none;
   position: absolute;
+  z-index: 1;
 }
 
 .mg-popup-video-shade {
@@ -1083,9 +1094,8 @@ input {
     align-items: flex-start;
   }
 
-  .game-brand p {
-    max-width: 7.5rem;
-    overflow-wrap: break-word;
+  .game-brand-logo {
+    width: clamp(8.2rem, 30vw, 11rem);
   }
 
   .timer-shell {
@@ -1258,8 +1268,8 @@ input {
 }
 
 @media (max-width: 380px) {
-  .game-brand p {
-    max-width: 6.25rem;
+  .game-brand-logo {
+    width: 7.4rem;
   }
 
   .timer-shell {
