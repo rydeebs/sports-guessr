@@ -69,9 +69,9 @@ input {
 .game-brand-logo {
   display: block;
   height: auto;
-  opacity: 0.82;
+  opacity: 0.78;
   transition: opacity 160ms ease;
-  width: clamp(11rem, 20vw, 19rem);
+  width: clamp(7.5rem, 12vw, 11rem);
 }
 
 .game-brand-logo:hover {
@@ -859,7 +859,7 @@ input {
   align-items: stretch;
   border: 0;
   border-radius: 999px;
-  bottom: 1.5rem;
+  bottom: 0.5rem;
   box-shadow: 0 0.75rem 1.7rem rgba(0, 0, 0, 0.28);
   color: #fff;
   cursor: pointer;
@@ -869,7 +869,7 @@ input {
   font-size: 11px;
   font-weight: 700;
   height: 40px;
-  left: 1.5rem;
+  left: 0.5rem;
   letter-spacing: 0.12em;
   opacity: 0;
   overflow: hidden;
@@ -1213,9 +1213,13 @@ input {
     padding: 0.36rem 0.62rem;
   }
 
-  .game-settings,
   .game-submit {
     bottom: 1.35rem;
+  }
+
+  .game-settings {
+    bottom: 0.5rem;
+    left: 0.5rem;
   }
 
   .game-submit button {
