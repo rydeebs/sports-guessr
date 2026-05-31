@@ -162,7 +162,7 @@ input {
     inset 0 -0.7rem 1.8rem rgba(255, 255, 255, 0.1),
     0 0.85rem 2rem rgba(0, 0, 0, 0.18);
   backdrop-filter: blur(24px) saturate(145%);
-  height: 7.65rem;
+  height: 7.25rem;
   min-width: 0;
   overflow: hidden;
   position: relative;
@@ -215,7 +215,7 @@ input {
   background: rgba(255, 255, 255, 0.18);
   border-block: 1px solid rgba(255, 255, 255, 0.62);
   box-shadow: 0 0 1rem rgba(255, 255, 255, 0.2);
-  height: 2rem;
+  height: 32px;
   left: 0;
   pointer-events: none;
   position: absolute;
@@ -226,11 +226,11 @@ input {
 }
 
 .date-wheel-option {
-  height: 2rem;
+  height: 32px;
 }
 
 .date-wheel-spacer {
-  height: 2.8rem;
+  height: 42px;
 }
 
 .date-wheel-option {
@@ -1139,7 +1139,7 @@ input {
 
   .date-wheel-frame {
     border-radius: 0.8rem;
-    height: 6.75rem;
+    height: 6.5rem;
   }
 
   .date-wheel-frame-month {
@@ -1155,11 +1155,11 @@ input {
   }
 
   .date-wheel-spacer {
-    height: 2.35rem;
+    height: 36px;
   }
 
   .date-wheel-option {
-    height: 2rem;
+    height: 32px;
   }
 
   .date-wheel-option {
