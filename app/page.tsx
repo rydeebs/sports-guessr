@@ -8,6 +8,7 @@ import { RoundResultView } from "@/components/RoundResultView";
 import { ScoreDisplay } from "@/components/ScoreDisplay";
 import { SettingsModal } from "@/components/SettingsModal";
 import { Timer } from "@/components/Timer";
+import { WelcomePopup } from "@/components/WelcomePopup";
 import { YearSlider } from "@/components/YearSlider";
 import { getAvailableDailyDates } from "@/data/dailyGames";
 import { rounds } from "@/data/rounds";
@@ -29,7 +30,7 @@ export default function Home() {
   const [isDailyComplete, setIsDailyComplete] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(ROUND_SECONDS);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [isDimmed] = useState(false);
+  const [welcomeOpen, setWelcomeOpen] = useState(true);
   const [activeDate, setActiveDate] = useState(getLocalDateKey(new Date()));
   const [dailyHistory, setDailyHistory] = useState<DailyScoreHistory[]>([]);
   const [gameRounds, setGameRounds] = useState(() =>
@@ -149,7 +150,7 @@ export default function Home() {
   }
 
   return (
-    <GameLayout isDimmed={isDimmed} round={round}>
+    <GameLayout isDimmed={welcomeOpen} round={round}>
       <header className="game-header pointer-events-none absolute inset-x-0 top-0 z-20 flex items-start justify-between gap-3 p-3 sm:gap-4 sm:p-6">
         <div className="game-brand pointer-events-auto glass-dark rounded-[1.25rem] px-3 py-2 shadow-2xl sm:rounded-[1.5rem] sm:px-4 sm:py-3">
           <p className="font-serif text-lg leading-none text-white sm:text-xl">
@@ -214,6 +215,11 @@ export default function Home() {
         history={dailyHistory}
         isOpen={settingsOpen}
         onClose={() => setSettingsOpen(false)}
+      />
+      <WelcomePopup
+        isOpen={welcomeOpen}
+        onClose={() => setWelcomeOpen(false)}
+        onOpen={() => setWelcomeOpen(true)}
       />
     </GameLayout>
   );
