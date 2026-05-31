@@ -186,7 +186,7 @@ export default function Home() {
       </header>
 
       {isAccountUser ? (
-        <div className="game-settings pointer-events-auto absolute bottom-2 left-2 z-20 sm:bottom-2 sm:left-2">
+        <div className="game-settings pointer-events-auto absolute bottom-3 left-3 z-20 sm:bottom-6 sm:left-6">
           <button
             className="glass-control rounded-full px-4 py-2.5 font-sans text-xs font-black uppercase text-white shadow-2xl transition sm:px-5 sm:py-3 sm:text-sm"
             onClick={() => setSettingsOpen(true)}

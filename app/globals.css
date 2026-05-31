@@ -71,7 +71,7 @@ input {
   height: auto;
   opacity: 0.78;
   transition: opacity 160ms ease;
-  width: clamp(7.5rem, 12vw, 11rem);
+  width: clamp(4.75rem, 8vw, 7rem);
 }
 
 .game-brand-logo:hover {
@@ -859,7 +859,7 @@ input {
   align-items: stretch;
   border: 0;
   border-radius: 999px;
-  bottom: 0.5rem;
+  bottom: 1.5rem;
   box-shadow: 0 0.75rem 1.7rem rgba(0, 0, 0, 0.28);
   color: #fff;
   cursor: pointer;
@@ -869,7 +869,7 @@ input {
   font-size: 11px;
   font-weight: 700;
   height: 40px;
-  left: 0.5rem;
+  left: 1.5rem;
   letter-spacing: 0.12em;
   opacity: 0;
   overflow: hidden;
@@ -1105,7 +1105,7 @@ input {
   }
 
   .game-brand-logo {
-    width: clamp(8.2rem, 30vw, 11rem);
+    width: clamp(4.25rem, 20vw, 5.75rem);
   }
 
   .timer-shell {
@@ -1218,8 +1218,7 @@ input {
   }
 
   .game-settings {
-    bottom: 0.5rem;
-    left: 0.5rem;
+    bottom: 1.35rem;
   }
 
   .game-submit button {
@@ -1283,7 +1282,7 @@ input {
 
 @media (max-width: 380px) {
   .game-brand-logo {
-    width: 7.4rem;
+    width: 4rem;
   }
 
   .timer-shell {
