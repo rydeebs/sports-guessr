@@ -1182,13 +1182,8 @@ input {
     z-index: 24;
   }
 
-  .game-brand-logo {
-    width: 100%;
-  }
-
   .game-brand {
-    height: 2.75rem;
-    width: clamp(9.5rem, 38vw, 13rem);
+    display: none;
   }
 
   .timer-shell {
@@ -1207,11 +1202,11 @@ input {
   }
 
   .score-display {
-    max-width: 5.8rem;
+    display: none;
   }
 
   .year-dock {
-    bottom: 0.75rem;
+    bottom: 1.9rem;
     justify-content: flex-start;
     left: 0.75rem;
     padding-inline: 0;
@@ -1273,7 +1268,7 @@ input {
   }
 
   .map-dock {
-    bottom: 0.75rem;
+    bottom: 1.9rem;
     right: 0.75rem;
   }
 
@@ -1307,7 +1302,7 @@ input {
   }
 
   .game-submit {
-    bottom: 6.45rem;
+    bottom: 7.6rem;
     right: 0.75rem;
   }
 
@@ -1379,15 +1374,6 @@ input {
 }
 
 @media (max-width: 380px) {
-  .game-brand-logo {
-    width: 100%;
-  }
-
-  .game-brand {
-    height: 2.75rem;
-    width: 9rem;
-  }
-
   .timer-shell {
     min-width: 5rem;
   }
@@ -1396,13 +1382,9 @@ input {
     font-size: 1.45rem;
   }
 
-  .score-display {
-    max-width: 5.15rem;
-    padding-inline: 0.55rem;
-  }
-
   .year-dock {
-    width: calc(100vw - 9.05rem);
+    bottom: 1.55rem;
+    width: calc(100vw - 8.45rem);
   }
 
   .date-wheel-panel {
@@ -1431,6 +1413,14 @@ input {
   }
 
   .map-preview {
-    width: 7.1rem;
+    width: 6.65rem;
+  }
+
+  .map-dock {
+    bottom: 1.55rem;
+  }
+
+  .game-submit {
+    bottom: 7.25rem;
   }
 }
