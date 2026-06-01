@@ -388,6 +388,19 @@ input {
   width: min(34rem, calc(100vw - 2rem));
 }
 
+.result-brand {
+  align-items: center;
+  max-width: min(28rem, calc(100vw - 1.5rem));
+}
+
+.result-brand-logo {
+  display: block;
+  height: clamp(1.3rem, 3.3vw, 2.25rem);
+  object-fit: contain;
+  object-position: left center;
+  width: min(22rem, calc(100vw - 3.25rem));
+}
+
 .mg-popup-backdrop {
   --mg-accent: #e60000;
   --mg-accent-dark: #b30000;
@@ -1375,6 +1388,16 @@ input {
     align-items: flex-end;
     justify-content: center;
     padding: 0.55rem;
+  }
+
+  .result-brand {
+    border-radius: 0.95rem;
+    padding: 0.45rem 0.6rem;
+  }
+
+  .result-brand-logo {
+    height: 1.15rem;
+    width: min(12.5rem, calc(100vw - 2.65rem));
   }
 
   .result-panel {

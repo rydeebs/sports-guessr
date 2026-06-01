@@ -135,8 +135,12 @@ export function RoundResultView({
         </div>
       ) : null}
       <div className="pointer-events-none absolute inset-x-0 top-0 z-20 p-3 sm:p-6">
-        <div className="pointer-events-auto glass-dark inline-block rounded-[1.25rem] px-3 py-2 font-serif text-lg text-white shadow-2xl sm:rounded-[1.5rem] sm:px-4 sm:py-3 sm:text-2xl">
-          Guess that Play
+        <div className="result-brand pointer-events-auto glass-dark inline-flex rounded-[1.25rem] px-3 py-2 shadow-2xl sm:rounded-[1.5rem] sm:px-4 sm:py-3">
+          <img
+            alt="Moment Guessr"
+            className="result-brand-logo"
+            src="/moment-popup/logo-popup-attached.png"
+          />
         </div>
       </div>
       <div className="round-result-panel-wrap pointer-events-none absolute inset-y-0 right-0 z-20 flex w-full items-center justify-end p-3 sm:p-6">
