@@ -230,7 +230,9 @@ export default function Home() {
 
       <div className="game-submit pointer-events-auto absolute bottom-3 right-3 z-20 sm:bottom-6 sm:right-6">
         <button
-          className="glass-control rounded-full px-5 py-2.5 font-sans text-xs font-black uppercase text-white shadow-2xl transition disabled:cursor-not-allowed disabled:opacity-45 sm:px-7 sm:py-3 sm:text-sm"
+          className={`glass-control rounded-full px-5 py-2.5 font-sans text-xs font-black uppercase text-white shadow-2xl transition disabled:cursor-not-allowed disabled:opacity-45 sm:px-7 sm:py-3 sm:text-sm ${
+            canSubmit ? "submit-ready" : ""
+          }`}
           disabled={!canSubmit}
           onClick={submitGuess}
           type="button"

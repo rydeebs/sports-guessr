@@ -120,6 +120,29 @@ input {
   }
 }
 
+.game-submit button.submit-ready:not(:disabled) {
+  animation: submit-border-pulse 1.35s ease-in-out infinite;
+  border-color: rgba(120, 183, 255, 0.95);
+}
+
+@keyframes submit-border-pulse {
+  0%,
+  100% {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.42),
+      0 0 0.45rem rgba(120, 183, 255, 0.45),
+      0 0.75rem 1.7rem rgba(0, 0, 0, 0.28);
+  }
+
+  50% {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.5),
+      0 0 1rem rgba(120, 183, 255, 0.9),
+      0 0 1.85rem rgba(36, 107, 255, 0.45),
+      0 0.75rem 1.7rem rgba(0, 0, 0, 0.28);
+  }
+}
+
 .panorama-scene {
   background:
     radial-gradient(circle at center, rgba(26, 48, 70, 0.42), transparent 55%),
@@ -1332,7 +1355,7 @@ input {
   }
 
   .game-submit {
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 12.7rem);
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 15.7rem);
     right: 0.75rem;
   }
 
@@ -1505,6 +1528,6 @@ input {
   }
 
   .game-submit {
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 12.25rem);
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 14.8rem);
   }
 }
