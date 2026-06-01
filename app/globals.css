@@ -68,24 +68,54 @@ input {
 
 .game-brand-logo {
   display: block;
-  height: auto;
+  height: 100%;
   opacity: 0.78;
-  position: absolute;
-  left: -1.67%;
-  top: -266%;
+  object-fit: contain;
+  object-position: left center;
   transition: opacity 160ms ease;
-  width: 102.6%;
+  width: 100%;
 }
 
 .game-brand {
-  aspect-ratio: 1559 / 133;
-  overflow: hidden;
-  position: relative;
-  width: clamp(9rem, 17vw, 15rem);
+  height: 3.65rem;
+  overflow: visible;
+  width: clamp(18rem, 32vw, 28.65rem);
 }
 
 .game-brand-logo:hover {
   opacity: 0.96;
+}
+
+.game-submit button:not(:disabled):hover {
+  animation: submit-blue-pulse 1.25s ease-in-out infinite;
+  background:
+    radial-gradient(circle at 24% 18%, rgba(120, 183, 255, 0.48), transparent 42%),
+    linear-gradient(135deg, #246bff 0%, #1876ff 48%, #78b7ff 100%);
+  border-color: rgba(120, 183, 255, 0.82);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.42),
+    0 0 1.1rem rgba(120, 183, 255, 0.72),
+    0 0 2.4rem rgba(36, 107, 255, 0.48),
+    0 0.9rem 1.9rem rgba(0, 0, 0, 0.34);
+}
+
+@keyframes submit-blue-pulse {
+  0%,
+  100% {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.42),
+      0 0 0.9rem rgba(120, 183, 255, 0.58),
+      0 0 2rem rgba(36, 107, 255, 0.38),
+      0 0.9rem 1.9rem rgba(0, 0, 0, 0.34);
+  }
+
+  50% {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.5),
+      0 0 1.45rem rgba(120, 183, 255, 0.9),
+      0 0 3.15rem rgba(36, 107, 255, 0.64),
+      0 1.05rem 2.15rem rgba(0, 0, 0, 0.36);
+  }
 }
 
 .panorama-scene {
@@ -1111,12 +1141,18 @@ input {
     align-items: flex-start;
   }
 
+  .game-timer {
+    top: 0.75rem;
+    z-index: 24;
+  }
+
   .game-brand-logo {
-    width: 102.6%;
+    width: 100%;
   }
 
   .game-brand {
-    width: clamp(7.5rem, 34vw, 10rem);
+    height: 2.75rem;
+    width: clamp(9.5rem, 38vw, 13rem);
   }
 
   .timer-shell {
@@ -1139,34 +1175,44 @@ input {
   }
 
   .year-dock {
-    bottom: 4.8rem;
-    padding-inline: 4.9rem;
+    bottom: 0.75rem;
+    justify-content: flex-start;
+    left: 0.75rem;
+    padding-inline: 0;
+    right: auto;
+    width: calc(100vw - 9.65rem);
+  }
+
+  .date-wheel-control {
+    width: 100%;
   }
 
   .date-wheel-panel {
-    gap: 0.42rem;
-    grid-template-columns: max-content max-content max-content;
+    gap: 0.32rem;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.72fr) minmax(0, 1fr);
+    width: 100%;
   }
 
   .date-wheel-frame {
     border-radius: 0.8rem;
-    height: 5.95rem;
+    height: 5.35rem;
+    width: auto;
   }
 
   .date-wheel-frame-month {
-    width: 7.5rem;
+    width: auto;
   }
 
   .date-wheel-frame-day {
-    width: 4rem;
+    width: auto;
   }
 
   .date-wheel-frame-year {
-    width: 5.5rem;
+    width: auto;
   }
 
   .date-wheel-spacer {
-    height: 34px;
+    height: 26px;
   }
 
   .date-wheel-option {
@@ -1174,12 +1220,12 @@ input {
   }
 
   .date-wheel-option {
-    font-size: 0.92rem;
+    font-size: 0.78rem;
     padding-inline: 0;
   }
 
   .date-wheel-option-selected {
-    font-size: 1.06rem;
+    font-size: 0.88rem;
   }
 
   .date-wheel-label-full {
@@ -1191,12 +1237,12 @@ input {
   }
 
   .map-dock {
-    bottom: 8.15rem;
+    bottom: 3.2rem;
     right: 0.75rem;
   }
 
   .map-preview {
-    width: min(7.4rem, calc(100vw - 1.5rem));
+    width: min(7.65rem, calc(100vw - 1.5rem));
   }
 
   .map-expanded {
@@ -1204,7 +1250,7 @@ input {
   }
 
   .world-map {
-    min-height: 4.1rem;
+    min-height: 3.95rem;
   }
 
   .map-expanded .world-map {
@@ -1225,15 +1271,20 @@ input {
   }
 
   .game-submit {
-    bottom: 1.35rem;
+    bottom: 0.75rem;
+    right: 0.75rem;
   }
 
   .game-settings {
-    bottom: 1.35rem;
+    display: none;
   }
 
   .game-submit button {
     padding-inline: 0.78rem;
+  }
+
+  .mg-popup-reopen {
+    display: none;
   }
 
   .round-result-panel-wrap {
@@ -1293,11 +1344,12 @@ input {
 
 @media (max-width: 380px) {
   .game-brand-logo {
-    width: 102.6%;
+    width: 100%;
   }
 
   .game-brand {
-    width: 6.8rem;
+    height: 2.75rem;
+    width: 9rem;
   }
 
   .timer-shell {
@@ -1314,30 +1366,35 @@ input {
   }
 
   .year-dock {
-    padding-inline: 4.35rem;
+    width: calc(100vw - 9.05rem);
   }
 
   .date-wheel-panel {
-    grid-template-columns: max-content max-content max-content;
+    gap: 0.26rem;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.72fr) minmax(0, 1fr);
   }
 
   .date-wheel-frame-month {
-    width: 7.5rem;
+    width: auto;
   }
 
   .date-wheel-frame-day {
-    width: 4rem;
+    width: auto;
   }
 
   .date-wheel-frame-year {
-    width: 5.5rem;
+    width: auto;
   }
 
   .date-wheel-option {
-    font-size: 0.84rem;
+    font-size: 0.72rem;
   }
 
   .date-wheel-option-selected {
-    font-size: 0.98rem;
+    font-size: 0.82rem;
+  }
+
+  .map-preview {
+    width: 7.1rem;
   }
 }
