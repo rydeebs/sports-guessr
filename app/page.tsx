@@ -155,18 +155,6 @@ export default function Home() {
     submitTimeout();
   }, [result, secondsLeft]);
 
-  useEffect(() => {
-    if (!result?.timedOut) {
-      return;
-    }
-
-    const timer = window.setTimeout(() => {
-      advanceRound();
-    }, 2400);
-
-    return () => window.clearTimeout(timer);
-  }, [result, roundIndex]);
-
   const startDay = (date: string) => {
     setActiveDate(date);
     setGameRounds(selectRandomRounds(rounds, ROUNDS_PER_GAME));

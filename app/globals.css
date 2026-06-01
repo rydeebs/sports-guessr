@@ -1062,6 +1062,14 @@ input {
   aspect-ratio: 2 / 1;
   background: #0c2a40;
   min-height: 8.25rem;
+  contain: paint;
+}
+
+.world-map > div {
+  height: 100% !important;
+  inset: 0 !important;
+  position: absolute !important;
+  width: 100% !important;
 }
 
 .sport-panel {
@@ -1226,7 +1234,7 @@ input {
   }
 
   .year-dock {
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 8rem);
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 7rem);
     justify-content: flex-start;
     left: 0.75rem;
     padding-inline: 0;
@@ -1288,7 +1296,7 @@ input {
   }
 
   .map-dock {
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 8rem);
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 7rem);
     right: 0.75rem;
   }
 
@@ -1301,10 +1309,12 @@ input {
   }
 
   .world-map {
-    min-height: 3.95rem;
+    aspect-ratio: 1 / 1;
+    min-height: 0;
   }
 
   .map-expanded .world-map {
+    aspect-ratio: 2 / 1;
     min-height: 10.6rem;
   }
 
@@ -1322,7 +1332,7 @@ input {
   }
 
   .game-submit {
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 13.7rem);
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 12.7rem);
     right: 0.75rem;
   }
 
@@ -1341,20 +1351,74 @@ input {
   .round-result-panel-wrap {
     align-items: flex-end;
     justify-content: center;
-    padding-bottom: 0.75rem;
+    padding: 0.55rem;
   }
 
   .result-panel {
-    max-height: 58vh;
-    overflow-y: auto;
+    border-radius: 1.05rem;
+    max-height: calc(100svh - 1.1rem);
+    overflow: hidden;
+    padding: 0.8rem;
+    width: min(26rem, calc(100vw - 1.1rem));
+  }
+
+  .result-panel > p:first-child {
+    font-size: 0.62rem;
+  }
+
+  .result-panel > p {
+    font-size: 0.72rem;
+    line-height: 1.25;
+    margin-top: 0.35rem;
   }
 
   .result-panel h2 {
-    font-size: 1.55rem;
+    font-size: 1.18rem;
+    margin-top: 0.3rem;
+  }
+
+  .result-panel h2 + p,
+  .result-panel h2 + p + p {
+    margin-top: 0.35rem;
+  }
+
+  .result-panel > div:first-of-type {
+    gap: 0.4rem;
+    margin-top: 0.55rem;
+  }
+
+  .result-panel > div:first-of-type > div {
+    border-radius: 0.82rem;
+    padding: 0.48rem;
+  }
+
+  .result-panel > div:first-of-type p:first-child {
+    font-size: 0.54rem;
+  }
+
+  .result-panel > div:first-of-type p:last-child {
+    font-size: 0.82rem;
+    margin-top: 0.2rem;
+  }
+
+  .result-panel > div:nth-of-type(2) {
+    border-radius: 0.9rem;
+    margin-top: 0.5rem;
+    padding: 0.65rem 0.8rem;
+  }
+
+  .result-panel > div:nth-of-type(2) p:first-child {
+    font-size: 0.58rem;
+  }
+
+  .result-panel > div:nth-of-type(2) p:last-child {
+    font-size: 1.75rem;
   }
 
   .result-panel button {
-    padding-block: 0.78rem;
+    font-size: 0.72rem;
+    margin-top: 0.65rem;
+    padding-block: 0.62rem;
   }
 
   .settings-sheet {
@@ -1403,7 +1467,7 @@ input {
   }
 
   .year-dock {
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 7.45rem);
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 6.55rem);
     width: calc(100vw - 8.45rem);
   }
 
@@ -1437,10 +1501,10 @@ input {
   }
 
   .map-dock {
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 7.45rem);
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 6.55rem);
   }
 
   .game-submit {
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 13.15rem);
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 12.25rem);
   }
 }
