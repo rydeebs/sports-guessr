@@ -189,7 +189,6 @@ export function PanoramaScene({
         alt=""
         className="panorama-fallback"
         fill
-        priority
         sizes="100vw"
         src={imageUrl}
         unoptimized

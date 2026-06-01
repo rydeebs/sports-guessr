@@ -252,7 +252,7 @@ export function GuessMap({
         tabIndex={0}
       />
       {mapStatus !== "ready" ? (
-        <div className="pointer-events-none absolute inset-2 grid place-items-center rounded-[1.1rem] bg-[#08131f]/72 p-4 text-center font-sans text-xs font-bold uppercase text-white">
+        <div className="pointer-events-none absolute inset-2 z-10 grid place-items-center rounded-[1.1rem] bg-[#08131f] p-4 text-center font-sans text-xs font-bold uppercase text-white">
           {mapStatus === "loading"
             ? "Loading Google Maps"
             : "Maps unavailable. Tap the map to place an approximate guess."}
