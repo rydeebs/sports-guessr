@@ -213,7 +213,7 @@ export default function Home() {
           <img
             alt="Moment Guessr"
             className="game-brand-logo"
-            src="/moment-popup/logo.png"
+            src="/moment-popup/logo-app-white.png"
           />
         </div>
         <div className="game-timer pointer-events-auto absolute left-1/2 top-3 -translate-x-1/2 sm:top-6">
