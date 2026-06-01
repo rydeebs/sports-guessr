@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { PointerEvent as ReactPointerEvent } from "react";
 import type { LocationPoint } from "@/types/game";
 import { getGoogleMapsErrorMessage, loadGoogleMaps } from "@/utils/googleMaps";
 
@@ -78,6 +79,26 @@ export function GuessMap({
       .catch(() => {
         onSelectRef.current(point);
       });
+  };
+
+  const selectFallbackLocation = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (disabled || mapStatus !== "error" || !mapRef.current) {
+      return;
+    }
+
+    if (isTouchViewport() && !isExpandedRef.current) {
+      setIsExpanded(true);
+      return;
+    }
+
+    const rect = mapRef.current.getBoundingClientRect();
+    const x = Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width));
+    const y = Math.min(1, Math.max(0, (event.clientY - rect.top) / rect.height));
+
+    onSelectRef.current({
+      lat: 85 - y * 170,
+      lng: x * 360 - 180,
+    });
   };
 
   useEffect(() => {
@@ -225,15 +246,16 @@ export function GuessMap({
             setIsExpanded(true);
           }
         }}
+        onPointerDown={selectFallbackLocation}
         ref={mapRef}
         role="button"
         tabIndex={0}
       />
       {mapStatus !== "ready" ? (
-        <div className="pointer-events-none absolute inset-2 grid place-items-center rounded-[1.1rem] bg-[#08131f]/92 p-4 text-center font-sans text-xs font-bold uppercase text-white">
+        <div className="pointer-events-none absolute inset-2 grid place-items-center rounded-[1.1rem] bg-[#08131f]/72 p-4 text-center font-sans text-xs font-bold uppercase text-white">
           {mapStatus === "loading"
             ? "Loading Google Maps"
-            : mapError}
+            : "Maps unavailable. Tap the map to place an approximate guess."}
         </div>
       ) : null}
     </section>
