@@ -135,7 +135,7 @@ export function RoundResultView({
         </div>
       ) : null}
       <div className="pointer-events-none absolute inset-x-0 top-0 z-20 p-3 sm:p-6">
-        <div className="result-brand pointer-events-auto glass-dark inline-flex rounded-[1.25rem] px-3 py-2 shadow-2xl sm:rounded-[1.5rem] sm:px-4 sm:py-3">
+        <div className="result-brand pointer-events-auto inline-flex">
           <img
             alt="Moment Guessr"
             className="result-brand-logo"

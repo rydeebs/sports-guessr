@@ -390,15 +390,15 @@ input {
 
 .result-brand {
   align-items: center;
-  max-width: min(28rem, calc(100vw - 1.5rem));
+  max-width: min(18rem, calc(100vw - 1.5rem));
 }
 
 .result-brand-logo {
   display: block;
-  height: clamp(1.3rem, 3.3vw, 2.25rem);
+  height: clamp(0.9rem, 2.2vw, 1.45rem);
   object-fit: contain;
   object-position: left center;
-  width: min(22rem, calc(100vw - 3.25rem));
+  width: min(15rem, calc(100vw - 1.5rem));
 }
 
 .mg-popup-backdrop {
@@ -1391,13 +1391,12 @@ input {
   }
 
   .result-brand {
-    border-radius: 0.95rem;
-    padding: 0.45rem 0.6rem;
+    max-width: calc(100vw - 1.5rem);
   }
 
   .result-brand-logo {
-    height: 1.15rem;
-    width: min(12.5rem, calc(100vw - 2.65rem));
+    height: 0.88rem;
+    width: min(9.6rem, calc(100vw - 1.5rem));
   }
 
   .result-panel {
