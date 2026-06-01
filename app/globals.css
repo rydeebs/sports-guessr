@@ -1206,7 +1206,7 @@ input {
   }
 
   .year-dock {
-    bottom: 1.9rem;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 4.6rem);
     justify-content: flex-start;
     left: 0.75rem;
     padding-inline: 0;
@@ -1268,7 +1268,7 @@ input {
   }
 
   .map-dock {
-    bottom: 1.9rem;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 4.6rem);
     right: 0.75rem;
   }
 
@@ -1302,7 +1302,7 @@ input {
   }
 
   .game-submit {
-    bottom: 7.6rem;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 10.3rem);
     right: 0.75rem;
   }
 
@@ -1383,7 +1383,7 @@ input {
   }
 
   .year-dock {
-    bottom: 1.55rem;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 4.25rem);
     width: calc(100vw - 8.45rem);
   }
 
@@ -1417,10 +1417,10 @@ input {
   }
 
   .map-dock {
-    bottom: 1.55rem;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 4.25rem);
   }
 
   .game-submit {
-    bottom: 7.25rem;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 9.95rem);
   }
 }
