@@ -6,7 +6,7 @@ import { ResultPanel } from "@/components/ResultPanel";
 import { getGoogleMapsErrorMessage, loadGoogleMaps } from "@/utils/googleMaps";
 
 type RoundResultViewProps = {
-  guessLocation: LocationPoint;
+  guessLocation: LocationPoint | null;
   isLastRound: boolean;
   onNextRound: () => void;
   result: ScoreResult;
@@ -53,11 +53,13 @@ export function RoundResultView({
           lng: round.actualLocation.lng,
         };
 
-        guessMarker = new Marker({
-          map,
-          position: guessLocation,
-          title: "Your guess",
-        });
+        guessMarker = guessLocation
+          ? new Marker({
+              map,
+              position: guessLocation,
+              title: "Your guess",
+            })
+          : null;
         answerMarker = new Marker({
           icon: {
             fillColor: "#246bff",
@@ -71,17 +73,21 @@ export function RoundResultView({
           position: actualPoint,
           title: round.actualLocation.name,
         });
-        connector = new Polyline({
-          geodesic: true,
-          map,
-          path: [guessLocation, actualPoint],
-          strokeColor: "#0d1a26",
-          strokeOpacity: 0.92,
-          strokeWeight: 3,
-        });
+        connector = guessLocation
+          ? new Polyline({
+              geodesic: true,
+              map,
+              path: [guessLocation, actualPoint],
+              strokeColor: "#0d1a26",
+              strokeOpacity: 0.92,
+              strokeWeight: 3,
+            })
+          : null;
 
         const bounds = new LatLngBounds();
-        bounds.extend(guessLocation);
+        if (guessLocation) {
+          bounds.extend(guessLocation);
+        }
         bounds.extend(actualPoint);
 
         if (bounds.getNorthEast().equals(bounds.getSouthWest())) {

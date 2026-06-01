@@ -21,6 +21,11 @@ export function ResultPanel({
       <h2 className="mt-2 font-serif text-2xl leading-tight text-[#07111d] sm:text-3xl">
         {round.title}
       </h2>
+      {result.timedOut ? (
+        <p className="mt-2 rounded-full bg-[#fee2e2] px-3 py-1.5 font-sans text-xs font-black uppercase text-[#b91c1c]">
+          Time expired
+        </p>
+      ) : null}
       <p className="mt-2 font-sans text-sm text-[#465251]">
         {round.actualLocation.name}, {round.actualLocation.city},{" "}
         {round.actualLocation.country} · {formatRoundDate(round)}
@@ -28,11 +33,18 @@ export function ResultPanel({
       <div className="mt-4 grid grid-cols-2 gap-2 font-sans sm:mt-5 sm:gap-2.5">
         <ResultStat
           label="Distance error"
-          value={`${result.distanceMiles.toLocaleString(undefined, {
-            maximumFractionDigits: 1,
-          })} mi`}
+          value={
+            result.timedOut
+              ? "No guess"
+              : `${result.distanceMiles.toLocaleString(undefined, {
+                  maximumFractionDigits: 1,
+                })} mi`
+          }
         />
-        <ResultStat label="Year error" value={`${result.yearError} yr`} />
+        <ResultStat
+          label="Year error"
+          value={result.timedOut ? "No guess" : `${result.yearError} yr`}
+        />
       </div>
       <div className="mt-3 rounded-[1.2rem] bg-[#1f2934] px-4 py-3 text-white sm:rounded-[1.35rem] sm:py-4">
         <p className="font-sans text-xs font-bold uppercase text-[#78b7ff]">

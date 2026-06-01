@@ -39,4 +39,5 @@ export type ScoreResult = {
   locationScore: number;
   yearScore: number;
   roundScore: number;
+  timedOut?: boolean;
 };

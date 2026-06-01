@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { GameLayout } from "@/components/GameLayout";
 import { DailySummary } from "@/components/DailySummary";
 import { GuessMap } from "@/components/GuessMap";
@@ -35,6 +35,7 @@ export default function Home() {
   const [welcomeOpen, setWelcomeOpen] = useState(true);
   const [activeDate, setActiveDate] = useState(getLocalDateKey(new Date()));
   const [dailyHistory, setDailyHistory] = useState<DailyScoreHistory[]>([]);
+  const timeoutHandledRef = useRef(false);
   const [gameRounds, setGameRounds] = useState(() =>
     selectRandomRounds(rounds, ROUNDS_PER_GAME),
   );
@@ -103,12 +104,34 @@ export default function Home() {
       return;
     }
 
+    timeoutHandledRef.current = true;
     const scoredGuess = scoreGuess(round, guess);
     setResult(scoredGuess);
     setScoreHistory((history) => [...history, scoredGuess]);
   };
 
+  const submitTimeout = () => {
+    if (timeoutHandledRef.current) {
+      return;
+    }
+
+    timeoutHandledRef.current = true;
+    const timedOutScore: ScoreResult = {
+      countryMatch: false,
+      distanceMiles: 0,
+      locationScore: 0,
+      roundScore: 0,
+      timedOut: true,
+      yearError: 0,
+      yearScore: 0,
+    };
+
+    setResult(timedOutScore);
+    setScoreHistory((history) => [...history, timedOutScore]);
+  };
+
   const resetRoundState = () => {
+    timeoutHandledRef.current = false;
     setGuess(blankGuess);
     setResult(null);
     setSecondsLeft(ROUND_SECONDS);
@@ -123,6 +146,26 @@ export default function Home() {
     setRoundIndex((index) => index + 1);
     resetRoundState();
   };
+
+  useEffect(() => {
+    if (secondsLeft !== 0 || result) {
+      return;
+    }
+
+    submitTimeout();
+  }, [result, secondsLeft]);
+
+  useEffect(() => {
+    if (!result?.timedOut) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      advanceRound();
+    }, 2400);
+
+    return () => window.clearTimeout(timer);
+  }, [result, roundIndex]);
 
   const startDay = (date: string) => {
     setActiveDate(date);
@@ -151,7 +194,7 @@ export default function Home() {
     );
   }
 
-  if (result && guess.location) {
+  if (result) {
     return (
       <RoundResultView
         guessLocation={guess.location}

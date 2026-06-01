@@ -8,11 +8,14 @@ export function Timer({ secondsLeft, totalSeconds }: TimerProps) {
   const seconds = secondsLeft % 60;
   const progress = Math.min(1, Math.max(0, secondsLeft / totalSeconds));
   const dashLength = 1000;
+  const isUrgent = secondsLeft <= 10 && secondsLeft > 0;
 
   return (
     <div
       aria-live="polite"
-      className="timer-shell relative grid place-items-center"
+      className={`timer-shell relative grid place-items-center ${
+        isUrgent ? "timer-shell-urgent" : ""
+      }`}
     >
       <svg
         aria-hidden="true"
