@@ -11,6 +11,11 @@ export const createClient = async (request: NextRequest) => {
     },
   });
 
+  if (!supabaseUrl || !supabaseKey) {
+    console.warn("Supabase middleware skipped: missing public env vars.");
+    return supabaseResponse;
+  }
+
   const supabase = createServerClient(supabaseUrl!, supabaseKey!, {
     cookies: {
       getAll() {
@@ -30,7 +35,11 @@ export const createClient = async (request: NextRequest) => {
     },
   });
 
-  await supabase.auth.getUser();
+  try {
+    await supabase.auth.getUser();
+  } catch (error) {
+    console.error("Supabase middleware auth refresh failed", error);
+  }
 
   return supabaseResponse;
 };
