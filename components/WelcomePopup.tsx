@@ -1,6 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import {
+  signInWithOAuth,
+  signInWithPassword,
+  signUpWithPassword,
+} from "@/utils/supabase/gameSync";
 
 type WelcomePopupProps = {
   isOpen: boolean;
@@ -91,6 +96,8 @@ export function WelcomePopup({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [hasError, setHasError] = useState(false);
+  const [authError, setAuthError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -107,6 +114,7 @@ export function WelcomePopup({
     setShowAccount(true);
     setMode(nextMode);
     setHasError(false);
+    setAuthError("");
   };
 
   const completeAccount = () => {
@@ -115,7 +123,7 @@ export function WelcomePopup({
     onClose();
   };
 
-  const submitAccount = () => {
+  const submitAccount = async () => {
     const validEmail = /.+@.+\..+/.test(email);
     const validPassword = password.length > 0;
 
@@ -124,7 +132,42 @@ export function WelcomePopup({
       return;
     }
 
-    completeAccount();
+    setAuthError("");
+    setIsSubmitting(true);
+
+    try {
+      if (mode === "create") {
+        await signUpWithPassword(email, password);
+      } else {
+        await signInWithPassword(email, password);
+      }
+
+      completeAccount();
+    } catch (error) {
+      setAuthError(
+        error instanceof Error
+          ? error.message
+          : "Authentication failed. Please try again.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const submitOAuth = async (provider: "apple" | "google") => {
+    setAuthError("");
+    setIsSubmitting(true);
+
+    try {
+      await signInWithOAuth(provider);
+    } catch (error) {
+      setAuthError(
+        error instanceof Error
+          ? error.message
+          : "Authentication failed. Please try again.",
+      );
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -253,7 +296,8 @@ export function WelcomePopup({
                   <div className="mg-popup-oauth">
                     <button
                       className="mg-popup-button mg-popup-oauth-button"
-                      onClick={completeAccount}
+                      disabled={isSubmitting}
+                      onClick={() => submitOAuth("google")}
                       type="button"
                     >
                       <GoogleMark />
@@ -261,7 +305,8 @@ export function WelcomePopup({
                     </button>
                     <button
                       className="mg-popup-button mg-popup-oauth-button"
-                      onClick={completeAccount}
+                      disabled={isSubmitting}
+                      onClick={() => submitOAuth("apple")}
                       type="button"
                     >
                       <AppleMark />
@@ -305,12 +350,23 @@ export function WelcomePopup({
 
                   <button
                     className="mg-popup-button mg-popup-cta"
+                    disabled={isSubmitting}
                     onClick={submitAccount}
                     type="button"
                   >
-                    {mode === "create" ? "Create account & play" : "Sign in & play"}{" "}
+                    {isSubmitting
+                      ? "Working..."
+                      : mode === "create"
+                        ? "Create account & play"
+                        : "Sign in & play"}{" "}
                     <span>&gt;</span>
                   </button>
+
+                  {authError ? (
+                    <p className="font-sans text-xs font-bold text-[#e43d4f]">
+                      {authError}
+                    </p>
+                  ) : null}
 
                   <div className="mg-popup-foot">
                     <span>

@@ -14,8 +14,15 @@ import { getAvailableDailyDates } from "@/data/dailyGames";
 import { rounds } from "@/data/rounds";
 import type { Guess, ScoreResult } from "@/types/game";
 import type { DailyScoreHistory } from "@/types/history";
+import type { CompletedRound } from "@/utils/supabase/gameSync";
 import { readDailyHistory, writeDailyHistory } from "@/utils/history";
 import { scoreGuess } from "@/utils/scoring";
+import {
+  ensureProfile,
+  getSignedInUser,
+  readSupabaseHistory,
+  syncCompletedGame,
+} from "@/utils/supabase/gameSync";
 
 const ROUND_SECONDS = 60;
 const blankGuess: Guess = { day: null, month: null, year: null, location: null };
@@ -27,7 +34,7 @@ export default function Home() {
   const [roundIndex, setRoundIndex] = useState(0);
   const [guess, setGuess] = useState<Guess>(blankGuess);
   const [result, setResult] = useState<ScoreResult | null>(null);
-  const [scoreHistory, setScoreHistory] = useState<ScoreResult[]>([]);
+  const [completedRounds, setCompletedRounds] = useState<CompletedRound[]>([]);
   const [isDailyComplete, setIsDailyComplete] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(ROUND_SECONDS);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -36,10 +43,15 @@ export default function Home() {
   const [activeDate, setActiveDate] = useState(getLocalDateKey(new Date()));
   const [dailyHistory, setDailyHistory] = useState<DailyScoreHistory[]>([]);
   const timeoutHandledRef = useRef(false);
+  const syncedDailyKeyRef = useRef<string | null>(null);
   const [gameRounds, setGameRounds] = useState(() =>
     selectRandomRounds(rounds, ROUNDS_PER_GAME),
   );
   const round = gameRounds[roundIndex];
+  const scoreHistory = useMemo(
+    () => completedRounds.map((entry) => entry.result),
+    [completedRounds],
+  );
 
   useEffect(() => {
     setDailyHistory(readDailyHistory());
@@ -49,6 +61,25 @@ export default function Home() {
       setIsAccountUser(true);
       setWelcomeOpen(false);
     }
+
+    getSignedInUser()
+      .then(async (user) => {
+        if (!user) {
+          return;
+        }
+
+        window.localStorage.setItem(ACCOUNT_STORAGE_KEY, "true");
+        setIsAccountUser(true);
+        setWelcomeOpen(false);
+
+        const supabaseHistory = await readSupabaseHistory();
+        if (supabaseHistory.length) {
+          setDailyHistory(supabaseHistory);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to load Supabase user", error);
+      });
   }, []);
 
   useEffect(() => {
@@ -77,19 +108,51 @@ export default function Home() {
   );
 
   useEffect(() => {
-    if (!isDailyComplete || scoreHistory.length !== gameRounds.length) {
+    if (!isDailyComplete || completedRounds.length !== gameRounds.length) {
       return;
     }
 
-    setDailyHistory(
-      writeDailyHistory({
-        date: activeDate,
-        playedAt: new Date().toISOString(),
-        roundScores: scoreHistory.map((score) => score.roundScore),
-        totalScore,
-      }),
-    );
-  }, [activeDate, gameRounds.length, isDailyComplete, scoreHistory, totalScore]);
+    const syncKey = `${activeDate}:${completedRounds
+      .map((entry) => entry.round.id)
+      .join(",")}`;
+
+    if (syncedDailyKeyRef.current === syncKey) {
+      return;
+    }
+
+    syncedDailyKeyRef.current = syncKey;
+
+    const localEntry = {
+      date: activeDate,
+      playedAt: new Date().toISOString(),
+      roundScores: scoreHistory.map((score) => score.roundScore),
+      totalScore,
+    };
+
+    setDailyHistory(writeDailyHistory(localEntry));
+
+    syncCompletedGame({
+      dailyGameId: activeDate,
+      rounds: completedRounds,
+      totalScore,
+    })
+      .then(async () => {
+        const supabaseHistory = await readSupabaseHistory();
+        if (supabaseHistory.length) {
+          setDailyHistory(supabaseHistory);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to sync Supabase completed game", error);
+      });
+  }, [
+    activeDate,
+    completedRounds,
+    gameRounds.length,
+    isDailyComplete,
+    scoreHistory,
+    totalScore,
+  ]);
 
   const canSubmit =
     guess.location !== null &&
@@ -107,7 +170,10 @@ export default function Home() {
     timeoutHandledRef.current = true;
     const scoredGuess = scoreGuess(round, guess);
     setResult(scoredGuess);
-    setScoreHistory((history) => [...history, scoredGuess]);
+    setCompletedRounds((history) => [
+      ...history,
+      { guess, result: scoredGuess, round, timeRemainingSeconds: secondsLeft },
+    ]);
   };
 
   const submitTimeout = () => {
@@ -127,7 +193,10 @@ export default function Home() {
     };
 
     setResult(timedOutScore);
-    setScoreHistory((history) => [...history, timedOutScore]);
+    setCompletedRounds((history) => [
+      ...history,
+      { guess, result: timedOutScore, round, timeRemainingSeconds: 0 },
+    ]);
   };
 
   const resetRoundState = () => {
@@ -160,11 +229,13 @@ export default function Home() {
     setGameRounds(selectRandomRounds(rounds, ROUNDS_PER_GAME));
     setIsDailyComplete(false);
     setRoundIndex(0);
-    setScoreHistory([]);
+    setCompletedRounds([]);
+    syncedDailyKeyRef.current = null;
     resetRoundState();
   };
 
-  const markAccountUser = () => {
+  const markAccountUser = async () => {
+    await ensureProfile();
     window.localStorage.setItem(ACCOUNT_STORAGE_KEY, "true");
     setIsAccountUser(true);
     setSettingsOpen(false);
