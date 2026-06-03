@@ -17,6 +17,7 @@ import type { DailyScoreHistory } from "@/types/history";
 import type { CompletedRound } from "@/utils/supabase/gameSync";
 import { readDailyHistory, writeDailyHistory } from "@/utils/history";
 import { scoreGuess } from "@/utils/scoring";
+import { readChallenge, type Challenge } from "@/utils/supabase/challenges";
 import {
   ensureProfile,
   getSignedInUser,
@@ -41,6 +42,7 @@ export default function Home() {
   const [isAccountUser, setIsAccountUser] = useState(false);
   const [welcomeOpen, setWelcomeOpen] = useState(true);
   const [activeDate, setActiveDate] = useState(getLocalDateKey(new Date()));
+  const [activeChallenge, setActiveChallenge] = useState<Challenge | null>(null);
   const [dailyHistory, setDailyHistory] = useState<DailyScoreHistory[]>([]);
   const timeoutHandledRef = useRef(false);
   const syncedDailyKeyRef = useRef<string | null>(null);
@@ -83,12 +85,32 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const requestedDate = new URLSearchParams(window.location.search).get("date");
+    const params = new URLSearchParams(window.location.search);
+    const requestedChallenge = params.get("challenge");
+    const requestedDate = params.get("date");
+
+    if (requestedChallenge && requestedChallenge !== activeChallenge?.id) {
+      readChallenge(requestedChallenge)
+        .then((challenge) => {
+          if (!challenge) {
+            return;
+          }
+
+          setActiveChallenge(challenge);
+          if (challenge.dailyGameId !== activeDate) {
+            startDay(challenge.dailyGameId, challenge);
+          }
+        })
+        .catch((error) => {
+          console.error("Failed to load challenge", error);
+        });
+      return;
+    }
 
     if (requestedDate && requestedDate !== activeDate) {
       startDay(requestedDate);
     }
-  }, [activeDate]);
+  }, [activeChallenge?.id, activeDate]);
 
   useEffect(() => {
     if (result) {
@@ -132,6 +154,7 @@ export default function Home() {
     setDailyHistory(writeDailyHistory(localEntry));
 
     syncCompletedGame({
+      challengeId: activeChallenge?.id,
       dailyGameId: activeDate,
       rounds: completedRounds,
       totalScore,
@@ -147,6 +170,7 @@ export default function Home() {
       });
   }, [
     activeDate,
+    activeChallenge?.id,
     completedRounds,
     gameRounds.length,
     isDailyComplete,
@@ -224,8 +248,9 @@ export default function Home() {
     submitTimeout();
   }, [result, secondsLeft]);
 
-  const startDay = (date: string) => {
+  const startDay = (date: string, challenge: Challenge | null = null) => {
     setActiveDate(date);
+    setActiveChallenge(challenge);
     setGameRounds(selectRandomRounds(rounds, ROUNDS_PER_GAME));
     setIsDailyComplete(false);
     setRoundIndex(0);
@@ -246,6 +271,7 @@ export default function Home() {
       <DailySummary
         activeDate={activeDate}
         archivedDates={getArchiveDates(activeDate)}
+        challenge={activeChallenge}
         onSelectDate={startDay}
         scoreHistory={scoreHistory}
         totalScore={totalScore}

@@ -2,9 +2,43 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import {
+  createChallenge,
+  getShareUrl,
+  shareText,
+} from "@/utils/supabase/challenges";
 
 export default function MultiplayerPage() {
-  const [roomCode] = useState(() => Math.random().toString(36).slice(2, 8).toUpperCase());
+  const [challengeUrl, setChallengeUrl] = useState("");
+  const [status, setStatus] = useState("");
+  const [isCreating, setIsCreating] = useState(false);
+
+  const createDailyChallenge = async () => {
+    setStatus("");
+    setIsCreating(true);
+
+    try {
+      const today = getLocalDateKey(new Date());
+      const challenge = await createChallenge(today);
+      const url = await getShareUrl(
+        `/?challenge=${encodeURIComponent(challenge.id)}`,
+      );
+      setChallengeUrl(url);
+      const shareStatus = await shareText({
+        text: "Can you beat my MomentGuessr daily challenge?",
+        title: "MomentGuessr Challenge",
+        url,
+      });
+
+      setStatus(shareStatus === "shared" ? "Challenge shared" : "Challenge copied");
+    } catch (error) {
+      setStatus(
+        error instanceof Error ? error.message : "Could not create challenge",
+      );
+    } finally {
+      setIsCreating(false);
+    }
+  };
 
   return (
     <main className="state-page min-h-screen px-4 py-6 text-[#0d1a26] sm:px-6">
@@ -22,23 +56,49 @@ export default function MultiplayerPage() {
         </div>
         <div className="mt-8 rounded-[1.25rem] border border-[#bfccda] bg-white p-5">
           <p className="font-sans text-xs font-black uppercase text-[#566373]">
-            Room Code
+            Friend Challenge
           </p>
-          <p className="mt-2 font-serif text-6xl">{roomCode}</p>
+          <p className="mt-2 font-serif text-4xl">Daily Link</p>
           <p className="mt-3 font-sans text-sm text-[#566373]">
-            This is the front-end lobby shell. Real-time joins, synchronized round
-            timers, and score broadcasting require a backend realtime service.
+            Create a private daily challenge link. Friends play the same daily
+            game and scores appear on the challenge leaderboard after they finish.
           </p>
+          {challengeUrl ? (
+            <p className="mt-4 break-all rounded-[0.9rem] bg-[#edf3f8] px-3 py-2 font-sans text-xs font-bold text-[#27323f]">
+              {challengeUrl}
+            </p>
+          ) : null}
+          {status ? (
+            <p className="mt-3 font-sans text-xs font-black uppercase text-[#246bff]">
+              {status}
+            </p>
+          ) : null}
         </div>
         <div className="mt-5 grid gap-3 md:grid-cols-2">
-          <button className="sport-action rounded-full px-5 py-3 font-sans text-sm font-black uppercase text-white" type="button">
-            Create Match
+          <button
+            className="sport-action rounded-full px-5 py-3 font-sans text-sm font-black uppercase text-white disabled:opacity-55"
+            disabled={isCreating}
+            onClick={createDailyChallenge}
+            type="button"
+          >
+            {isCreating ? "Creating..." : "Create Challenge"}
           </button>
-          <button className="rounded-full border border-[#bfccda] bg-white px-5 py-3 font-sans text-sm font-black uppercase" type="button">
-            Join Match
-          </button>
+          <Link
+            className="rounded-full border border-[#bfccda] bg-white px-5 py-3 text-center font-sans text-sm font-black uppercase"
+            href="/"
+          >
+            Play Daily
+          </Link>
         </div>
       </section>
     </main>
   );
+}
+
+function getLocalDateKey(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
 }

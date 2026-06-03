@@ -4,12 +4,18 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { DailyScoreHistory } from "@/types/history";
 import { readDailyHistory } from "@/utils/history";
+import {
+  readGlobalLeaderboard,
+  type LeaderboardEntry,
+} from "@/utils/supabase/challenges";
 
 export default function StatePage() {
   const [history, setHistory] = useState<DailyScoreHistory[]>([]);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
 
   useEffect(() => {
     setHistory(readDailyHistory());
+    readGlobalLeaderboard().then(setLeaderboard);
   }, []);
 
   const stats = useMemo(() => {
@@ -69,6 +75,39 @@ export default function StatePage() {
         <StateMetric label="Average Score" value={stats.averageScore} />
         <StateMetric label="Rounds Played" value={stats.roundsPlayed} />
         <StateMetric label="Saved Days" value={stats.gamesPlayed} />
+      </section>
+      <section className="state-card mx-auto mt-3 w-full max-w-6xl rounded-[1.5rem] p-4">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="font-sans text-xs font-black uppercase text-[#566373]">
+              Leaderboard
+            </p>
+            <h2 className="mt-1 font-serif text-3xl">All-Time Points</h2>
+          </div>
+        </div>
+        <div className="state-table mt-4 overflow-hidden rounded-[1rem] border border-[#bfccda]">
+          <div className="grid grid-cols-[auto_1fr_auto] gap-3 bg-[#edf3f8] px-4 py-2 font-sans text-xs font-black uppercase text-[#566373]">
+            <span>Rank</span>
+            <span>Player</span>
+            <span>Total</span>
+          </div>
+          {leaderboard.length ? (
+            leaderboard.map((entry) => (
+              <div
+                className="grid grid-cols-[auto_1fr_auto] gap-3 border-t border-[#d3dde8] px-4 py-3 font-sans text-sm"
+                key={`${entry.userId}-${entry.rank}`}
+              >
+                <span className="font-black">#{entry.rank}</span>
+                <span className="font-semibold">{entry.displayName}</span>
+                <span className="font-black">{entry.score.toLocaleString()}</span>
+              </div>
+            ))
+          ) : (
+            <p className="border-t border-[#d3dde8] px-4 py-5 font-sans text-sm text-[#566373]">
+              Sign in and finish a game to populate the leaderboard.
+            </p>
+          )}
+        </div>
       </section>
       <section className="state-card mx-auto mt-3 w-full max-w-6xl rounded-[1.5rem] p-4">
         <div className="flex items-center justify-between gap-4">

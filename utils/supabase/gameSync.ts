@@ -116,9 +116,11 @@ export async function signInWithOAuth(provider: "apple" | "google") {
 
 export async function syncCompletedGame({
   dailyGameId,
+  challengeId,
   rounds,
   totalScore,
 }: {
+  challengeId?: string | null;
   dailyGameId: string;
   rounds: CompletedRound[];
   totalScore: number;
@@ -179,6 +181,27 @@ export async function syncCompletedGame({
 
   if (roundsError) {
     console.error("Failed to sync Supabase round results", roundsError);
+  }
+
+  if (challengeId) {
+    const { error: challengeError } = await supabase
+      .from("challenge_entries")
+      .upsert(
+        {
+          challenge_id: challengeId,
+          completed_at: completedAt,
+          game_session_id: gameSession.id,
+          metadata: {},
+          rounds_played: rounds.length,
+          total_score: totalScore,
+          user_id: user.id,
+        },
+        { onConflict: "challenge_id,user_id" },
+      );
+
+    if (challengeError) {
+      console.error("Failed to sync Supabase challenge entry", challengeError);
+    }
   }
 
   await refreshUserStats(user.id);

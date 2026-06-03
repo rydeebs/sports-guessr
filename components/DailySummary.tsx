@@ -1,35 +1,102 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ScoreResult } from "@/types/game";
+import {
+  createChallenge,
+  getShareUrl,
+  openSocialShare,
+  readChallengeLeaderboard,
+  readDailyLeaderboard,
+  shareText,
+  type Challenge,
+  type LeaderboardEntry,
+} from "@/utils/supabase/challenges";
 
 type DailySummaryProps = {
   activeDate: string;
   archivedDates: string[];
+  challenge: Challenge | null;
   scoreHistory: ScoreResult[];
   totalScore: number;
   onSelectDate: (date: string) => void;
 };
 
-const benchmarkScores = [
-  { name: "ArenaAce", score: 4380 },
-  { name: "ClutchCaller", score: 3910 },
-  { name: "RoadTrip", score: 3475 },
-  { name: "FilmRoom", score: 3010 },
-];
-
 export function DailySummary({
   activeDate,
   archivedDates,
+  challenge,
   scoreHistory,
   totalScore,
   onSelectDate,
 }: DailySummaryProps) {
   const [isArchiveOpen, setIsArchiveOpen] = useState(false);
-  const leaderboard = [...benchmarkScores, { name: "You", score: totalScore }]
-    .sort((first, second) => second.score - first.score)
-    .map((entry, index) => ({ ...entry, rank: index + 1 }));
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [challengeLeaderboard, setChallengeLeaderboard] = useState<
+    LeaderboardEntry[]
+  >([]);
+  const [shareStatus, setShareStatus] = useState("");
+  const [challengeUrl, setChallengeUrl] = useState("");
+  const [isCreatingChallenge, setIsCreatingChallenge] = useState(false);
   const displayDate = formatPlayDate(activeDate);
+
+  useEffect(() => {
+    readDailyLeaderboard(activeDate).then(setLeaderboard);
+  }, [activeDate, totalScore]);
+
+  useEffect(() => {
+    if (!challenge) {
+      setChallengeLeaderboard([]);
+      return;
+    }
+
+    readChallengeLeaderboard(challenge.id).then(setChallengeLeaderboard);
+  }, [challenge, totalScore]);
+
+  const shareDailyScore = async () => {
+    const url = await getShareUrl(`/?date=${encodeURIComponent(activeDate)}`);
+    const status = await shareText({
+      text: `I scored ${totalScore.toLocaleString()} on MomentGuessr for ${displayDate}.`,
+      title: "MomentGuessr Daily Score",
+      url,
+    });
+
+    setShareStatus(status === "shared" ? "Shared" : "Link copied");
+  };
+
+  const createFriendChallenge = async () => {
+    setShareStatus("");
+    setIsCreatingChallenge(true);
+
+    try {
+      const nextChallenge = await createChallenge(activeDate);
+      const url = await getShareUrl(
+        `/?challenge=${encodeURIComponent(nextChallenge.id)}`,
+      );
+      setChallengeUrl(url);
+      const status = await shareText({
+        text: `Can you beat my ${totalScore.toLocaleString()} on MomentGuessr?`,
+        title: "MomentGuessr Challenge",
+        url,
+      });
+
+      setShareStatus(status === "shared" ? "Challenge shared" : "Challenge copied");
+    } catch (error) {
+      setShareStatus(
+        error instanceof Error ? error.message : "Could not create challenge",
+      );
+    } finally {
+      setIsCreatingChallenge(false);
+    }
+  };
+
+  const shareToSocial = async (network: "facebook" | "x") => {
+    const url = challengeUrl || (await getShareUrl(`/?date=${activeDate}`));
+    openSocialShare(network, {
+      text: `I scored ${totalScore.toLocaleString()} on MomentGuessr for ${displayDate}.`,
+      url,
+    });
+  };
 
   return (
     <main className="daily-summary min-h-screen px-4 py-6 text-white sm:px-6">
@@ -102,8 +169,56 @@ export function DailySummary({
               </div>
             ))}
           </div>
+          <div className="share-card mt-8">
+            <div className="share-score-card">
+              <div>
+                <p className="share-card-label">Shareable Score</p>
+                <p className="share-card-title">{displayDate}</p>
+              </div>
+              <div className="share-card-score">
+                {totalScore.toLocaleString()}
+              </div>
+            </div>
+            <div className="share-card-actions">
+              <button
+                className="share-neon-button share-neon-button-primary"
+                onClick={shareDailyScore}
+                type="button"
+              >
+                Share Score
+              </button>
+              <button
+                className="share-neon-button share-neon-button-challenge"
+                disabled={isCreatingChallenge}
+                onClick={createFriendChallenge}
+                type="button"
+              >
+                {isCreatingChallenge ? "Creating..." : "Challenge Friend"}
+              </button>
+              <button
+                className="share-neon-button"
+                onClick={() => shareToSocial("x")}
+                type="button"
+              >
+                Post on X
+              </button>
+              <button
+                className="share-neon-button"
+                onClick={() => shareToSocial("facebook")}
+                type="button"
+              >
+                Facebook
+              </button>
+            </div>
+            {shareStatus ? (
+              <p className="share-card-status">{shareStatus}</p>
+            ) : null}
+            {challengeUrl ? (
+              <p className="share-card-url">{challengeUrl}</p>
+            ) : null}
+          </div>
           <button
-            className="sport-action mt-8 rounded-full px-7 py-3 font-sans text-sm font-black uppercase text-white shadow-xl transition"
+            className="sport-action mt-5 rounded-full px-7 py-3 font-sans text-sm font-black uppercase text-white shadow-xl transition"
             onClick={() => setIsArchiveOpen(true)}
             type="button"
           >
@@ -119,31 +234,63 @@ export function DailySummary({
               <h2 className="mt-2 font-serif text-4xl">Today</h2>
             </div>
             <p className="font-sans text-xs font-bold uppercase text-white/48">
-              Local preview
+              Live
             </p>
           </div>
           <ol className="mt-6 space-y-2">
-            {leaderboard.map((entry) => (
+            {leaderboard.length ? leaderboard.map((entry) => (
               <li
-                className={`flex items-center justify-between gap-4 rounded-[1.15rem] border px-4 py-3 font-sans ${
-                  entry.name === "You"
-                    ? "border-[#78b7ff]/55 bg-[#78b7ff]/16"
-                    : "border-white/10 bg-white/6"
-                }`}
-                key={`${entry.name}-${entry.rank}`}
+                className="flex items-center justify-between gap-4 rounded-[1.15rem] border border-white/10 bg-white/6 px-4 py-3 font-sans"
+                key={`${entry.userId}-${entry.rank}`}
               >
                 <div className="flex items-center gap-3">
                   <span className="w-7 text-sm font-black text-white/46">
                     #{entry.rank}
                   </span>
-                  <span className="font-semibold">{entry.name}</span>
+                  <span className="font-semibold">{entry.displayName}</span>
                 </div>
                 <span className="font-black">
                   {entry.score.toLocaleString()}
                 </span>
               </li>
-            ))}
+            )) : (
+              <li className="rounded-[1.15rem] border border-white/10 bg-white/6 px-4 py-3 font-sans text-sm text-white/64">
+                Sign in and finish a game to appear here.
+              </li>
+            )}
           </ol>
+          {challenge ? (
+            <section className="mt-6 border-t border-white/10 pt-5">
+              <p className="font-sans text-xs font-black uppercase text-[#78b7ff]">
+                Challenge
+              </p>
+              <h3 className="mt-1 font-serif text-3xl">Friends</h3>
+              <ol className="mt-4 space-y-2">
+                {challengeLeaderboard.length ? (
+                  challengeLeaderboard.map((entry) => (
+                    <li
+                      className="flex items-center justify-between gap-4 rounded-[1.15rem] border border-white/10 bg-white/6 px-4 py-3 font-sans"
+                      key={`${entry.userId}-${entry.rank}`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="w-7 text-sm font-black text-white/46">
+                          #{entry.rank}
+                        </span>
+                        <span className="font-semibold">{entry.displayName}</span>
+                      </div>
+                      <span className="font-black">
+                        {entry.score.toLocaleString()}
+                      </span>
+                    </li>
+                  ))
+                ) : (
+                  <li className="rounded-[1.15rem] border border-white/10 bg-white/6 px-4 py-3 font-sans text-sm text-white/64">
+                    Challenge scores appear after friends finish.
+                  </li>
+                )}
+              </ol>
+            </section>
+          ) : null}
         </aside>
       </section>
     </main>

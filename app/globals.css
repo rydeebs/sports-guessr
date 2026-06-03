@@ -1131,6 +1131,171 @@ input {
     linear-gradient(135deg, #07111d, #0d2236);
 }
 
+.share-card {
+  animation: share-card-glow 2.6s ease-in-out infinite;
+  background:
+    linear-gradient(145deg, rgba(8, 19, 31, 0.92), rgba(10, 28, 48, 0.88)) padding-box,
+    linear-gradient(135deg, rgba(120, 183, 255, 0.95), rgba(228, 61, 79, 0.82), rgba(24, 165, 111, 0.82)) border-box;
+  border: 1px solid transparent;
+  border-radius: 1.35rem;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 0 1.2rem rgba(36, 107, 255, 0.26),
+    0 0 2.4rem rgba(228, 61, 79, 0.14);
+  overflow: hidden;
+  padding: 0.85rem;
+}
+
+.share-score-card {
+  align-items: center;
+  background:
+    radial-gradient(circle at 18% 8%, rgba(120, 183, 255, 0.24), transparent 38%),
+    radial-gradient(circle at 84% 84%, rgba(228, 61, 79, 0.22), transparent 42%),
+    rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 1rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  min-height: 6.2rem;
+  padding: 1rem;
+}
+
+.share-card-label {
+  color: #78b7ff;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  font-size: 0.68rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.share-card-title {
+  color: rgba(255, 255, 255, 0.72);
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  font-size: 0.9rem;
+  font-weight: 800;
+  margin-top: 0.35rem;
+  text-transform: uppercase;
+}
+
+.share-card-score {
+  color: white;
+  font-family:
+    Iowan Old Style, "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: clamp(2.6rem, 7vw, 4.6rem);
+  line-height: 0.9;
+  text-shadow:
+    0 0 0.55rem rgba(120, 183, 255, 0.95),
+    0 0 1.4rem rgba(36, 107, 255, 0.72),
+    0 0 2.2rem rgba(228, 61, 79, 0.42);
+  white-space: nowrap;
+}
+
+.share-card-actions {
+  display: grid;
+  gap: 0.55rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 0.75rem;
+}
+
+.share-neon-button {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(120, 183, 255, 0.32);
+  border-radius: 999px;
+  color: white;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  font-size: 0.72rem;
+  font-weight: 900;
+  min-height: 2.65rem;
+  padding: 0.78rem 0.9rem;
+  text-transform: uppercase;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.share-neon-button:hover {
+  background: rgba(120, 183, 255, 0.14);
+  border-color: rgba(120, 183, 255, 0.78);
+  box-shadow:
+    0 0 0.8rem rgba(120, 183, 255, 0.42),
+    0 0 1.7rem rgba(36, 107, 255, 0.24);
+  transform: translateY(-1px);
+}
+
+.share-neon-button-primary {
+  background:
+    radial-gradient(circle at 28% 18%, rgba(255, 255, 255, 0.24), transparent 42%),
+    linear-gradient(135deg, #246bff, #78b7ff);
+  border-color: rgba(120, 183, 255, 0.88);
+  box-shadow: 0 0 1.15rem rgba(36, 107, 255, 0.46);
+}
+
+.share-neon-button-challenge {
+  background:
+    radial-gradient(circle at 24% 18%, rgba(255, 255, 255, 0.2), transparent 42%),
+    linear-gradient(135deg, #e43d4f, #246bff);
+  border-color: rgba(228, 61, 79, 0.74);
+  box-shadow: 0 0 1.15rem rgba(228, 61, 79, 0.36);
+}
+
+.share-neon-button:disabled {
+  cursor: wait;
+  opacity: 0.58;
+  transform: none;
+}
+
+.share-card-status {
+  color: #78b7ff;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  font-size: 0.72rem;
+  font-weight: 900;
+  margin-top: 0.7rem;
+  text-transform: uppercase;
+}
+
+.share-card-url {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.8rem;
+  color: rgba(255, 255, 255, 0.68);
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  margin-top: 0.55rem;
+  overflow-wrap: anywhere;
+  padding: 0.6rem 0.7rem;
+}
+
+@keyframes share-card-glow {
+  0%,
+  100% {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      0 0 1.1rem rgba(36, 107, 255, 0.24),
+      0 0 2.2rem rgba(228, 61, 79, 0.12);
+  }
+
+  50% {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.16),
+      0 0 1.55rem rgba(120, 183, 255, 0.42),
+      0 0 3rem rgba(228, 61, 79, 0.22);
+  }
+}
+
 .settings-sheet {
   background: rgba(248, 250, 252, 0.96);
 }
@@ -1497,6 +1662,15 @@ input {
 
   .daily-summary header p {
     font-size: 2rem;
+  }
+
+  .share-score-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .share-card-actions {
+    grid-template-columns: 1fr;
   }
 
   .state-map svg {
