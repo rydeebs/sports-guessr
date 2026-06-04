@@ -93,6 +93,7 @@ export function WelcomePopup({
 }: WelcomePopupProps) {
   const [mode, setMode] = useState<"create" | "signin">("create");
   const [showAccount, setShowAccount] = useState(false);
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [hasError, setHasError] = useState(false);
@@ -124,10 +125,11 @@ export function WelcomePopup({
   };
 
   const submitAccount = async () => {
+    const validName = mode === "signin" || name.trim().length > 0;
     const validEmail = /.+@.+\..+/.test(email);
     const validPassword = password.length > 0;
 
-    if (!validEmail || !validPassword) {
+    if (!validName || !validEmail || !validPassword) {
       setHasError(true);
       return;
     }
@@ -137,7 +139,7 @@ export function WelcomePopup({
 
     try {
       if (mode === "create") {
-        await signUpWithPassword(email, password);
+        await signUpWithPassword(name, email, password);
       } else {
         await signInWithPassword(email, password);
       }
@@ -315,6 +317,22 @@ export function WelcomePopup({
                   </div>
 
                   <div className="mg-popup-or">OR</div>
+
+                  {mode === "create" ? (
+                    <label
+                      className={`mg-popup-field${
+                        hasError && !name.trim() ? " mg-popup-field-error" : ""
+                      }`}
+                    >
+                      {hasError && !name.trim() ? <span>Required</span> : null}
+                      <input
+                        onChange={(event) => setName(event.target.value)}
+                        placeholder="Name"
+                        type="text"
+                        value={name}
+                      />
+                    </label>
+                  ) : null}
 
                   <label
                     className={`mg-popup-field${

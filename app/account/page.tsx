@@ -11,6 +11,8 @@ import { createClient } from "@/utils/supabase/client";
 export default function AccountPage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [displayName, setDisplayName] = useState("");
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [history, setHistory] = useState<DailyScoreHistory[]>([]);
   const [stats, setStats] = useState<{
     bestGameScore: number;
@@ -40,7 +42,7 @@ export default function AccountPage() {
           await Promise.all([
             supabase
               .from("profiles")
-              .select("display_name")
+              .select("display_name, email, username")
               .eq("id", data.user.id)
               .maybeSingle(),
             supabase
@@ -62,6 +64,8 @@ export default function AccountPage() {
           setProfile(supabaseProfile);
           setDisplayName(profileData.display_name);
         }
+        setEmail(profileData?.email ?? data.user.email ?? "");
+        setUsername(profileData?.username ?? "");
 
         if (statsData) {
           setStats({
@@ -121,6 +125,8 @@ export default function AccountPage() {
     clearProfile();
     setProfile(null);
     setDisplayName("");
+    setEmail("");
+    setUsername("");
     setStats(null);
     setUserId(null);
   };
@@ -150,6 +156,22 @@ export default function AccountPage() {
             placeholder="Enter a player name"
             value={displayName}
           />
+          {email ? (
+            <div className="grid gap-1 rounded-[1rem] border border-[#d3dde8] bg-white px-4 py-3 font-sans">
+              <span className="text-xs font-black uppercase text-[#566373]">
+                Email
+              </span>
+              <span className="text-sm font-bold">{email}</span>
+            </div>
+          ) : null}
+          {username ? (
+            <div className="grid gap-1 rounded-[1rem] border border-[#d3dde8] bg-white px-4 py-3 font-sans">
+              <span className="text-xs font-black uppercase text-[#566373]">
+                Username
+              </span>
+              <span className="text-sm font-bold">@{username}</span>
+            </div>
+          ) : null}
           <div className="flex flex-wrap gap-2">
             <button className="sport-action rounded-full px-5 py-3 font-sans text-sm font-black uppercase text-white" type="submit">
               {profile ? "Update Account" : "Create Account"}

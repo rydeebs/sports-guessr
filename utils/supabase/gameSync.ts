@@ -40,11 +40,20 @@ export async function ensureProfile(input: ProfileInput = {}) {
     input.email?.split("@")[0] ||
     user.email?.split("@")[0] ||
     "Player";
+  const email = input.email?.trim() || user.email || null;
+  const { data: existingProfile } = await supabase
+    .from("profiles")
+    .select("username")
+    .eq("id", user.id)
+    .maybeSingle();
 
   const { error } = await supabase.from("profiles").upsert({
     avatar_url: user.user_metadata?.avatar_url ?? null,
     display_name: displayName,
+    email,
     id: user.id,
+    username:
+      existingProfile?.username ?? generateUsernameFromName(displayName),
   });
 
   if (error) {
@@ -77,14 +86,20 @@ export async function signInWithPassword(email: string, password: string) {
   return data.user;
 }
 
-export async function signUpWithPassword(email: string, password: string) {
+export async function signUpWithPassword(
+  displayName: string,
+  email: string,
+  password: string,
+) {
   const supabase = createClient();
+  const trimmedDisplayName = displayName.trim();
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
       data: {
-        name: email.split("@")[0],
+        name: trimmedDisplayName,
+        username: generateUsernameFromName(trimmedDisplayName),
       },
     },
   });
@@ -94,7 +109,7 @@ export async function signUpWithPassword(email: string, password: string) {
   }
 
   if (data.user) {
-    await ensureProfile({ email });
+    await ensureProfile({ displayName: trimmedDisplayName, email });
   }
 
   return data.user;
@@ -289,4 +304,18 @@ function toDateKey(value: string | null) {
   }
 
   return new Date(value).toISOString().slice(0, 10);
+}
+
+function generateUsernameFromName(name: string) {
+  const baseName = name
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "")
+    .slice(0, 18);
+  const digitCount = Math.random() < 0.5 ? 3 : 4;
+  const min = digitCount === 3 ? 100 : 1000;
+  const max = digitCount === 3 ? 999 : 9999;
+  const randomDigits = Math.floor(Math.random() * (max - min + 1)) + min;
+
+  return `${baseName || "player"}${randomDigits}`;
 }
