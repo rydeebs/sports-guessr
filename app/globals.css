@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Saira+Condensed:ital,wght@0,600;0,700;0,800;0,900;1,700;1,800;1,900&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;0,800;1,600;1,700&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap");
 @import "tailwindcss";
 
 :root {
@@ -9,6 +10,10 @@
   --blue: #246bff;
   --blue-bright: #78b7ff;
   --green: #18a56f;
+  --hud-red: #e60000;
+  --hud-red-dark: #a60000;
+  --hud-panel: rgba(9, 11, 15, 0.88);
+  --hud-panel-top: rgba(22, 26, 32, 0.88);
 }
 
 * {
@@ -25,7 +30,7 @@ body {
 body {
   background: var(--navy);
   font-family:
-    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Barlow, Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
 }
 
@@ -36,7 +41,8 @@ input {
 
 .font-serif {
   font-family:
-    Iowan Old Style, "Palatino Linotype", "Book Antiqua", Georgia, serif;
+    "Saira Condensed", Iowan Old Style, "Palatino Linotype", "Book Antiqua",
+    Georgia, serif;
 }
 
 .glass-panel {
@@ -46,24 +52,27 @@ input {
 }
 
 .glass-dark {
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(7, 18, 31, 0.68);
-  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background:
+    linear-gradient(180deg, rgba(24, 27, 31, 0.94), rgba(8, 10, 13, 0.92));
+  backdrop-filter: blur(10px);
 }
 
 .glass-control {
   background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.12));
-  border: 1px solid rgba(255, 255, 255, 0.52);
+    linear-gradient(180deg, rgba(241, 244, 236, 0.96), rgba(202, 210, 198, 0.92));
+  border: 1px solid rgba(255, 255, 255, 0.74);
+  color: #10151a;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    0 0.75rem 1.7rem rgba(0, 0, 0, 0.28);
-  backdrop-filter: blur(18px);
+    0 0.4rem 0 rgba(0, 0, 0, 0.34),
+    0 0.75rem 1.7rem rgba(0, 0, 0, 0.34);
+  backdrop-filter: blur(10px);
 }
 
 .glass-control:hover {
   background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.2));
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(219, 225, 213, 0.94));
 }
 
 .game-brand-logo {
@@ -88,12 +97,29 @@ input {
   opacity: 0.96;
 }
 
+.game-header {
+  font-family: Barlow, ui-sans-serif, system-ui, sans-serif;
+}
+
+.game-header::before {
+  background: linear-gradient(180deg, rgba(4, 8, 14, 0.34), transparent);
+  content: "";
+  height: 7.5rem;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: auto;
+  z-index: -1;
+}
+
 .game-submit button:not(:disabled):hover {
   animation: submit-blue-pulse 1.25s ease-in-out infinite;
   background:
-    radial-gradient(circle at 24% 18%, rgba(120, 183, 255, 0.48), transparent 42%),
-    linear-gradient(135deg, #246bff 0%, #1876ff 48%, #78b7ff 100%);
-  border-color: rgba(120, 183, 255, 0.82);
+    radial-gradient(circle at 24% 18%, rgba(255, 255, 255, 0.3), transparent 42%),
+    linear-gradient(180deg, #f01f32 0%, #b51221 100%);
+  border-color: rgba(255, 255, 255, 0.82);
+  color: white;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.42),
     0 0 1.1rem rgba(120, 183, 255, 0.72),
@@ -122,7 +148,9 @@ input {
 
 .game-submit button.submit-ready:not(:disabled) {
   animation: submit-border-pulse 1.35s ease-in-out infinite;
-  border-color: rgba(120, 183, 255, 0.95);
+  background: linear-gradient(180deg, #f01f32 0%, #b51221 100%);
+  border-color: rgba(255, 255, 255, 0.95);
+  color: white;
 }
 
 @keyframes submit-border-pulse {
@@ -179,42 +207,145 @@ input {
 }
 
 .timer-shell {
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.14));
-  border-radius: 999px;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    0 0.75rem 1.7rem rgba(0, 0, 0, 0.32);
-  height: 2.9rem;
-  min-width: 6.2rem;
-  padding: 0.22rem 0.86rem;
-  text-shadow: 0 0.2rem 0.55rem rgba(0, 0, 0, 0.72);
-  backdrop-filter: blur(18px);
+  background: transparent;
+  border: 0;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.65rem 1.75rem rgba(0, 0, 0, 0.5);
+  height: 3.625rem;
+  min-width: 9.55rem;
+  overflow: hidden;
+  padding: 0;
+  text-shadow: none;
+  backdrop-filter: blur(10px);
 }
 
-.timer-shell span {
-  font-size: 1.9rem;
+.timer-shell::before {
+  background: var(--hud-red);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  content: "";
+  inset: 0 auto 0 0;
+  position: absolute;
+  width: 4.15rem;
+}
+
+.timer-shell > span {
+  align-items: center;
+  display: flex;
+  height: 100%;
+  justify-content: stretch;
+  width: 100%;
+}
+
+.timer-label {
+  align-items: center;
+  color: white;
+  display: flex;
+  font-family: "Barlow Semi Condensed", Barlow, ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  height: 100%;
+  justify-content: center;
+  letter-spacing: 0.16em;
+  line-height: 1.05;
+  padding-inline: 0.7rem;
+  text-align: center;
+  text-transform: uppercase;
+  width: 4.15rem;
+  z-index: 1;
+}
+
+.timer-value {
+  align-items: center;
+  background: linear-gradient(180deg, #1a1e25, #0a0c10);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-left: 0;
+  color: white;
+  display: flex;
+  font-family: "Saira Condensed", Barlow, ui-sans-serif, system-ui, sans-serif;
+  font-size: 2.15rem;
+  font-style: italic;
+  font-weight: 800;
+  height: 100%;
+  justify-content: center;
+  letter-spacing: 0.02em;
+  line-height: 0.9;
+  min-width: 5.4rem;
+  padding-inline: 1.15rem;
+  z-index: 1;
 }
 
 .score-display {
-  border-radius: 1.2rem;
-  gap: 0.55rem;
-  padding: 0.55rem 0.9rem;
+  align-items: stretch;
+  border-radius: 0.5rem;
+  display: flex;
+  gap: 0;
+  height: 3.625rem;
+  overflow: hidden;
+  padding: 0;
 }
 
-.score-display p:first-child {
-  font-size: 0.72rem;
+.score-display-segment {
+  background: linear-gradient(180deg, #1a1e25, #0a0c10);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 5.25rem;
+  padding: 0 1rem;
 }
 
-.score-display p:last-child {
+.score-display-segment p {
+  color: #9aa3ad;
+  font-family: "Barlow Semi Condensed", Barlow, ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.score-display-segment strong {
+  color: white;
+  font-family: "Saira Condensed", Barlow, ui-sans-serif, system-ui, sans-serif;
   font-size: 1.55rem;
+  font-style: italic;
+  font-weight: 800;
+  line-height: 0.92;
+}
+
+.score-display-segment strong span {
+  color: var(--hud-red);
+  font-size: 0.8em;
+  margin-left: 0.05em;
+}
+
+.score-display-points {
+  align-items: center;
+  background: var(--hud-red);
+  border-color: transparent;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  min-width: 5.5rem;
+}
+
+.score-display-points p {
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.score-display-points strong {
+  font-size: 1.85rem;
+  font-weight: 900;
+}
+
+.score-display-points strong span {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.45em;
 }
 
 .timer-track,
 .timer-progress {
   fill: none;
-  stroke-linecap: round;
-  stroke-width: 6;
+  stroke-linecap: square;
+  stroke-width: 4;
 }
 
 .timer-track {
@@ -222,7 +353,7 @@ input {
 }
 
 .timer-progress {
-  stroke: rgba(255, 255, 255, 0.98);
+  stroke: #d91f2d;
   transition: stroke-dashoffset 1s linear;
 }
 
@@ -262,8 +393,59 @@ input {
   right: 1.5rem;
 }
 
+.game-submit button {
+  background: linear-gradient(180deg, #ff3b32, var(--hud-red) 48%, var(--hud-red-dark));
+  border: 0;
+  border-radius: 0.5rem;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.3),
+    0 0.65rem 1.65rem rgba(230, 0, 0, 0.42);
+  color: white;
+  font-family: "Saira Condensed", Barlow, ui-sans-serif, system-ui, sans-serif;
+  font-size: 1.55rem;
+  font-style: italic;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  min-height: 3.875rem;
+  padding: 0 2.15rem;
+  text-transform: uppercase;
+}
+
 .date-wheel-control {
+  background: linear-gradient(180deg, rgba(22, 26, 32, 0.86), rgba(9, 11, 15, 0.86));
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 0.44rem;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.4),
+    0 0.5rem 1.5rem rgba(0, 0, 0, 0.42);
+  padding: 1rem 1.125rem 1.125rem;
+  position: relative;
   width: max-content;
+}
+
+.date-wheel-control::before {
+  align-items: center;
+  background: var(--hud-red);
+  border-radius: 0.32rem;
+  box-shadow:
+    0 0.25rem 0.65rem rgba(230, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  color: white;
+  content: "When";
+  display: inline-flex;
+  font-family: "Barlow Semi Condensed", Barlow, ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  height: 1.625rem;
+  left: 1.125rem;
+  letter-spacing: 0.14em;
+  padding: 0 0.875rem;
+  position: absolute;
+  text-transform: uppercase;
+  top: -0.82rem;
+  z-index: 4;
 }
 
 .date-wheel-panel {
@@ -273,11 +455,11 @@ input {
 }
 
 .date-wheel-frame {
-  background: rgba(13, 26, 41, 0.16);
+  background: transparent;
   border: 0;
-  border-radius: 1rem;
-  box-shadow: 0 0.85rem 2rem rgba(0, 0, 0, 0.18);
-  backdrop-filter: blur(24px) saturate(145%);
+  border-radius: 0;
+  box-shadow: none;
+  backdrop-filter: none;
   height: 6.35rem;
   min-width: 0;
   overflow: hidden;
@@ -328,10 +510,12 @@ input {
 }
 
 .date-wheel-highlight {
-  background: rgba(255, 255, 255, 0.18);
-  border-block: 0;
+  background: linear-gradient(90deg, rgba(230, 0, 0, 0.26), rgba(230, 0, 0, 0.06));
+  border-block: 1px solid rgba(255, 255, 255, 0.12);
+  border-left: 3px solid var(--hud-red);
+  border-radius: 0.25rem;
   box-shadow: none;
-  height: 32px;
+  height: 38px;
   left: 0;
   pointer-events: none;
   position: absolute;
@@ -351,7 +535,7 @@ input {
 
 .date-wheel-option {
   align-items: center;
-  color: rgba(255, 255, 255, 0.66);
+  color: #7a828c;
   display: flex;
   font-family: var(--font-serif), Georgia, serif;
   font-size: 1.08rem;
@@ -361,7 +545,7 @@ input {
   padding-inline: 0;
   scroll-snap-align: center;
   text-align: center;
-  text-shadow: 0 0.25rem 1.25rem rgba(0, 0, 0, 0.55);
+  text-shadow: none;
   transition:
     color 160ms ease,
     opacity 160ms ease,
@@ -371,7 +555,9 @@ input {
 
 .date-wheel-option-selected {
   color: white;
-  font-size: 1.2rem;
+  font-size: 1.28rem;
+  font-style: italic;
+  font-weight: 900;
   opacity: 1;
   transform: scale(1.02);
 }
@@ -386,6 +572,57 @@ input {
 
 .map-expanded {
   width: min(34rem, calc(100vw - 2rem));
+}
+
+.map-dock .glass-panel {
+  background: #0e1014;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.5rem;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 0.65rem 1.75rem rgba(0, 0, 0, 0.5);
+  overflow: visible;
+  padding: 0.25rem;
+}
+
+.map-dock .glass-panel::before {
+  align-items: center;
+  background: var(--hud-red);
+  border-radius: 0.32rem;
+  box-shadow:
+    0 0.25rem 0.65rem rgba(230, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  color: white;
+  content: "Where";
+  display: inline-flex;
+  font-family: "Barlow Semi Condensed", Barlow, ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  height: 1.625rem;
+  left: 0.875rem;
+  letter-spacing: 0.14em;
+  padding: 0 0.82rem;
+  position: absolute;
+  text-transform: uppercase;
+  top: -0.82rem;
+  z-index: 12;
+}
+
+.map-dock .glass-panel::after {
+  border-bottom: 2px solid rgba(255, 255, 255, 0.7);
+  border-right: 2px solid rgba(255, 255, 255, 0.7);
+  bottom: 0.8rem;
+  content: "";
+  height: 0.7rem;
+  pointer-events: none;
+  position: absolute;
+  right: 0.8rem;
+  width: 0.7rem;
+  z-index: 11;
+}
+
+.world-map {
+  border-radius: 0.32rem;
 }
 
 .result-brand {
@@ -1417,13 +1654,25 @@ input {
   }
 
   .timer-shell {
-    height: 2.75rem;
-    min-width: 5.85rem;
-    padding: 0.2rem 0.72rem;
+    height: 2.9rem;
+    min-width: 7.6rem;
+    padding: 0;
   }
 
-  .timer-shell span {
-    font-size: 1.6rem;
+  .timer-shell::before {
+    width: 3.1rem;
+  }
+
+  .timer-label {
+    font-size: 0.52rem;
+    padding-inline: 0.42rem;
+    width: 3.1rem;
+  }
+
+  .timer-value {
+    font-size: 1.72rem;
+    min-width: 4.5rem;
+    padding-inline: 0.7rem;
   }
 
   .timer-track,
@@ -1445,12 +1694,20 @@ input {
   }
 
   .date-wheel-control {
+    padding: 0.82rem 0.7rem 0.7rem;
     width: 100%;
+  }
+
+  .date-wheel-control::before,
+  .map-dock .glass-panel::before {
+    font-size: 0.62rem;
+    height: 1.35rem;
+    top: -0.68rem;
   }
 
   .date-wheel-panel {
     gap: 0.32rem;
-    grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.72fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 0.72fr) minmax(0, 1fr);
     width: 100%;
   }
 
@@ -1528,9 +1785,9 @@ input {
 
   .game-settings button,
   .game-submit button {
-    font-size: 0.56rem;
-    min-height: 1.85rem;
-    padding: 0.36rem 0.62rem;
+    font-size: 1.08rem;
+    min-height: 2.85rem;
+    padding: 0.35rem 0.62rem;
   }
 
   .game-submit {
@@ -1544,6 +1801,7 @@ input {
 
   .game-submit button {
     padding-inline: 0.78rem;
+    width: min(7.65rem, calc(100vw - 1.5rem));
   }
 
   .mg-popup-reopen {
@@ -1680,11 +1938,22 @@ input {
 
 @media (max-width: 380px) {
   .timer-shell {
-    min-width: 5rem;
+    min-width: 7rem;
   }
 
-  .timer-shell span {
-    font-size: 1.45rem;
+  .timer-shell::before {
+    width: 2.85rem;
+  }
+
+  .timer-label {
+    font-size: 0.48rem;
+    width: 2.85rem;
+  }
+
+  .timer-value {
+    font-size: 1.58rem;
+    min-width: 4.15rem;
+    padding-inline: 0.58rem;
   }
 
   .year-dock {
@@ -1694,7 +1963,7 @@ input {
 
   .date-wheel-panel {
     gap: 0.26rem;
-    grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.72fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 0.72fr) minmax(0, 1fr);
   }
 
   .date-wheel-frame-month {
@@ -1727,5 +1996,9 @@ input {
 
   .game-submit {
     bottom: calc(env(safe-area-inset-bottom, 0px) + 14.8rem);
+  }
+
+  .game-submit button {
+    width: 6.65rem;
   }
 }

@@ -49,7 +49,10 @@ export function Timer({ secondsLeft, totalSeconds }: TimerProps) {
         />
       </svg>
       <span className="relative z-10 font-sans text-4xl font-medium tracking-normal text-white">
-        {minutes}:{seconds.toString().padStart(2, "0")}
+        <span className="timer-label">Time Left</span>
+        <span className="timer-value">
+          {minutes}:{seconds.toString().padStart(2, "0")}
+        </span>
       </span>
     </div>
   );

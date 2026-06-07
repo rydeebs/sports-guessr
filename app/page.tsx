@@ -113,7 +113,7 @@ export default function Home() {
   }, [activeChallenge?.id, activeDate]);
 
   useEffect(() => {
-    if (result) {
+    if (result || welcomeOpen) {
       return;
     }
 
@@ -122,7 +122,7 @@ export default function Home() {
     }, 1000);
 
     return () => window.clearInterval(timer);
-  }, [result, roundIndex]);
+  }, [result, roundIndex, welcomeOpen]);
 
   const totalScore = useMemo(
     () => scoreHistory.reduce((total, score) => total + score.roundScore, 0),
@@ -241,12 +241,12 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (secondsLeft !== 0 || result) {
+    if (secondsLeft !== 0 || result || welcomeOpen) {
       return;
     }
 
     submitTimeout();
-  }, [result, secondsLeft]);
+  }, [result, secondsLeft, welcomeOpen]);
 
   const startDay = (date: string, challenge: Challenge | null = null) => {
     setActiveDate(date);

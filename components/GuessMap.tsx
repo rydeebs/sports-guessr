@@ -75,9 +75,11 @@ export function GuessMap({
           ...point,
           country: getCountryFromGeocodeResults(results),
         });
+        setIsExpanded(false);
       })
       .catch(() => {
         onSelectRef.current(point);
+        setIsExpanded(false);
       });
   };
 
@@ -99,6 +101,7 @@ export function GuessMap({
       lat: 85 - y * 170,
       lng: x * 360 - 180,
     });
+    setIsExpanded(false);
   };
 
   useEffect(() => {
@@ -157,6 +160,7 @@ export function GuessMap({
             lat: event.latLng.lat(),
             lng: event.latLng.lng(),
           });
+          setIsExpanded(false);
         });
 
         geocoderRef.current = new Geocoder();

@@ -9,14 +9,23 @@ export function ScoreDisplay({
   totalRounds,
   totalScore,
 }: ScoreDisplayProps) {
+  const maxScore = totalRounds * 1000;
+
   return (
-    <div className="score-display glass-dark flex items-center gap-2 rounded-[1.25rem] px-3 py-2 text-right shadow-2xl sm:gap-3 sm:rounded-[1.75rem] sm:px-5 sm:py-3">
-      <p className="font-sans text-[0.65rem] font-semibold uppercase leading-none text-white/72 sm:text-sm">
-        Round {currentRound}/{totalRounds}
-      </p>
-      <p className="font-serif text-xl leading-none text-white sm:text-3xl">
-        {totalScore.toLocaleString()}
-      </p>
+    <div className="score-display glass-dark shadow-2xl">
+      <div className="score-display-segment">
+        <p>Round</p>
+        <strong>
+          {currentRound}<span>/{totalRounds}</span>
+        </strong>
+      </div>
+      <div className="score-display-segment score-display-points">
+        <p>Score</p>
+        <strong>
+          {totalScore.toLocaleString()}
+          <span>/{maxScore.toLocaleString()}</span>
+        </strong>
+      </div>
     </div>
   );
 }
