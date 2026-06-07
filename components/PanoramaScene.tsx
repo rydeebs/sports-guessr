@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import * as THREE from "three";
 
@@ -9,6 +9,7 @@ type PanoramaSceneProps = {
   title: string;
   isDimmed: boolean;
   initialYaw?: number;
+  showInteractionHint?: boolean;
 };
 
 export function PanoramaScene({
@@ -16,8 +17,32 @@ export function PanoramaScene({
   title,
   isDimmed,
   initialYaw = 180,
+  showInteractionHint = false,
 }: PanoramaSceneProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const showInteractionHintRef = useRef(showInteractionHint);
+  const [isInteractionHintDismissed, setIsInteractionHintDismissed] =
+    useState(false);
+
+  useEffect(() => {
+    showInteractionHintRef.current = showInteractionHint;
+
+    if (showInteractionHint) {
+      setIsInteractionHintDismissed(false);
+    }
+  }, [imageUrl, showInteractionHint]);
+
+  useEffect(() => {
+    if (!showInteractionHint || isInteractionHintDismissed) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setIsInteractionHintDismissed(true);
+    }, 10000);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [isInteractionHintDismissed, showInteractionHint]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -132,6 +157,14 @@ export function PanoramaScene({
 
       lon = startLon - (event.clientX - startX) * 0.12;
       lat = startLat + (event.clientY - startY) * 0.12;
+
+      if (
+        showInteractionHintRef.current &&
+        Math.hypot(event.clientX - startX, event.clientY - startY) > 4
+      ) {
+        setIsInteractionHintDismissed(true);
+        showInteractionHintRef.current = false;
+      }
     };
 
     const stopDragging = (event: PointerEvent) => {
@@ -193,6 +226,11 @@ export function PanoramaScene({
         src={imageUrl}
         unoptimized
       />
+      {showInteractionHint && !isInteractionHintDismissed ? (
+        <div className="panorama-hint pointer-events-none absolute left-1/2 top-1/2 z-[2] -translate-x-1/2 -translate-y-1/2">
+          {"<Drag to move image around>"}
+        </div>
+      ) : null}
     </div>
   );
 }

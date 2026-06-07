@@ -18,12 +18,13 @@ export function readProfile() {
   }
 }
 
-export function saveProfile(displayName: string) {
+export function saveProfile(displayName: string, username?: string) {
   const existingProfile = readProfile();
   const profile: UserProfile = {
     createdAt: existingProfile?.createdAt ?? new Date().toISOString(),
     displayName,
     id: existingProfile?.id ?? crypto.randomUUID(),
+    username: username ?? existingProfile?.username,
   };
 
   window.localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));

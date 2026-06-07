@@ -94,6 +94,7 @@ export function WelcomePopup({
   const [mode, setMode] = useState<"create" | "signin">("create");
   const [showAccount, setShowAccount] = useState(false);
   const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [hasError, setHasError] = useState(false);
@@ -126,10 +127,12 @@ export function WelcomePopup({
 
   const submitAccount = async () => {
     const validName = mode === "signin" || name.trim().length > 0;
+    const validUsername =
+      mode === "signin" || /^[a-zA-Z0-9_][a-zA-Z0-9_-]{2,23}$/.test(username.trim());
     const validEmail = /.+@.+\..+/.test(email);
     const validPassword = password.length > 0;
 
-    if (!validName || !validEmail || !validPassword) {
+    if (!validName || !validUsername || !validEmail || !validPassword) {
       setHasError(true);
       return;
     }
@@ -139,7 +142,7 @@ export function WelcomePopup({
 
     try {
       if (mode === "create") {
-        await signUpWithPassword(name, email, password);
+        await signUpWithPassword(name, username, email, password);
       } else {
         await signInWithPassword(email, password);
       }
@@ -319,19 +322,45 @@ export function WelcomePopup({
                   <div className="mg-popup-or">OR</div>
 
                   {mode === "create" ? (
-                    <label
-                      className={`mg-popup-field${
-                        hasError && !name.trim() ? " mg-popup-field-error" : ""
-                      }`}
-                    >
-                      {hasError && !name.trim() ? <span>Required</span> : null}
-                      <input
-                        onChange={(event) => setName(event.target.value)}
-                        placeholder="Name"
-                        type="text"
-                        value={name}
-                      />
-                    </label>
+                    <>
+                      <label
+                        className={`mg-popup-field${
+                          hasError && !name.trim() ? " mg-popup-field-error" : ""
+                        }`}
+                      >
+                        {hasError && !name.trim() ? <span>Required</span> : null}
+                        <input
+                          onChange={(event) => setName(event.target.value)}
+                          placeholder="Name"
+                          type="text"
+                          value={name}
+                        />
+                      </label>
+                      <label
+                        className={`mg-popup-field${
+                          hasError &&
+                          !/^[a-zA-Z0-9_][a-zA-Z0-9_-]{2,23}$/.test(
+                            username.trim(),
+                          )
+                            ? " mg-popup-field-error"
+                            : ""
+                        }`}
+                      >
+                        {hasError &&
+                        !/^[a-zA-Z0-9_][a-zA-Z0-9_-]{2,23}$/.test(
+                          username.trim(),
+                        ) ? (
+                          <span>3-24 letters, numbers, _ or -</span>
+                        ) : null}
+                        <input
+                          autoCapitalize="none"
+                          onChange={(event) => setUsername(event.target.value)}
+                          placeholder="Username"
+                          type="text"
+                          value={username}
+                        />
+                      </label>
+                    </>
                   ) : null}
 
                   <label

@@ -25,6 +25,7 @@ export default function AccountPage() {
     const savedProfile = readProfile();
     setProfile(savedProfile);
     setDisplayName(savedProfile?.displayName ?? "");
+    setUsername(savedProfile?.username ?? "");
     setHistory(readDailyHistory());
 
     const supabase = createClient();
@@ -60,7 +61,10 @@ export default function AccountPage() {
           ]);
 
         if (profileData?.display_name) {
-          const supabaseProfile = saveProfile(profileData.display_name);
+          const supabaseProfile = saveProfile(
+            profileData.display_name,
+            profileData.username ?? undefined,
+          );
           setProfile(supabaseProfile);
           setDisplayName(profileData.display_name);
         }
@@ -99,18 +103,26 @@ export default function AccountPage() {
   const submitProfile = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const trimmedName = displayName.trim();
+    const normalizedUsername = username
+      .trim()
+      .toLowerCase()
+      .replace(/^@+/, "")
+      .replace(/[^a-z0-9_]+/g, "-")
+      .replace(/^-|-$/g, "")
+      .slice(0, 24);
 
-    if (!trimmedName) {
+    if (!trimmedName || normalizedUsername.length < 3) {
       return;
     }
 
-    setProfile(saveProfile(trimmedName));
+    setProfile(saveProfile(trimmedName, normalizedUsername));
+    setUsername(normalizedUsername);
 
     if (userId) {
       const supabase = createClient();
       const { error } = await supabase
         .from("profiles")
-        .update({ display_name: trimmedName })
+        .update({ display_name: trimmedName, username: normalizedUsername })
         .eq("id", userId);
 
       if (error) {
@@ -156,20 +168,23 @@ export default function AccountPage() {
             placeholder="Enter a player name"
             value={displayName}
           />
+          <label className="font-sans text-xs font-black uppercase text-[#566373]" htmlFor="username">
+            Username
+          </label>
+          <input
+            autoCapitalize="none"
+            className="rounded-[1rem] border border-[#bfccda] bg-white px-4 py-3 font-sans text-lg outline-none focus:border-[#27323f]"
+            id="username"
+            onChange={(event) => setUsername(event.target.value)}
+            placeholder="momentlegend"
+            value={username}
+          />
           {email ? (
             <div className="grid gap-1 rounded-[1rem] border border-[#d3dde8] bg-white px-4 py-3 font-sans">
               <span className="text-xs font-black uppercase text-[#566373]">
                 Email
               </span>
               <span className="text-sm font-bold">{email}</span>
-            </div>
-          ) : null}
-          {username ? (
-            <div className="grid gap-1 rounded-[1rem] border border-[#d3dde8] bg-white px-4 py-3 font-sans">
-              <span className="text-xs font-black uppercase text-[#566373]">
-                Username
-              </span>
-              <span className="text-sm font-bold">@{username}</span>
             </div>
           ) : null}
           <div className="flex flex-wrap gap-2">

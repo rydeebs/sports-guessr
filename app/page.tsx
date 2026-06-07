@@ -292,7 +292,11 @@ export default function Home() {
   }
 
   return (
-    <GameLayout isDimmed={welcomeOpen} round={round}>
+    <GameLayout
+      isDimmed={welcomeOpen}
+      round={round}
+      showPanoramaHint={roundIndex === 0 && !welcomeOpen}
+    >
       <header className="game-header pointer-events-none absolute inset-x-0 top-0 z-20 flex items-start justify-between gap-3 p-3 sm:gap-4 sm:p-6">
         <div className="game-brand pointer-events-auto">
           <img

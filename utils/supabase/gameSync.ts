@@ -14,6 +14,7 @@ export type CompletedRound = {
 type ProfileInput = {
   displayName?: string | null;
   email?: string | null;
+  username?: string | null;
 };
 
 export async function getSignedInUser() {
@@ -41,6 +42,7 @@ export async function ensureProfile(input: ProfileInput = {}) {
     user.email?.split("@")[0] ||
     "Player";
   const email = input.email?.trim() || user.email || null;
+  const requestedUsername = normalizeUsername(input.username);
   const { data: existingProfile } = await supabase
     .from("profiles")
     .select("username")
@@ -53,7 +55,9 @@ export async function ensureProfile(input: ProfileInput = {}) {
     email,
     id: user.id,
     username:
-      existingProfile?.username ?? generateUsernameFromName(displayName),
+      requestedUsername ||
+      existingProfile?.username ||
+      generateUsernameFromName(displayName),
   });
 
   if (error) {
@@ -88,18 +92,21 @@ export async function signInWithPassword(email: string, password: string) {
 
 export async function signUpWithPassword(
   displayName: string,
+  username: string,
   email: string,
   password: string,
 ) {
   const supabase = createClient();
   const trimmedDisplayName = displayName.trim();
+  const normalizedUsername =
+    normalizeUsername(username) || generateUsernameFromName(trimmedDisplayName);
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
       data: {
         name: trimmedDisplayName,
-        username: generateUsernameFromName(trimmedDisplayName),
+        username: normalizedUsername,
       },
     },
   });
@@ -109,7 +116,11 @@ export async function signUpWithPassword(
   }
 
   if (data.user) {
-    await ensureProfile({ displayName: trimmedDisplayName, email });
+    await ensureProfile({
+      displayName: trimmedDisplayName,
+      email,
+      username: normalizedUsername,
+    });
   }
 
   return data.user;
@@ -307,15 +318,21 @@ function toDateKey(value: string | null) {
 }
 
 function generateUsernameFromName(name: string) {
-  const baseName = name
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "")
-    .slice(0, 18);
+  const baseName = normalizeUsername(name).replace(/-/g, "").slice(0, 18);
   const digitCount = Math.random() < 0.5 ? 3 : 4;
   const min = digitCount === 3 ? 100 : 1000;
   const max = digitCount === 3 ? 999 : 9999;
   const randomDigits = Math.floor(Math.random() * (max - min + 1)) + min;
 
   return `${baseName || "player"}${randomDigits}`;
+}
+
+function normalizeUsername(value: string | null | undefined) {
+  return (value ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/^@+/, "")
+    .replace(/[^a-z0-9_]+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 24);
 }
