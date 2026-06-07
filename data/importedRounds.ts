@@ -614,5 +614,56 @@ export const importedRounds: Round[] = [
       "lng": -79.3894
     },
     "description": "José Bautista launched a dramatic three-run homer against the Texas Rangers and unleashed an unforgettable bat flip that became one of baseball’s defining postseason celebrations."
+  },
+  {
+    "id": "2025-rory-mcilroy-wins-first-masters",
+    "title": "Rory McIlroy Wins First Masters",
+    "imageUrl": "/rounds/2025-rory-mcilroy-wins-first-masters.png",
+    "level": "Easy",
+    "actualYear": 2025,
+    "actualMonth": "April",
+    "actualDay": 14,
+    "actualLocation": {
+      "name": "Augusta National Golf Club",
+      "city": "Augusta, Georgia",
+      "country": "United States",
+      "lat": 33.5031,
+      "lng": -82.0209
+    },
+    "description": "Rory McIlroy captured his first Masters title, completing the career Grand Slam and joining golf’s most exclusive club."
+  },
+  {
+    "id": "2020-patrick-mahomes-wins-first-super-bowl-mvp",
+    "title": "Patrick Mahomes Wins First Super Bowl MVP",
+    "imageUrl": "/rounds/2020-patrick-mahomes-wins-first-super-bowl-mvp.png",
+    "level": "Easy",
+    "actualYear": 2020,
+    "actualMonth": "February",
+    "actualDay": 2,
+    "actualLocation": {
+      "name": "Hard Rock Stadium",
+      "city": "Miami Gardens, Florida",
+      "country": "United States",
+      "lat": 25.958,
+      "lng": -80.2389
+    },
+    "description": "Patrick Mahomes led Kansas City to a comeback win in Super Bowl LIV and earned his first Super Bowl MVP award."
+  },
+  {
+    "id": "2009-warriors-draft-stephen-curry",
+    "title": "Warriors Draft Stephen Curry",
+    "imageUrl": "/rounds/2009-warriors-draft-stephen-curry.png",
+    "level": "Medium",
+    "actualYear": 2009,
+    "actualMonth": "June",
+    "actualDay": 25,
+    "actualLocation": {
+      "name": "Madison Square Garden",
+      "city": "New York City, New York",
+      "country": "United States",
+      "lat": 40.7505,
+      "lng": -73.9934
+    },
+    "description": "Golden State selected Stephen Curry with the seventh overall pick in the NBA Draft, beginning a franchise-changing era."
   }
 ];
