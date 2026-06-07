@@ -9,6 +9,7 @@ type PanoramaSceneProps = {
   title: string;
   isDimmed: boolean;
   initialYaw?: number;
+  onReady?: () => void;
 };
 
 export function PanoramaScene({
@@ -16,6 +17,7 @@ export function PanoramaScene({
   title,
   isDimmed,
   initialYaw = 180,
+  onReady,
 }: PanoramaSceneProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -53,6 +55,8 @@ export function PanoramaScene({
     renderer.domElement.className = "panorama-canvas";
     renderer.domElement.style.display = "block";
     renderer.domElement.style.height = "100%";
+    renderer.domElement.style.opacity = "0";
+    renderer.domElement.style.transition = "opacity 180ms ease";
     renderer.domElement.style.width = "100%";
     container.appendChild(renderer.domElement);
 
@@ -86,6 +90,8 @@ export function PanoramaScene({
         material.map = loadedTexture;
         material.color.set(0xffffff);
         material.needsUpdate = true;
+        renderer.domElement.style.opacity = "1";
+        onReady?.();
       },
       undefined,
       () => {
@@ -176,7 +182,7 @@ export function PanoramaScene({
       texture?.dispose();
       renderer.dispose();
     };
-  }, [imageUrl, initialYaw, isDimmed, title]);
+  }, [imageUrl, initialYaw, isDimmed, onReady, title]);
 
   return (
     <div

@@ -3,12 +3,15 @@
 :root {
   color-scheme: dark;
   --paper: rgba(244, 248, 252, 0.9);
-  --paper-border: rgba(199, 222, 243, 0.5);
+  --paper-border: rgba(68, 54, 36, 0.34);
   --ink: #0d1a26;
-  --navy: #08131f;
-  --blue: #246bff;
-  --blue-bright: #78b7ff;
+  --navy: #111813;
+  --blue: #b62323;
+  --blue-bright: #f0c46a;
   --green: #18a56f;
+  --vintage-paper: #f8f1df;
+  --vintage-red: #b62323;
+  --vintage-ink: #1e2a23;
 }
 
 * {
@@ -41,29 +44,46 @@ input {
 
 .glass-panel {
   border: 1px solid var(--paper-border);
-  background: var(--paper);
-  backdrop-filter: blur(18px);
+  background: linear-gradient(180deg, rgba(248, 241, 223, 0.95), rgba(229, 216, 184, 0.92));
+  backdrop-filter: blur(6px);
 }
 
 .glass-dark {
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(7, 18, 31, 0.68);
-  backdrop-filter: blur(18px);
+  border: 1px solid rgba(248, 241, 223, 0.42);
+  background: rgba(30, 42, 35, 0.82);
+  backdrop-filter: blur(8px);
 }
 
 .glass-control {
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.12));
-  border: 1px solid rgba(255, 255, 255, 0.52);
+  background: linear-gradient(180deg, #f8f1df, #d9c796);
+  border: 2px solid rgba(68, 42, 24, 0.72);
+  color: var(--vintage-ink);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.62),
+    0 0.55rem 0 rgba(72, 43, 23, 0.34),
     0 0.75rem 1.7rem rgba(0, 0, 0, 0.28);
-  backdrop-filter: blur(18px);
+  backdrop-filter: blur(4px);
 }
 
 .glass-control:hover {
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.2));
+  background: linear-gradient(180deg, #fff6df, #e7cf93);
+}
+
+.game-nav {
+  margin-left: clamp(8rem, 14vw, 12rem);
+}
+
+.game-nav-link {
+  background: rgba(248, 241, 223, 0.9);
+  border: 1px solid rgba(68, 42, 24, 0.5);
+  border-radius: 0;
+  box-shadow: 0 0.35rem 0 rgba(72, 43, 23, 0.25);
+  color: var(--vintage-ink);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 900;
+  padding: 0.58rem 0.9rem;
+  text-transform: uppercase;
 }
 
 .game-brand-logo {
@@ -90,10 +110,9 @@ input {
 
 .game-submit button:not(:disabled):hover {
   animation: submit-blue-pulse 1.25s ease-in-out infinite;
-  background:
-    radial-gradient(circle at 24% 18%, rgba(120, 183, 255, 0.48), transparent 42%),
-    linear-gradient(135deg, #246bff 0%, #1876ff 48%, #78b7ff 100%);
-  border-color: rgba(120, 183, 255, 0.82);
+  background: linear-gradient(180deg, #cf3030, #941c1c);
+  border-color: rgba(255, 232, 176, 0.92);
+  color: white;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.42),
     0 0 1.1rem rgba(120, 183, 255, 0.72),
@@ -122,7 +141,9 @@ input {
 
 .game-submit button.submit-ready:not(:disabled) {
   animation: submit-border-pulse 1.35s ease-in-out infinite;
-  border-color: rgba(120, 183, 255, 0.95);
+  background: linear-gradient(180deg, #c92d2d, #981d1d);
+  border-color: rgba(255, 232, 176, 0.95);
+  color: white;
 }
 
 @keyframes submit-border-pulse {
@@ -145,8 +166,8 @@ input {
 
 .panorama-scene {
   background:
-    radial-gradient(circle at center, rgba(26, 48, 70, 0.42), transparent 55%),
-    #08131f;
+    radial-gradient(circle at center, rgba(80, 54, 30, 0.28), transparent 55%),
+    #111813;
   cursor: grab;
   touch-action: none;
   user-select: none;
@@ -173,23 +194,25 @@ input {
 
 .arena-glow {
   background:
-    linear-gradient(90deg, rgba(8, 13, 15, 0.14), transparent 18%, transparent 82%, rgba(8, 13, 15, 0.14)),
-    linear-gradient(180deg, rgba(6, 12, 14, 0.14), transparent 28%, rgba(6, 12, 14, 0.12));
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 4px),
+    linear-gradient(90deg, rgba(8, 13, 15, 0.2), transparent 18%, transparent 82%, rgba(8, 13, 15, 0.2)),
+    linear-gradient(180deg, rgba(6, 12, 14, 0.16), transparent 28%, rgba(6, 12, 14, 0.16));
   pointer-events: none;
 }
 
 .timer-shell {
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.14));
-  border-radius: 999px;
+  background: linear-gradient(180deg, #f8f1df, #d5c08b);
+  border: 2px solid rgba(68, 42, 24, 0.72);
+  border-radius: 0;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.5),
     0 0.75rem 1.7rem rgba(0, 0, 0, 0.32);
   height: 2.9rem;
   min-width: 6.2rem;
   padding: 0.22rem 0.86rem;
-  text-shadow: 0 0.2rem 0.55rem rgba(0, 0, 0, 0.72);
-  backdrop-filter: blur(18px);
+  color: #1e2a23;
+  text-shadow: none;
+  backdrop-filter: blur(4px);
 }
 
 .timer-shell span {
@@ -262,122 +285,50 @@ input {
   right: 1.5rem;
 }
 
-.date-wheel-control {
-  width: max-content;
+.year-slider-control {
+  width: min(24rem, calc(100vw - 2rem));
 }
 
-.date-wheel-panel {
-  display: grid;
-  gap: 0.5rem;
-  grid-template-columns: max-content max-content max-content;
+.year-slider-panel {
+  background: linear-gradient(180deg, rgba(248, 241, 223, 0.94), rgba(218, 198, 145, 0.92));
+  border: 2px solid rgba(68, 42, 24, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.56),
+    0 0.55rem 0 rgba(72, 43, 23, 0.28),
+    0 0.85rem 2rem rgba(0, 0, 0, 0.22);
+  color: var(--vintage-ink);
+  padding: 0.8rem 0.95rem 0.62rem;
 }
 
-.date-wheel-frame {
-  background: rgba(13, 26, 41, 0.16);
-  border: 0;
-  border-radius: 1rem;
-  box-shadow: 0 0.85rem 2rem rgba(0, 0, 0, 0.18);
-  backdrop-filter: blur(24px) saturate(145%);
-  height: 6.35rem;
-  min-width: 0;
-  overflow: hidden;
-  position: relative;
-}
-
-.date-wheel-frame-month {
-  width: 7.5rem;
-}
-
-.date-wheel-frame-day {
-  width: 4rem;
-}
-
-.date-wheel-frame-year {
-  width: 5.5rem;
-}
-
-.date-wheel-column {
-  cursor: ns-resize;
-  height: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
-  position: relative;
-  scroll-snap-type: y mandatory;
-  scrollbar-width: none;
-  touch-action: pan-y;
-  z-index: 2;
-  -webkit-overflow-scrolling: touch;
-}
-
-.date-wheel-column:active {
-  cursor: grabbing;
-}
-
-.date-wheel-column:focus-visible {
-  outline: 2px solid rgba(255, 255, 255, 0.88);
-  outline-offset: -0.35rem;
-}
-
-.date-wheel-column::-webkit-scrollbar {
-  display: none;
-}
-
-.date-wheel-disabled {
-  cursor: default;
-  overflow: hidden;
-}
-
-.date-wheel-highlight {
-  background: rgba(255, 255, 255, 0.18);
-  border-block: 0;
-  box-shadow: none;
-  height: 32px;
-  left: 0;
-  pointer-events: none;
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 1;
-}
-
-.date-wheel-option {
-  height: 32px;
-}
-
-.date-wheel-spacer {
-  height: 38px;
-}
-
-.date-wheel-option {
-  align-items: center;
-  color: rgba(255, 255, 255, 0.66);
-  display: flex;
+.year-slider-value {
   font-family: var(--font-serif), Georgia, serif;
-  font-size: 1.08rem;
-  font-weight: 700;
-  justify-content: center;
+  font-size: 2.3rem;
+  font-weight: 900;
   line-height: 1;
-  padding-inline: 0;
-  scroll-snap-align: center;
   text-align: center;
-  text-shadow: 0 0.25rem 1.25rem rgba(0, 0, 0, 0.55);
-  transition:
-    color 160ms ease,
-    opacity 160ms ease,
-    transform 160ms ease;
-  white-space: nowrap;
 }
 
-.date-wheel-option-selected {
-  color: white;
-  font-size: 1.2rem;
-  opacity: 1;
-  transform: scale(1.02);
+.year-slider-input {
+  accent-color: var(--vintage-red);
+  display: block;
+  margin-top: 0.58rem;
+  touch-action: pan-x;
+  width: 100%;
 }
 
-.date-wheel-label-short {
-  display: none;
+.year-slider-input:focus-visible {
+  outline: 2px solid var(--vintage-red);
+  outline-offset: 0.25rem;
+}
+
+.year-slider-bounds {
+  display: flex;
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.66rem;
+  font-weight: 900;
+  justify-content: space-between;
+  margin-top: 0.28rem;
+  opacity: 0.74;
 }
 
 .map-preview {
@@ -386,6 +337,21 @@ input {
 
 .map-expanded {
   width: min(34rem, calc(100vw - 2rem));
+}
+
+.map-expand-button {
+  background: rgba(248, 241, 223, 0.94);
+  border: 1px solid rgba(68, 42, 24, 0.58);
+  bottom: 0.8rem;
+  color: var(--vintage-ink);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.68rem;
+  font-weight: 900;
+  padding: 0.48rem 0.68rem;
+  position: absolute;
+  right: 0.8rem;
+  text-transform: uppercase;
+  z-index: 12;
 }
 
 .result-brand {
@@ -1408,7 +1374,7 @@ input {
   }
 
   .game-timer {
-    top: 0.75rem;
+    top: calc(env(safe-area-inset-top, 0px) + 1.05rem);
     z-index: 24;
   }
 
@@ -1436,78 +1402,54 @@ input {
   }
 
   .year-dock {
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 7rem);
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 5rem);
     justify-content: flex-start;
     left: 0.75rem;
     padding-inline: 0;
     right: auto;
-    width: calc(100vw - 9.65rem);
+    width: calc(100vw - 1.5rem);
   }
 
-  .date-wheel-control {
+  .year-slider-control {
     width: 100%;
   }
 
-  .date-wheel-panel {
-    gap: 0.32rem;
-    grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.72fr) minmax(0, 1fr);
-    width: 100%;
+  .year-slider-panel {
+    padding: 0.62rem 0.78rem 0.5rem;
   }
 
-  .date-wheel-frame {
-    border-radius: 0.8rem;
-    height: 5.35rem;
-    width: auto;
+  .year-slider-value {
+    font-size: 1.85rem;
   }
 
-  .date-wheel-frame-month {
-    width: auto;
+  .year-slider-input {
+    margin-top: 0.42rem;
   }
 
-  .date-wheel-frame-day {
-    width: auto;
+  .year-slider-bounds {
+    font-size: 0.6rem;
   }
 
-  .date-wheel-frame-year {
-    width: auto;
-  }
-
-  .date-wheel-spacer {
-    height: 26px;
-  }
-
-  .date-wheel-option {
-    height: 32px;
-  }
-
-  .date-wheel-option {
-    font-size: 0.78rem;
-    padding-inline: 0;
-  }
-
-  .date-wheel-option-selected {
-    font-size: 0.88rem;
-  }
-
-  .date-wheel-label-full {
-    display: none;
-  }
-
-  .date-wheel-label-short {
-    display: inline;
+  .panorama-tip {
+    top: calc(env(safe-area-inset-top, 0px) + 4.5rem);
   }
 
   .map-dock {
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 7rem);
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 11.2rem);
     right: 0.75rem;
   }
 
   .map-preview {
-    width: min(7.65rem, calc(100vw - 1.5rem));
+    width: min(8.75rem, calc(100vw - 1.5rem));
   }
 
   .map-expanded {
-    width: min(20.5rem, calc(100vw - 1.5rem));
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 5.3rem);
+    left: 0.75rem;
+    position: fixed;
+    right: 0.75rem;
+    width: auto;
+    z-index: 26;
   }
 
   .world-map {
@@ -1517,7 +1459,7 @@ input {
 
   .map-expanded .world-map {
     aspect-ratio: 2 / 1;
-    min-height: 10.6rem;
+    min-height: min(14rem, 48vh);
   }
 
   .glass-control {
@@ -1534,8 +1476,9 @@ input {
   }
 
   .game-submit {
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 15.7rem);
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 0.75rem);
     right: 0.75rem;
+    z-index: 32;
   }
 
   .game-settings {
@@ -1543,7 +1486,9 @@ input {
   }
 
   .game-submit button {
-    padding-inline: 0.78rem;
+    font-size: 0.9rem;
+    min-height: 3.25rem;
+    padding: 0.8rem 1.2rem;
   }
 
   .mg-popup-reopen {
@@ -1688,44 +1633,19 @@ input {
   }
 
   .year-dock {
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 6.55rem);
-    width: calc(100vw - 8.45rem);
-  }
-
-  .date-wheel-panel {
-    gap: 0.26rem;
-    grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.72fr) minmax(0, 1fr);
-  }
-
-  .date-wheel-frame-month {
-    width: auto;
-  }
-
-  .date-wheel-frame-day {
-    width: auto;
-  }
-
-  .date-wheel-frame-year {
-    width: auto;
-  }
-
-  .date-wheel-option {
-    font-size: 0.72rem;
-  }
-
-  .date-wheel-option-selected {
-    font-size: 0.82rem;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 4.75rem);
+    width: calc(100vw - 1.5rem);
   }
 
   .map-preview {
-    width: 6.65rem;
+    width: 7.5rem;
   }
 
   .map-dock {
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 6.55rem);
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 10.7rem);
   }
 
   .game-submit {
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 14.8rem);
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 0.7rem);
   }
 }

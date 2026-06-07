@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import type { ScoreResult } from "@/types/game";
+import type { CompletedRound } from "@/utils/supabase/gameSync";
 import {
   createChallenge,
   getShareUrl,
@@ -17,6 +19,7 @@ type DailySummaryProps = {
   activeDate: string;
   archivedDates: string[];
   challenge: Challenge | null;
+  completedRounds: CompletedRound[];
   scoreHistory: ScoreResult[];
   totalScore: number;
   onSelectDate: (date: string) => void;
@@ -26,11 +29,13 @@ export function DailySummary({
   activeDate,
   archivedDates,
   challenge,
+  completedRounds,
   scoreHistory,
   totalScore,
   onSelectDate,
 }: DailySummaryProps) {
   const [isArchiveOpen, setIsArchiveOpen] = useState(false);
+  const [selectedRoundIndex, setSelectedRoundIndex] = useState(0);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [challengeLeaderboard, setChallengeLeaderboard] = useState<
     LeaderboardEntry[]
@@ -39,6 +44,15 @@ export function DailySummary({
   const [challengeUrl, setChallengeUrl] = useState("");
   const [isCreatingChallenge, setIsCreatingChallenge] = useState(false);
   const displayDate = formatPlayDate(activeDate);
+  const maxScore = scoreHistory.length * 1000;
+  const selectedRound = completedRounds[selectedRoundIndex];
+  const averageRoundScore = scoreHistory.length
+    ? Math.round(totalScore / scoreHistory.length)
+    : 0;
+  const bestRoundScore = scoreHistory.reduce(
+    (best, score) => Math.max(best, score.roundScore),
+    0,
+  );
 
   useEffect(() => {
     readDailyLeaderboard(activeDate).then(setLeaderboard);
@@ -104,14 +118,28 @@ export function DailySummary({
         <p className="font-serif text-3xl leading-none sm:text-4xl">
           MomentGuessr
         </p>
-        <button
-          aria-expanded={isArchiveOpen}
-          className="sport-panel rounded-full px-4 py-2 font-sans text-xs font-black uppercase text-white/76 transition hover:text-white"
-          onClick={() => setIsArchiveOpen((open) => !open)}
-          type="button"
-        >
-          {displayDate}
-        </button>
+        <div className="flex flex-wrap justify-end gap-2">
+          <Link
+            className="sport-panel rounded-full px-4 py-2 font-sans text-xs font-black uppercase text-white/76 transition hover:text-white"
+            href="/archive"
+          >
+            Archive
+          </Link>
+          <Link
+            className="sport-panel rounded-full px-4 py-2 font-sans text-xs font-black uppercase text-white/76 transition hover:text-white"
+            href="/state"
+          >
+            Leaderboard
+          </Link>
+          <button
+            aria-expanded={isArchiveOpen}
+            className="sport-panel rounded-full px-4 py-2 font-sans text-xs font-black uppercase text-white/76 transition hover:text-white"
+            onClick={() => setIsArchiveOpen((open) => !open)}
+            type="button"
+          >
+            {displayDate}
+          </button>
+        </div>
       </header>
       {isArchiveOpen ? (
         <section className="sport-panel mx-auto mt-4 w-full max-w-6xl rounded-[1.5rem] p-4 shadow-xl">
@@ -152,13 +180,20 @@ export function DailySummary({
             {totalScore.toLocaleString()}
           </h1>
           <p className="mt-3 max-w-lg font-sans text-sm text-white/68">
-            Five sports moments scored for location and year accuracy.
+            Five sports moments scored out of {maxScore.toLocaleString()} points
+            for location and year accuracy.
           </p>
           <div className="mt-8 grid gap-3 sm:grid-cols-5">
             {scoreHistory.map((score, index) => (
-              <div
-                className="rounded-[1.15rem] border border-white/12 bg-white/8 p-3"
+              <button
+                className={`rounded-[1.15rem] border p-3 text-left transition hover:bg-white/14 ${
+                  selectedRoundIndex === index
+                    ? "border-[#f0c46a]/80 bg-[#f0c46a]/16"
+                    : "border-white/12 bg-white/8"
+                }`}
                 key={`round-${index + 1}`}
+                onClick={() => setSelectedRoundIndex(index)}
+                type="button"
               >
                 <p className="font-sans text-[0.65rem] font-black uppercase text-white/52">
                   Round {index + 1}
@@ -166,9 +201,48 @@ export function DailySummary({
                 <p className="mt-1 font-serif text-2xl">
                   {score.roundScore.toLocaleString()}
                 </p>
-              </div>
+              </button>
             ))}
           </div>
+          {selectedRound ? (
+            <section className="mt-5 rounded-[1.15rem] border border-white/12 bg-white/8 p-4">
+              <p className="font-sans text-xs font-black uppercase text-[#f0c46a]">
+                Round {selectedRoundIndex + 1} Review
+              </p>
+              <h2 className="mt-1 font-serif text-3xl leading-tight">
+                {selectedRound.round.title}
+              </h2>
+              <p className="mt-2 font-sans text-sm text-white/68">
+                Your guess:{" "}
+                {selectedRound.guess.location
+                  ? `${selectedRound.guess.year}, ${selectedRound.guess.location.lat.toFixed(2)}, ${selectedRound.guess.location.lng.toFixed(2)}`
+                  : "No guess"}
+              </p>
+              <p className="mt-1 font-sans text-sm text-white/68">
+                Answer: {selectedRound.round.actualYear},{" "}
+                {selectedRound.round.actualLocation.name},{" "}
+                {selectedRound.round.actualLocation.country}
+              </p>
+              <p className="mt-3 font-sans text-sm text-white/76">
+                {selectedRound.round.description}
+              </p>
+            </section>
+          ) : null}
+          <section className="mt-5 grid gap-3 sm:grid-cols-3">
+            <SummaryStat label="Average Round" value={averageRoundScore} />
+            <SummaryStat label="Best Round" value={bestRoundScore} />
+            <SummaryStat label="Max Score" value={maxScore} />
+          </section>
+          <section className="mt-5 rounded-[1.15rem] border border-white/12 bg-white/8 p-4">
+            <p className="font-sans text-xs font-black uppercase text-[#f0c46a]">
+              Scoring
+            </p>
+            <p className="mt-2 font-sans text-sm text-white/70">
+              Each round is worth 1,000 points: up to 500 for location and up to
+              500 for the year. Country matches protect a chunk of location
+              credit, and exact month/day are shown as context after the round.
+            </p>
+          </section>
           <div className="share-card mt-8">
             <div className="share-score-card">
               <div>
@@ -303,4 +377,15 @@ function formatPlayDate(date: string) {
     month: "short",
     year: "numeric",
   }).format(new Date(`${date}T12:00:00`));
+}
+
+function SummaryStat({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="rounded-[1.15rem] border border-white/12 bg-white/8 p-3">
+      <p className="font-sans text-[0.65rem] font-black uppercase text-white/52">
+        {label}
+      </p>
+      <p className="mt-1 font-serif text-2xl">{value.toLocaleString()}</p>
+    </div>
+  );
 }

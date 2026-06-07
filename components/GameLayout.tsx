@@ -8,15 +8,22 @@ type GameLayoutProps = {
   round: Round;
   children: ReactNode;
   isDimmed: boolean;
+  onPanoramaReady?: () => void;
 };
 
-export function GameLayout({ round, children, isDimmed }: GameLayoutProps) {
+export function GameLayout({
+  round,
+  children,
+  isDimmed,
+  onPanoramaReady,
+}: GameLayoutProps) {
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#08131f] text-white">
       <PanoramaScene
         imageUrl={round.imageUrl}
         initialYaw={round.initialPanoramaYaw}
         isDimmed={isDimmed}
+        onReady={onPanoramaReady}
         title={round.title}
       />
       <div className="arena-glow absolute inset-0" />
