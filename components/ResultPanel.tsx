@@ -14,8 +14,8 @@ export function ResultPanel({
   onNextRound,
 }: ResultPanelProps) {
   return (
-    <aside className="result-panel glass-panel w-[min(32rem,calc(100vw-1.5rem))] rounded-[1.5rem] p-4 text-[#0d1a26] shadow-2xl sm:rounded-[2rem] sm:p-6">
-      <p className="font-sans text-xs font-black uppercase text-[#246bff]">
+    <aside className="result-panel glass-panel w-[min(32rem,calc(100vw-1.5rem))] p-4 text-[#0d1a26] shadow-2xl sm:p-6">
+      <p className="result-kicker font-sans text-xs font-black uppercase">
         Result
       </p>
       <h2 className="mt-2 font-serif text-2xl leading-tight text-[#07111d] sm:text-3xl">
@@ -46,8 +46,8 @@ export function ResultPanel({
           value={result.timedOut ? "No guess" : `${result.yearError} yr`}
         />
       </div>
-      <div className="mt-3 rounded-[1.2rem] bg-[#1f2934] px-4 py-3 text-white sm:rounded-[1.35rem] sm:py-4">
-        <p className="font-sans text-xs font-bold uppercase text-[#78b7ff]">
+      <div className="result-score-card mt-3 bg-[#1f2934] px-4 py-3 text-white sm:py-4">
+        <p className="font-sans text-xs font-bold uppercase">
           Round score
         </p>
         <p className="font-serif text-3xl leading-none sm:text-4xl">
@@ -55,7 +55,7 @@ export function ResultPanel({
         </p>
       </div>
       <button
-        className="sport-action mt-4 w-full rounded-full px-5 py-3 font-sans text-sm font-black uppercase text-white shadow-lg transition"
+        className="sport-action result-next-button mt-4 w-full px-5 py-3 font-sans text-sm font-black uppercase text-white shadow-lg transition"
         onClick={onNextRound}
         type="button"
       >
@@ -71,7 +71,7 @@ function formatRoundDate(round: Round) {
 
 function ResultStat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-[1.2rem] bg-white/68 p-3 shadow-sm">
+    <div className="result-stat-card bg-white/68 p-3 shadow-sm">
       <p className="text-[0.68rem] font-black uppercase text-[#5d6968]">
         {label}
       </p>

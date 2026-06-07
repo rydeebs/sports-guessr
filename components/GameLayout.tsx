@@ -12,7 +12,7 @@ type GameLayoutProps = {
 
 export function GameLayout({ round, children, isDimmed }: GameLayoutProps) {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#08131f] text-white">
+    <main className="game-root relative min-h-screen overflow-hidden bg-[#08131f] text-white">
       <PanoramaScene
         imageUrl={round.imageUrl}
         initialYaw={round.initialPanoramaYaw}
@@ -20,7 +20,7 @@ export function GameLayout({ round, children, isDimmed }: GameLayoutProps) {
         title={round.title}
       />
       <div className="arena-glow absolute inset-0" />
-      <div className="pointer-events-none relative z-10 min-h-screen">
+      <div className="game-content pointer-events-none relative z-10 min-h-screen">
         {children}
       </div>
     </main>
