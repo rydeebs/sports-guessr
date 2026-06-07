@@ -9,8 +9,6 @@ export function ScoreDisplay({
   totalRounds,
   totalScore,
 }: ScoreDisplayProps) {
-  const maxScore = totalRounds * 1000;
-
   return (
     <div className="score-display glass-dark flex items-center gap-2 rounded-[1.25rem] px-3 py-2 text-right shadow-2xl sm:gap-3 sm:rounded-[1.75rem] sm:px-5 sm:py-3">
       <p className="font-sans text-[0.65rem] font-semibold uppercase leading-none text-white/72 sm:text-sm">
@@ -18,10 +16,6 @@ export function ScoreDisplay({
       </p>
       <p className="font-serif text-xl leading-none text-white sm:text-3xl">
         {totalScore.toLocaleString()}
-        <span className="font-sans text-[0.62rem] font-black text-white/52 sm:text-xs">
-          {" "}
-          / {maxScore.toLocaleString()}
-        </span>
       </p>
     </div>
   );

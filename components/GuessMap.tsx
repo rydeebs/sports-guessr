@@ -111,7 +111,7 @@ export function GuessMap({
         }
 
         const map = new Map(mapRef.current, {
-          center: { lat: 22, lng: -70 },
+          center: { lat: 18, lng: 0 },
           clickableIcons: false,
           disableDefaultUI: true,
           gestureHandling: "greedy",
@@ -126,7 +126,7 @@ export function GuessMap({
             },
           },
           streetViewControl: false,
-          zoom: 2,
+          zoom: 1,
           zoomControl: false,
         });
 
@@ -258,17 +258,6 @@ export function GuessMap({
             : "Maps unavailable. Tap the map to place an approximate guess."}
         </div>
       ) : null}
-      <button
-        aria-expanded={isExpanded}
-        className="map-expand-button"
-        onClick={(event) => {
-          event.stopPropagation();
-          setIsExpanded((expanded) => !expanded);
-        }}
-        type="button"
-      >
-        {isExpanded ? "Close map" : "Expand map"}
-      </button>
     </section>
   );
 }

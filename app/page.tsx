@@ -1,7 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { GameLayout } from "@/components/GameLayout";
 import { DailySummary } from "@/components/DailySummary";
 import { GuessMap } from "@/components/GuessMap";
@@ -26,7 +25,7 @@ import {
   syncCompletedGame,
 } from "@/utils/supabase/gameSync";
 
-const ROUND_SECONDS = 90;
+const ROUND_SECONDS = 60;
 const blankGuess: Guess = { day: null, month: null, year: null, location: null };
 const DAY_COUNT = 6;
 const ROUNDS_PER_GAME = 5;
@@ -42,7 +41,6 @@ export default function Home() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [isAccountUser, setIsAccountUser] = useState(false);
   const [welcomeOpen, setWelcomeOpen] = useState(true);
-  const [isPanoramaReady, setIsPanoramaReady] = useState(false);
   const [activeDate, setActiveDate] = useState(getLocalDateKey(new Date()));
   const [activeChallenge, setActiveChallenge] = useState<Challenge | null>(null);
   const [dailyHistory, setDailyHistory] = useState<DailyScoreHistory[]>([]);
@@ -115,7 +113,7 @@ export default function Home() {
   }, [activeChallenge?.id, activeDate]);
 
   useEffect(() => {
-    if (result || welcomeOpen || !isPanoramaReady) {
+    if (result) {
       return;
     }
 
@@ -124,15 +122,12 @@ export default function Home() {
     }, 1000);
 
     return () => window.clearInterval(timer);
-  }, [isPanoramaReady, result, roundIndex, welcomeOpen]);
+  }, [result, roundIndex]);
 
   const totalScore = useMemo(
     () => scoreHistory.reduce((total, score) => total + score.roundScore, 0),
     [scoreHistory],
   );
-  const markPanoramaReady = useCallback(() => {
-    setIsPanoramaReady(true);
-  }, []);
 
   useEffect(() => {
     if (!isDailyComplete || completedRounds.length !== gameRounds.length) {
@@ -185,6 +180,8 @@ export default function Home() {
 
   const canSubmit =
     guess.location !== null &&
+    guess.month !== null &&
+    guess.day !== null &&
     guess.year !== null &&
     !result;
   const isLastRound = roundIndex === gameRounds.length - 1;
@@ -231,7 +228,6 @@ export default function Home() {
     setGuess(blankGuess);
     setResult(null);
     setSecondsLeft(ROUND_SECONDS);
-    setIsPanoramaReady(false);
   };
 
   const advanceRound = () => {
@@ -276,7 +272,6 @@ export default function Home() {
         activeDate={activeDate}
         archivedDates={getArchiveDates(activeDate)}
         challenge={activeChallenge}
-        completedRounds={completedRounds}
         onSelectDate={startDay}
         scoreHistory={scoreHistory}
         totalScore={totalScore}
@@ -297,11 +292,7 @@ export default function Home() {
   }
 
   return (
-    <GameLayout
-      isDimmed={welcomeOpen}
-      onPanoramaReady={markPanoramaReady}
-      round={round}
-    >
+    <GameLayout isDimmed={welcomeOpen} round={round}>
       <header className="game-header pointer-events-none absolute inset-x-0 top-0 z-20 flex items-start justify-between gap-3 p-3 sm:gap-4 sm:p-6">
         <div className="game-brand pointer-events-auto">
           <img
@@ -310,17 +301,6 @@ export default function Home() {
             src="/moment-popup/logo-app-white.png"
           />
         </div>
-        <nav
-          aria-label="Game links"
-          className="game-nav pointer-events-auto hidden items-center gap-2 sm:flex"
-        >
-          <Link className="game-nav-link" href="/archive">
-            Archive
-          </Link>
-          <Link className="game-nav-link" href="/state">
-            Leaderboard
-          </Link>
-        </nav>
         <div className="game-timer pointer-events-auto absolute left-1/2 top-3 -translate-x-1/2 sm:top-6">
           <Timer secondsLeft={secondsLeft} totalSeconds={ROUND_SECONDS} />
         </div>
@@ -347,7 +327,7 @@ export default function Home() {
 
       <div className="game-submit pointer-events-auto absolute bottom-3 right-3 z-20 sm:bottom-6 sm:right-6">
         <button
-          className={`glass-control rounded-full px-7 py-4 font-sans text-sm font-black uppercase text-white shadow-2xl transition disabled:cursor-not-allowed disabled:opacity-45 sm:px-9 sm:py-4 sm:text-base ${
+          className={`glass-control rounded-full px-5 py-2.5 font-sans text-xs font-black uppercase text-white shadow-2xl transition disabled:cursor-not-allowed disabled:opacity-45 sm:px-7 sm:py-3 sm:text-sm ${
             canSubmit ? "submit-ready" : ""
           }`}
           disabled={!canSubmit}
@@ -366,10 +346,6 @@ export default function Home() {
           onChange={(date) => setGuess((current) => ({ ...current, ...date }))}
           year={guess.year}
         />
-      </div>
-
-      <div className="panorama-tip pointer-events-none absolute left-3 top-20 z-10 max-w-[15rem] rounded-none border border-white/35 bg-[#f8f1df]/90 px-3 py-2 font-sans text-xs font-black uppercase text-[#1e2a23] shadow-xl sm:left-6 sm:top-24">
-        Drag the image to look around
       </div>
 
       <div className="map-dock pointer-events-auto absolute bottom-20 right-3 z-20 sm:bottom-28 sm:right-6">
