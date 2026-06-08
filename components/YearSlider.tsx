@@ -39,7 +39,7 @@ const LAST_YEAR = 2026;
 const DEFAULT_MONTH = 1;
 const DEFAULT_DAY = 1;
 const DEFAULT_YEAR = 1980;
-const WHEEL_ITEM_PX = 32;
+const WHEEL_ITEM_PX = 28;
 
 const monthOptions = [
   "January",
@@ -176,6 +176,7 @@ function WheelColumn({
     scrollTop: number;
     startY: number;
   } | null>(null);
+  const scrollEndRef = useRef<number | null>(null);
   const selectedIndex = Math.max(
     0,
     options.findIndex((option) => option.value === value),
@@ -191,16 +192,44 @@ function WheelColumn({
     scroller.scrollTop = selectedIndex * WHEEL_ITEM_PX;
   }, [selectedIndex]);
 
-  const updateFromScroll = (event: UIEvent<HTMLDivElement>) => {
+  useEffect(() => {
+    return () => {
+      if (scrollEndRef.current !== null) {
+        window.clearTimeout(scrollEndRef.current);
+      }
+    };
+  }, []);
+
+  const commitNearestOption = (scrollTop: number) => {
     const nextIndex = Math.min(
       options.length - 1,
-      Math.max(0, Math.round(event.currentTarget.scrollTop / WHEEL_ITEM_PX)),
+      Math.max(0, Math.round(scrollTop / WHEEL_ITEM_PX)),
     );
     const nextValue = options[nextIndex]?.value;
 
     if (!disabled && nextValue !== undefined && nextValue !== value) {
       onChange(nextValue);
     }
+
+    return nextIndex;
+  };
+
+  const updateFromScroll = (event: UIEvent<HTMLDivElement>) => {
+    const scroller = event.currentTarget;
+
+    commitNearestOption(scroller.scrollTop);
+
+    if (scrollEndRef.current !== null) {
+      window.clearTimeout(scrollEndRef.current);
+    }
+
+    scrollEndRef.current = window.setTimeout(() => {
+      const nextIndex = commitNearestOption(scroller.scrollTop);
+      scroller.scrollTo({
+        behavior: "smooth",
+        top: nextIndex * WHEEL_ITEM_PX,
+      });
+    }, 120);
   };
 
   const moveWithKeyboard = (event: KeyboardEvent<HTMLDivElement>) => {

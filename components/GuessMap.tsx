@@ -5,6 +5,9 @@ import type { PointerEvent as ReactPointerEvent } from "react";
 import type { LocationPoint } from "@/types/game";
 import { getGoogleMapsErrorMessage, loadGoogleMaps } from "@/utils/googleMaps";
 
+const COLLAPSED_MAP_CENTER = { lat: 39.5, lng: -98.35 };
+const COLLAPSED_MAP_ZOOM = 3;
+
 type GuessMapProps = {
   guess: LocationPoint | null;
   actualLocation?: LocationPoint;
@@ -114,7 +117,7 @@ export function GuessMap({
         }
 
         const map = new Map(mapRef.current, {
-          center: { lat: 18, lng: 0 },
+          center: COLLAPSED_MAP_CENTER,
           clickableIcons: false,
           disableDefaultUI: true,
           gestureHandling: "greedy",
@@ -129,7 +132,7 @@ export function GuessMap({
             },
           },
           streetViewControl: false,
-          zoom: 1,
+          zoom: COLLAPSED_MAP_ZOOM,
           zoomControl: false,
         });
 
@@ -222,6 +225,11 @@ export function GuessMap({
     window.setTimeout(() => {
       if (googleMapRef.current && window.google?.maps) {
         google.maps.event.trigger(googleMapRef.current, "resize");
+
+        if (!isExpanded) {
+          googleMapRef.current.setCenter(COLLAPSED_MAP_CENTER);
+          googleMapRef.current.setZoom(COLLAPSED_MAP_ZOOM);
+        }
       }
     }, 320);
   }, [isExpanded]);
